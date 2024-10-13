@@ -111,6 +111,15 @@ class _AdministratormanagementscreenState
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.black.withOpacity(0.2), // Color de la sombra
+                        spreadRadius: 2, // Extensión de la sombra
+                        blurRadius: 6, // Difuminado de la sombra
+                        offset: Offset(0, 3), // Posición de la sombra (x, y)
+                      ),
+                    ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -126,8 +135,7 @@ class _AdministratormanagementscreenState
                             child: Image.network(
                               "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Logo-utez.png/300px-Logo-utez.png",
                               width: 100,
-                              fit: BoxFit
-                                  .cover, // Para que la imagen se ajuste correctamente
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -141,8 +149,7 @@ class _AdministratormanagementscreenState
                               Text(
                                 "Universidad Tecnológica Emiliano Zapata",
                                 maxLines: 2,
-                                overflow: TextOverflow
-                                    .ellipsis, // Mostrar '...' si el texto es muy largo
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -173,6 +180,15 @@ class _AdministratormanagementscreenState
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.black.withOpacity(0.2), // Color de la sombra
+                        spreadRadius: 2, // Extensión de la sombra
+                        blurRadius: 6, // Difuminado de la sombra
+                        offset: Offset(0, 3), // Posición de la sombra (x, y)
+                      ),
+                    ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -188,8 +204,7 @@ class _AdministratormanagementscreenState
                             child: Image.network(
                               "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Logo-utez.png/300px-Logo-utez.png",
                               width: 100,
-                              fit: BoxFit
-                                  .cover, // Para que la imagen se ajuste correctamente
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -203,8 +218,7 @@ class _AdministratormanagementscreenState
                               Text(
                                 "Universidad Tecnológica Emiliano Zapata",
                                 maxLines: 2,
-                                overflow: TextOverflow
-                                    .ellipsis, // Mostrar '...' si el texto es muy largo
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -235,9 +249,13 @@ class _AdministratormanagementscreenState
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           print("Mandar a pantalla de registro");
-        }, 
+        },
         backgroundColor: const Color(0xFF47649D),
-        child: const Icon(Icons.add, color: Colors.white,size: 40,),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 40,
+        ),
       ),
     );
   }
