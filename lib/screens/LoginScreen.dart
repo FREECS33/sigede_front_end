@@ -32,7 +32,15 @@ class Loginscreen extends StatelessWidget {
                 },
                 child: const Text('Ver landing'),
               ),
-
+              const SizedBox(
+                height: 32,
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/admin-registration');
+                },
+                child: const Text('Ver Formulario admin'),
+              ),
               //------------------------------------------------------------------------------------------------------------------
             ],
           ),
