@@ -4,6 +4,8 @@ import 'package:sigede_flutter/screens/auth/LoginScreen.dart';
 import 'package:sigede_flutter/screens/auth/recoverPassword/CodeConfirmation.dart';
 import 'package:sigede_flutter/screens/auth/recoverPassword/RecoverPasswordScreen.dart';
 import 'package:sigede_flutter/screens/auth/recoverPassword/ResetPasswordScreen.dart';
+import 'package:sigede_flutter/screens/admin/admin_registration_screen.dart';
+
 
 void main() {
   runApp(const MainApp());
@@ -23,6 +25,7 @@ class MainApp extends StatelessWidget {
         '/recoverPassword':(context)=> const Recoverpasswordscreen(),
         '/codeConfirmation':(context)=> const CodeConfirmation(),
         '/resetPassword':(context)=> const ResetPasswordScreen(),
+        '/admin-registration':(context)=> const AdminRegistrationScreen(),
       },
     );
   }
