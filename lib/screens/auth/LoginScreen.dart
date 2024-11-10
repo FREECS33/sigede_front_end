@@ -47,6 +47,10 @@ class _LoginscreenState extends State<Loginscreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Text('Bienvenido',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 36),),
+                  const SizedBox(height: 16),
+                  Image.network('https://i.ibb.co/sPtHpG9/Icono.png',height: 150,width: 200,),
+                  const Text('S I G E D E'),
                   const SizedBox(
                     height: 32,
                   ),
@@ -56,7 +60,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     decoration: const InputDecoration(
                       hintText: 'Correo electrónico',
                       border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15)),borderSide: BorderSide.none),
-                      fillColor: const Color.fromARGB(255, 199, 197, 197), filled: true,
+                      fillColor: Color.fromARGB(255, 199, 197, 197), filled: true,
                       //label: Text('Correo electrónico'),
                     ),
                     keyboardType: TextInputType.emailAddress,
@@ -84,19 +88,22 @@ class _LoginscreenState extends State<Loginscreen> {
                     height: 32,
                   ),
                   SizedBox(
-                    width: 200,
+                    width: double.infinity,
                     child: ElevatedButton(onPressed: (){
                       if(_formKey.currentState!.validate()){
-                        Navigator.pushReplacementNamed(context, '/landing');
+                        Navigator.pushReplacementNamed(context, '/navigation');
                       }
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
+                        borderRadius: BorderRadius.circular(20)
                       )
                     ),
-                    child: const Text('Iniciar sesión',style:TextStyle(color:Colors.white),),),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text('Entrar',style:TextStyle(color:Colors.white,fontSize: 16,fontWeight: FontWeight.bold),),
+                    ),),
                   ),
                   const SizedBox(
                     height: 32,
