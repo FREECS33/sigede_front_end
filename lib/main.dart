@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
+import 'package:sigede_flutter/screens/admin/edit_capturist.dart';
+import 'package:sigede_flutter/screens/admin/management_capturist.dart';
+import 'package:sigede_flutter/screens/admin/register_capturist.dart';
 import 'package:sigede_flutter/screens/auth/LoginScreen.dart';
 import 'package:sigede_flutter/screens/auth/recoverPassword/CodeConfirmation.dart';
 import 'package:sigede_flutter/screens/auth/recoverPassword/RecoverPasswordScreen.dart';
@@ -29,7 +32,10 @@ class MainApp extends StatelessWidget {
         '/resetPassword':(context)=> const ResetPasswordScreen(),
         '/admin-registration':(context)=> const AdminRegistrationScreen(),
         '/preview-qr':(context)=>const PreviewQR(),
-        '/navigation':(context)=>const NavigationAdmin()
+        '/navigation':(context)=>const NavigationAdmin(),
+        '/editCapturist':(context)=>const EditCapturist(),
+        '/managementCapturist':(context)=>const ManagementCapturist(),
+        '/registerCapturist':(context)=>const RegisterCapturist()
       },
     );
   }

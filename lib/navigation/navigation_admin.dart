@@ -14,7 +14,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Administratormanagementscreen(),
-    PreviewQR()
+    PreviewQR(),
   ];
 
   void _onItemTapped(int index) {
