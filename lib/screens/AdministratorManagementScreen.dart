@@ -117,7 +117,7 @@ class _AdministratormanagementscreenState
                             Colors.black.withOpacity(0.2), // Color de la sombra
                         spreadRadius: 2, // Extensión de la sombra
                         blurRadius: 6, // Difuminado de la sombra
-                        offset: Offset(0, 3), // Posición de la sombra (x, y)
+                        offset: const Offset(0, 3), // Posición de la sombra (x, y)
                       ),
                     ],
                   ),
@@ -186,7 +186,7 @@ class _AdministratormanagementscreenState
                             Colors.black.withOpacity(0.2), // Color de la sombra
                         spreadRadius: 2, // Extensión de la sombra
                         blurRadius: 6, // Difuminado de la sombra
-                        offset: Offset(0, 3), // Posición de la sombra (x, y)
+                        offset: const Offset(0, 3), // Posición de la sombra (x, y)
                       ),
                     ],
                   ),
