@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
+import 'package:sigede_flutter/screens/admin/credential_form.dart';
+import 'package:sigede_flutter/screens/admin/edit_capturist.dart';
+import 'package:sigede_flutter/screens/admin/management_capturist.dart';
+import 'package:sigede_flutter/screens/admin/register_capturist.dart';
 import 'package:sigede_flutter/screens/public/preview_qr.dart';
 
 class NavigationAdmin extends StatefulWidget {
@@ -14,7 +18,8 @@ class _NavigationAdminState extends State<NavigationAdmin> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Administratormanagementscreen(),
-    PreviewQR(),
+    CredentialForm(),
+    ManagementCapturist(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,8 +38,12 @@ class _NavigationAdminState extends State<NavigationAdmin> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'preview-qr',
+            icon: Icon(Icons.sd_card),
+            label: 'Credential-form',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.edit_document),
+            label: 'Capturistas',
           ),
         ],
         currentIndex: _selectedIndex,
