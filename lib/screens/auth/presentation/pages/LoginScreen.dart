@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -12,7 +13,7 @@ class _LoginscreenState extends State<Loginscreen> {
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
   bool _isObscure = true;
-
+  bool _isValidPassword = true;
   String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
@@ -29,9 +30,8 @@ class _LoginscreenState extends State<Loginscreen> {
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Ingrese una contraseña';
-    } else {
-      return null;
     }
+    return null; // Si es válido, no retorna nada.
   }
 
   @override
@@ -47,21 +47,63 @@ class _LoginscreenState extends State<Loginscreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Bienvenido',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 36),),
+                  Text('Bienvenido',
+                      style: GoogleFonts.rubikMonoOne(
+                          textStyle: const TextStyle(fontSize: 28))),
                   const SizedBox(height: 16),
-                  Image.network('https://i.ibb.co/sPtHpG9/Icono.png',height: 150,width: 200,),
-                  const Text('S I G E D E'),
+                  Image.asset(
+                    'Logo_sigede.png',
+                    height: 150,
+                    width: 200,
+                  ),
+                  const SizedBox(
+                    height: 16.0,
+                  ),
+                  const Text(
+                    'SIGEDE',
+                    style: TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 8.0,
+                        fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(
                     height: 32,
                   ),
                   TextFormField(
                     validator: validateEmail,
                     controller: _emailcontroller,
-                    decoration: const InputDecoration(
-                      hintText: 'Correo electrónico',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15)),borderSide: BorderSide.none),
-                      fillColor: Color.fromARGB(255, 199, 197, 197), filled: true,
-                      //label: Text('Correo electrónico'),
+                    decoration: InputDecoration(
+                      labelText: 'Correo electrónico',
+                      labelStyle: TextStyle(
+                        color: _formKey.currentState?.validate() == null
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
+                      ),
+                      suffixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -73,15 +115,45 @@ class _LoginscreenState extends State<Loginscreen> {
                     validator: validatePassword,
                     controller: _passwordcontroller,
                     decoration: InputDecoration(
-                      hintText: 'Contraseña',
-                      border:const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15)),borderSide: BorderSide.none),
-                      fillColor: const Color.fromARGB(255, 199, 197, 197), filled: true,
-                      //label: const Text('Contraseña'),
-                      suffixIcon: IconButton(onPressed: (){
-                        setState(() {
-                          _isObscure=!_isObscure;
-                        });
-                      }, icon: Icon(_isObscure?Icons.visibility:Icons.visibility_off)),
+                      labelText: 'Contraseña',
+                      labelStyle: TextStyle(
+                        color: _formKey.currentState?.validate() == null
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
+                      ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isObscure = !_isObscure;
+                            });
+                          },
+                          color: _formKey.currentState?.validate() == null
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                          icon: Icon(_isObscure
+                              ? Icons.visibility
+                              : Icons.visibility_off)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -89,35 +161,50 @@ class _LoginscreenState extends State<Loginscreen> {
                   ),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(onPressed: (){
-                      if(_formKey.currentState!.validate()){
-                        Navigator.pushReplacementNamed(context, '/navigation');
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)
-                      )
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          Navigator.pushReplacementNamed(
+                              context, '/navigation');
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'Entrar',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text('Entrar',style:TextStyle(color:Colors.white,fontSize: 16,fontWeight: FontWeight.bold),),
-                    ),),
                   ),
                   const SizedBox(
                     height: 32,
                   ),
                   SizedBox(
-                    child: ElevatedButton(onPressed: () {
-                      Navigator.pushNamed(context, '/recoverPassword');
-                    },
-                    style: OutlinedButton.styleFrom(
-                      elevation: 0,
-                      shadowColor: Colors.transparent,
-                      backgroundColor: Colors.transparent,
-                    ), child: const Text('Olvide la contraseña',style: TextStyle(decoration: TextDecoration.underline,color: Colors.black),),),
-                  ),  
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/recoverPassword');
+                      },
+                      style: OutlinedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                      ),
+                      child: const Text(
+                        'Olvide la contraseña',
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.black),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
