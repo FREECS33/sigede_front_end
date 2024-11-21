@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/kernel/utils/setupLocator.dart';
 import 'package:sigede_flutter/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
 import 'package:sigede_flutter/screens/admin/credential_form.dart';
@@ -14,6 +15,7 @@ import 'package:sigede_flutter/screens/public/preview_qr.dart';
 
 
 void main() {
+  setupLocator();
   runApp(const MainApp());
 }
 
