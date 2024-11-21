@@ -1,7 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/kernel/utils/setupLocator.dart';
 import 'package:sigede_flutter/screens/auth/models/capturista.dart';
-import 'package:sigede_flutter/screens/auth/use_cases/get_capturista.dart';
+import 'package:sigede_flutter/screens/auth/use_cases/get_capturistas.dart';
 
 class ManagementCapturist extends StatefulWidget {
   const ManagementCapturist({super.key});
@@ -11,31 +12,37 @@ class ManagementCapturist extends StatefulWidget {
 }
 
 class _ManagementCapturistState extends State<ManagementCapturist> {
-  late GetCapturista getCapturista;
+  late GetCapturistas getCapturistas;
   List<Capturista> capturistas = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getCapturista = locator<GetCapturista>();
+    getCapturistas = locator<GetCapturistas>();
     _loadCapturistas();
   }
 
   Future<void> _loadCapturistas() async {
     try {
-      final users = await getCapturista.call();
+      final users = await getCapturistas.call();
       setState(() {
-        capturistas = users; // Actualiza la lista de capturistas
-        isLoading = false; // Oculta el indicador de carga
+        capturistas = users;
+        isLoading = false;
       });
-    } catch (e) {
+    } on DioError catch (e) {
       setState(() {
-        isLoading =
-            false; // Asegura que el loading desaparezca en caso de error
+        isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar capturistas: $e')),
+        SnackBar(content: Text('Error de red: ${e.message}')),
+      );
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error inesperado: $e')),
       );
     }
   }

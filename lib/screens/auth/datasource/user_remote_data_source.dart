@@ -1,8 +1,8 @@
-
+import 'package:sigede_flutter/kernel/utils/dio_capturista.dart';
 import 'package:sigede_flutter/screens/auth/models/capturista.dart';
 
 abstract class UserRemoteDataSource {
-  Future<List<Capturista>> getAllUsers();
+  Future<List<Capturista>> getAllCapturistas();
   Future<Capturista> getUser(String id);
   Future<Capturista> createUser(Capturista capturista);
   Future<Capturista> updateUser(String id, Capturista capturista);
@@ -15,7 +15,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   UserRemoteDataSourceImpl({required this.dioClient});
 
   @override
-  Future<List<Capturista>> getAllUsers() async {
+  Future<List<Capturista>> getAllCapturistas() async {
     final response = await dioClient.get('/users');
     return (response.data as List).map((json) => Capturista.fromJson(json)).toList();
   }

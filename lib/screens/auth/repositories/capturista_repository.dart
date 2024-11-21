@@ -2,7 +2,7 @@ import 'package:sigede_flutter/screens/auth/datasource/user_remote_data_source.d
 import 'package:sigede_flutter/screens/auth/models/capturista.dart';
 
 abstract class CapturistaRepository {
-  Future<List<Capturista>> getAllUsers();
+  Future<List<Capturista>> getAllCapturistas();
   Future<Capturista> getUser(String id);
   Future<Capturista> createUser(Capturista capturista);
   Future<Capturista> updateUser(String id, Capturista capturista);
@@ -15,8 +15,8 @@ class UserRepositoryImpl implements CapturistaRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Capturista>> getAllUsers() async {
-    return await remoteDataSource.getAllUsers();
+  Future<List<Capturista>> getAllCapturistas() async {
+    return await remoteDataSource.getAllCapturistas();
   }
 
   @override
