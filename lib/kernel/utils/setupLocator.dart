@@ -3,6 +3,7 @@ import 'package:sigede_flutter/kernel/utils/dio_capturista.dart';
 import 'package:sigede_flutter/screens/auth/datasource/user_remote_data_source.dart';
 import 'package:sigede_flutter/screens/auth/repositories/capturista_repository.dart';
 import 'package:sigede_flutter/screens/auth/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/screens/auth/use_cases/update_capturista.dart';
 final locator = GetIt.instance;
 void setupLocator() {
   // DioClient
@@ -16,4 +17,6 @@ void setupLocator() {
 
   // Casos de uso
   locator.registerFactory(() => GetCapturistas(repository: locator()));
+
+  locator.registerLazySingleton(() => UpdateCapturista(locator()));
 }

@@ -7,6 +7,7 @@ abstract class CapturistaRepository {
   Future<Capturista> createUser(Capturista capturista);
   Future<Capturista> updateUser(String id, Capturista capturista);
   Future<void> deleteUser(String id);
+  Future<void> updateCapturista(Capturista capturista);
 }
 
 class UserRepositoryImpl implements CapturistaRepository {
@@ -38,4 +39,15 @@ class UserRepositoryImpl implements CapturistaRepository {
   Future<void> deleteUser(String id) async {
     await remoteDataSource.deleteUser(id);
   }
+
+  @override
+  Future<void> updateCapturista(Capturista capturista) async {
+    await remoteDataSource.updateCapturista(capturista);
+  }
+
+  @override
+  Future<Capturista> getUserById(String id) async {
+    return await remoteDataSource.getUser(id);
+  }
+
 }

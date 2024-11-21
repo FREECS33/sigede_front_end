@@ -1,12 +1,14 @@
 class Capturista {
   final String id;
   final String nombre;
+    final String? password;
   final String correo;
     bool isActive;
 
   Capturista({
     required this.id,
     required this.nombre,
+    required this.password,
     required this.correo,
     this.isActive = true,
   });
@@ -16,6 +18,7 @@ class Capturista {
       id: json['id'],
       nombre: json['nombre'],
       correo: json['correo'],
+      password: json['password'],
       isActive: json['isActive'] ?? true,
     );
   }
@@ -25,6 +28,7 @@ class Capturista {
       'id': id,
       'nombre': nombre,
       'correo': correo,
+      'password': password,
       'isActive': isActive,
     };
   }

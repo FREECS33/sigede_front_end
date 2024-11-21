@@ -6,6 +6,7 @@ abstract class UserRemoteDataSource {
   Future<Capturista> getUser(String id);
   Future<Capturista> createUser(Capturista capturista);
   Future<Capturista> updateUser(String id, Capturista capturista);
+  Future<void> updateCapturista(Capturista capturista);
   Future<void> deleteUser(String id);
 }
 
@@ -41,5 +42,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<void> deleteUser(String id) async {
     await dioClient.delete('/users/$id');
+  }
+
+  @override
+  Future<void> updateCapturista(Capturista capturista) async {
+    await dioClient.post('/update-data', data: capturista.toJson());
   }
 }
