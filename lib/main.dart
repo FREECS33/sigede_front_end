@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
         '/admin-registration':(context)=> const AdminRegistrationScreen(),
         '/preview-qr':(context)=>const PreviewQR(),
         '/navigation':(context)=>const NavigationAdmin(),
-        '/editCapturist':(context)=>const EditCapturist(),
+        '/editCapturist':(context)=>const EditCapturist(id: '1',),
         '/managementCapturist':(context)=>const ManagementCapturist(),
         '/registerCapturist':(context)=>const RegisterCapturist(),
         '/credential-form':(context)=>const CredentialForm(),

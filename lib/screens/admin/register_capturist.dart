@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:sigede_flutter/data/models/capturist_model.dart';
+import 'package:sigede_flutter/data/repositories/capturist_repository.dart';
+import 'package:sigede_flutter/usecases/register_capturist_use_case.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterCapturist extends StatefulWidget {
   const RegisterCapturist({super.key});
@@ -8,25 +13,22 @@ class RegisterCapturist extends StatefulWidget {
 }
 
 class _RegisterCapturistState extends State<RegisterCapturist> {
-  bool _isObscure = true;
-
-  bool _isObscure2 = true;
-
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _emailController = TextEditingController();
 
-  final TextEditingController _passwordController = TextEditingController();
+  late RegisterCapturistUseCase registerCapturistUseCase;
 
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    final dio = Dio();
+    final repository = CapturistRepository(dio, 'http://localhost:8080');
+    registerCapturistUseCase = RegisterCapturistUseCase(repository);
+  }
 
   String? validateEmail(String? value) {
-    final RegExp emailRegExp = RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    );
-
+    final RegExp emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (value == null || value.isEmpty) {
       return 'Por favor, ingrese un correo electrónico';
     } else if (!emailRegExp.hasMatch(value)) {
@@ -35,36 +37,48 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
     return null;
   }
 
-  String? validatePassword(String? value) {
+  String? validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else {
-      return null;
-    }
-  }
-
-  String? validatePasswordConfirm(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else if (value != _passwordController.text) {
-      return 'Las contraseñas no coinciden';
-    } else {
-      return null;
-    }
-  }
-
-  String? validateName(String? value){
-    if(value == null || value.isEmpty){
       return 'Ingrese un nombre';
-    }else if(value.length < 3){
-      return 'Ingrese un nombre valido';
-    }else{
-      return null;
+    } else if (value.length < 3) {
+      return 'Ingrese un nombre válido';
+    }
+    return null;
+  }
+
+  Future<void> _submit() async {
+    if (_formKey.currentState!.validate()) {
+      final capturist = CapturistModel(
+        name: _nameController.text,
+        email: _emailController.text,
+        fkInstitution: 1,
+      );
+
+      try {
+        await registerCapturistUseCase.call(capturist); 
+        Fluttertoast.showToast(
+          msg: 'Capturista registrado con éxito',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP_RIGHT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.green,
+        );
+        Navigator.pushNamed(context, '/managementCapturist');
+
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: 'Error al registrar capturista',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP_RIGHT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+        );
+      }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Padding(
@@ -148,50 +162,6 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
                     const SizedBox(
                       height: 16,
                     ),
-                    TextFormField(
-                      validator: validatePassword,
-                      obscureText: _isObscure,
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          hintText: 'Contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              icon: Icon(_isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off))),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                        validator: validatePasswordConfirm,
-                        obscureText: _isObscure2,
-                        controller: _passwordConfirmController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar contraseña',
-                          hintText: 'Confirmar contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure2 = !_isObscure2;
-                                });
-                              },
-                              icon: Icon(_isObscure2
-                                  ? Icons.visibility
-                                  : Icons.visibility_off)),
-                        )),
-                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 40,
@@ -202,11 +172,7 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Navigator.pushNamed(context, '/managementCapturist');
-                          }
-                        },
+                        onPressed: _submit,
                         child: const Text('Guardar',style: TextStyle( fontSize: 22,),),
                       ),
                     )
