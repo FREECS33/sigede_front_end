@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/LoginScreen.dart';
+import 'package:sigede_flutter/screens/auth/presentation/pages/login_screen.dart';
 import 'package:sigede_flutter/screens/auth/presentation/pages/CodeConfirmation.dart';
 import 'package:sigede_flutter/screens/auth/presentation/pages/RecoverPasswordScreen.dart';
 import 'package:sigede_flutter/screens/auth/presentation/pages/ResetPasswordScreen.dart';
@@ -10,6 +11,7 @@ import 'package:sigede_flutter/screens/public/preview_qr.dart';
 
 
 void main() {
+  setupLocator();
   runApp(const MainApp());
 }
 

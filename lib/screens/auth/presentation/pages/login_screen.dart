@@ -1,8 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/screens/auth/data/models/login_model.dart';
+import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
+import 'package:sigede_flutter/screens/auth/domain/use_cases/login.dart';
+import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class Loginscreen extends StatefulWidget {
-  const Loginscreen({super.key});
+  final LoginEntity? entity;
+  const Loginscreen({super.key, this.entity});
 
   @override
   State<Loginscreen> createState() => _LoginscreenState();
@@ -14,25 +22,88 @@ class _LoginscreenState extends State<Loginscreen> {
   final TextEditingController _passwordcontroller = TextEditingController();
   bool _isObscure = true;
   bool _isValidPassword = true;
+  bool _isValidUserEmail = true;
+  bool _isloading = false;
+  final GetIt getIt = GetIt.instance;
+  Future<void> _loginSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isloading = true;
+      });
+
+      try {
+        // Recuperar valores de los controladores
+        final String email = _emailcontroller.text.trim();
+        final String password = _passwordcontroller.text.trim();
+
+        // Crear entidad para el caso de uso
+        final LoginEntity loginEntity =
+            LoginEntity(userEmail: email, password: password);
+
+        final LoginModel loginModel = LoginModel(
+          userEmail: loginEntity.userEmail,
+          password: loginEntity.password,
+        );
+        // Inyectar el caso de uso
+        final loginUseCase = getIt<Login>();
+
+        // Llamar al caso de uso
+        final result = await loginUseCase.call(loginModel);
+
+        // Manejo del resultado
+        if (result != null) {
+          // Ajusta según el contenido de LoginEntity
+          Navigator.pushReplacementNamed(context, '/navigation');
+        } else {
+          throw Exception("Error: Token no recibido");
+        }
+      } catch (error) {
+        // Mostrar error al usuario
+        print(error);
+      } finally {
+        setState(() {
+          _isloading = false;
+        });
+      }
+    }
+  }
+
   String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
     );
 
     if (value == null || value.isEmpty) {
+      setState(() {
+        _isValidUserEmail = false;
+      });
       return 'Por favor, ingrese su correo electrónico';
     } else if (!emailRegExp.hasMatch(value)) {
+      setState(() {
+        _isValidUserEmail = false;
+      });
       return 'Por favor, ingrese un correo electrónico válido';
     }
+    setState(() {
+      _isValidUserEmail = true;
+    });
     return null;
   }
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
+      setState(() {
+        _isValidPassword = false;
+      });
       return 'Ingrese una contraseña';
     }
+    setState(() {
+      _isValidPassword = true;
+    });
     return null; // Si es válido, no retorna nada.
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +146,15 @@ class _LoginscreenState extends State<Loginscreen> {
                     decoration: InputDecoration(
                       labelText: 'Correo electrónico',
                       labelStyle: TextStyle(
-                        color: _formKey.currentState?.validate() == null
+                        color: _isValidUserEmail
                             ? Colors.grey // Si la validación es exitosa
                             : Colors.red, // Si la validación falla
                       ),
-                      suffixIcon: const Icon(
+                      suffixIcon: Icon(
                         Icons.email_outlined,
-                        color: Colors.grey,
+                        color: _isValidUserEmail
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -117,7 +190,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       labelStyle: TextStyle(
-                        color: _formKey.currentState?.validate() == null
+                        color: _isValidPassword
                             ? Colors.grey // Si la validación es exitosa
                             : Colors.red, // Si la validación falla
                       ),
@@ -127,7 +200,7 @@ class _LoginscreenState extends State<Loginscreen> {
                               _isObscure = !_isObscure;
                             });
                           },
-                          color: _formKey.currentState?.validate() == null
+                          color: _isValidPassword
                               ? Colors.grey // Si la validación es exitosa
                               : Colors.red, // Si la validación falla
                           icon: Icon(_isObscure
@@ -162,26 +235,21 @@ class _LoginscreenState extends State<Loginscreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.pushReplacementNamed(
-                              context, '/navigation');
-                        }
-                      },
+                      onPressed: _loginSubmit,
                       style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20))),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text(
-                          'Entrar',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      child: _isloading
+                          ? const LoadingWidget() // Mostrar loading si está cargando
+                          : const Text(
+                              'Entrar',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(

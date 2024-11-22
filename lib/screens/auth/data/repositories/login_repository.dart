@@ -1,10 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:sigede_flutter/screens/auth/data/datasources/login_remote_data_source.dart';
 import 'package:sigede_flutter/screens/auth/data/models/login_model.dart';
 import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
 
 abstract class LoginRepository {
-  Future<LoginEntity> login(LoginEntity LoginEntity);
+  Future<LoginEntity> login(LoginModel model);
 }
 
 class LoginRepositoryImpl implements LoginRepository {
@@ -13,7 +12,7 @@ class LoginRepositoryImpl implements LoginRepository {
   LoginRepositoryImpl({required this.loginRemoteDataSource});
 
   @override
-  Future<LoginEntity> login(LoginEntity LoginEntity) async {
-    return await loginRemoteDataSource.login(LoginEntity as LoginModel);
+  Future<LoginEntity> login(LoginModel model) async {
+    return await loginRemoteDataSource.login(model);
   }
 }

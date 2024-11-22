@@ -16,7 +16,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
   Future<LoginEntity> login(LoginModel loginModel) async {
     try {
       final response = await dioClient.dio.post(
-        '/login',
+        '/api/login',
         data: loginModel.toJson(),
       );
       return LoginModel.fromJson(response.data);
