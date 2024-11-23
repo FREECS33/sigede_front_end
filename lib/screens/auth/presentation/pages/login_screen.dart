@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,13 +37,9 @@ class _LoginscreenState extends State<Loginscreen> {
         final String email = _emailcontroller.text.trim();
         final String password = _passwordcontroller.text.trim();
 
-        // Crear entidad para el caso de uso
-        final LoginEntity loginEntity =
-            LoginEntity(userEmail: email, password: password);
-
         final LoginModel loginModel = LoginModel(
-          userEmail: loginEntity.userEmail,
-          password: loginEntity.password,
+          userEmail: email,
+          password: password,
         );
         // Inyectar el caso de uso
         final loginUseCase = getIt<Login>();
@@ -52,14 +49,42 @@ class _LoginscreenState extends State<Loginscreen> {
 
         // Manejo del resultado
         if (result != null) {
-          // Ajusta según el contenido de LoginEntity
           Navigator.pushReplacementNamed(context, '/navigation');
         } else {
           throw Exception("Error: Token no recibido");
         }
       } catch (error) {
-        // Mostrar error al usuario
-        print(error);
+        String errorMessage = "Unknown error occurred";
+
+        if (error is DioException) {
+          errorMessage = error.response?.data?['message'] ?? "Unknown error";
+        } else {
+          errorMessage = "An unexpected error occurred"; // Mensaje genérico
+        }
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+              icon: Icon(
+                Icons.error,
+                color: Colors.red[600],
+              ),
+              title: Text(
+                "Error",
+                style: TextStyle(color: Colors.red[600]),
+              ),
+              content: Text(
+                errorMessage,
+                textAlign: TextAlign.center,
+              )),
+        );
+
+        Future.delayed(const Duration(seconds: 1), () {
+          _formKey.currentState!.reset();
+          _emailcontroller.clear();
+          _passwordcontroller.clear();
+          Navigator.of(context, rootNavigator: true).pop();
+        });
       } finally {
         setState(() {
           _isloading = false;
@@ -96,14 +121,42 @@ class _LoginscreenState extends State<Loginscreen> {
         _isValidPassword = false;
       });
       return 'Ingrese una contraseña';
+    } else if (value.length < 8) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña debe tener al menos 8 caracteres';
+    } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña debe contener al menos una letra mayúscula';
+    } else if (!RegExp(r'[a-z]').hasMatch(value)) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña debe contener al menos una letra minúscula';
+    } else if (!RegExp(r'[0-9]').hasMatch(value)) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña debe contener al menos un número';
+    } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña debe contener al menos un carácter especial';
+    } else if (value.contains(" ")) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña no debe contener espacios';
     }
     setState(() {
       _isValidPassword = true;
     });
-    return null; // Si es válido, no retorna nada.
+    return null;
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +288,7 @@ class _LoginscreenState extends State<Loginscreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _loginSubmit,
+                      onPressed: _isloading ? null : _loginSubmit,
                       style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(

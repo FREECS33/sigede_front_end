@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 
 class DioClient {
@@ -33,6 +32,9 @@ class DioClient {
               print("Bad Request");
               break;
             case 401:
+              print("Unauthorized");
+              break;
+            case 403:
               print("Unauthorized");
               break;
             case 500:

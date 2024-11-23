@@ -10,6 +10,7 @@ class LoginModel extends LoginEntity{
     return LoginModel(
       userEmail: json['userEmail'],
       password: json['password'],
+
     );
   }
 
