@@ -2,21 +2,21 @@ import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
 
 class LoginModel extends LoginEntity{
   LoginModel({
-    required super.userEmail,
-    required super.password,
+    super.token, 
+    required super.email,
+    super.password,
   });
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
     return LoginModel(
-      userEmail: json['userEmail'],
-      password: json['password'],
-
+      email: json['email'],
+      token: json['token'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'userEmail': userEmail,
+      'email': email,
       'password': password,
     };
   }

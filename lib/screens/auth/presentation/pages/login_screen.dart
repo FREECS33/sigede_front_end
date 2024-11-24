@@ -4,9 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/screens/auth/data/exceptions/auth_exceptions.dart';
 import 'package:sigede_flutter/screens/auth/data/models/login_model.dart';
 import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
 import 'package:sigede_flutter/screens/auth/domain/use_cases/login.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class Loginscreen extends StatefulWidget {
@@ -38,7 +40,7 @@ class _LoginscreenState extends State<Loginscreen> {
         final String password = _passwordcontroller.text.trim();
 
         final LoginModel loginModel = LoginModel(
-          userEmail: email,
+          email: email,
           password: password,
         );
         // Inyectar el caso de uso
@@ -46,50 +48,30 @@ class _LoginscreenState extends State<Loginscreen> {
 
         // Llamar al caso de uso
         final result = await loginUseCase.call(loginModel);
-
         // Manejo del resultado
-        if (result != null) {
+        if (result.token != null) {
           Navigator.pushReplacementNamed(context, '/navigation');
         } else {
           throw Exception("Error: Token no recibido");
         }
-      } catch (error) {
-        String errorMessage = "Unknown error occurred";
-
-        if (error is DioException) {
-          errorMessage = error.response?.data?['message'] ?? "Unknown error";
-        } else {
-          errorMessage = "An unexpected error occurred"; // Mensaje genérico
-        }
-
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-              icon: Icon(
-                Icons.error,
-                color: Colors.red[600],
-              ),
-              title: Text(
-                "Error",
-                style: TextStyle(color: Colors.red[600]),
-              ),
-              content: Text(
-                errorMessage,
-                textAlign: TextAlign.center,
-              )),
-        );
-
-        Future.delayed(const Duration(seconds: 1), () {
-          _formKey.currentState!.reset();
-          _emailcontroller.clear();
-          _passwordcontroller.clear();
-          Navigator.of(context, rootNavigator: true).pop();
-        });
-      } finally {
+      } on InvalidCredentialsException {
+        showErrorDialog(context: context, message: 'correo o contraseña incorrectos.');
+      } on UserNotFoundException {
+        showErrorDialog(context: context, message: 'Usuario no encontrado.');
+      } on NetworkException {
+        showErrorDialog(context: context, message: 'No se puede conectar al servidor.');
+      } on AuthException catch (authError) {
+        showErrorDialog(context: context, message: authError.message);
+      } on BadRequestException{
+        showErrorDialog(context: context, message: 'Correo o contraseña incorrectos.');
+      }catch (error) {
+        //showErrorDialog(context: context, message: 'Unexpected error: ${error.toString()}');
+      }finally {
         setState(() {
           _isloading = false;
         });
       }
+/////////////////////////////////////////////////
     }
   }
 
@@ -141,16 +123,16 @@ class _LoginscreenState extends State<Loginscreen> {
         _isValidPassword = false;
       });
       return 'La contraseña debe contener al menos un número';
-    } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña debe contener al menos un carácter especial';
     } else if (value.contains(" ")) {
       setState(() {
         _isValidPassword = false;
       });
       return 'La contraseña no debe contener espacios';
+    } else if (!RegExp(r'^[a-zA-Z0-9\s]*$').hasMatch(value)) {
+      setState(() {
+        _isValidPassword = false;
+      });
+      return 'La contraseña no debe contener caracteres especiales';
     }
     setState(() {
       _isValidPassword = true;
