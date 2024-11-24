@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
+import 'package:sigede_flutter/screens/auth/data/exceptions/auth_exceptions.dart';
 import 'package:sigede_flutter/screens/auth/data/models/login_model.dart';
 import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
 
@@ -33,21 +34,18 @@ Future<LoginEntity> login(LoginModel loginModel) async {
   } on DioException catch (dioError) {
     // Aquí se maneja el error utilizando la misma lógica que tienes en el interceptor
     if (dioError.response != null) {
-      final statusCode = dioError.response?.statusCode;
-      final errorMessage = dioError.response?.data?['message'] ?? 'Unknown error';
-      
-      switch (statusCode) {
-        case 400:
-          throw Exception('Bad Request: $errorMessage');
-        case 401:
-          throw Exception('Unauthorized: Invalid credentials.');
-        case 403:
-          throw Exception('Forbidden: Access denied.');
-        case 500:
-          throw Exception('Internal Server Error: $errorMessage');
-        default:
-          throw Exception('Request failed: $statusCode - $errorMessage');
-      }
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw BadRequestException();
+          case 401:
+            throw InvalidCredentialsException();
+          case 404:
+            throw UserNotFoundException();
+          case 500:
+            throw ServerException();
+          default:
+            throw AuthException('Unexpected error: ${dioError.response?.statusCode}');
+        }
     } else {
       // En caso de errores de red o conexión
       throw Exception('Network error: ${dioError.message}');
