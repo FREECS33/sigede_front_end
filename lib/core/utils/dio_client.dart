@@ -8,7 +8,7 @@ class DioClient {
           BaseOptions(
             baseUrl: baseUrl,
             connectTimeout: const Duration(seconds: 5),
-            receiveTimeout: const Duration(seconds: 5),
+            receiveTimeout: const Duration(seconds: 20),
           ),
         ) {
     _dio.interceptors.add(InterceptorsWrapper(
