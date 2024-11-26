@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/screens/auth/data/exceptions/recovery_password_exceptions.dart';
+import 'package:sigede_flutter/screens/auth/data/models/recovery_password_model.dart';
+import 'package:sigede_flutter/screens/auth/domain/use_cases/recovery_password.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
+import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class Recoverpasswordscreen extends StatefulWidget {
   const Recoverpasswordscreen({super.key});
@@ -8,23 +15,76 @@ class Recoverpasswordscreen extends StatefulWidget {
   State<Recoverpasswordscreen> createState() => _RecoverpasswordscreenState();
 }
 
-String? validateEmail(String? value) {
-  // Expresión regular para validar un correo electrónico
-  final RegExp emailRegExp = RegExp(
-    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-  );
-
-  if (value == null || value.isEmpty) {
-    return 'Por favor, ingrese su correo electrónico';
-  } else if (!emailRegExp.hasMatch(value)) {
-    return 'Por favor, ingrese un correo electrónico válido';
-  }
-  return null; // Si es válido, no devuelve ningún error
-}
-
 class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
   final TextEditingController _emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isloading = false;
+  bool _isValidUserEmail = true;
+  final GetIt getIt = GetIt.instance;
+
+  Future<void> _recoveryPassword() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isloading = true;
+      });
+
+      try {
+        final String userEmail = _emailController.text.trim();
+        final RecoveryPasswordModel model = RecoveryPasswordModel(
+          userEmail: userEmail,
+        );
+
+        final recoveryUseCase = getIt<RecoveryPassword>();
+
+        final result = await recoveryUseCase.call(model);
+        if (result.error == false){
+          showSuccessDialog(context: context, message: "Se ha enviado un correo con las instrucciones para restablecer tu contraseña");
+          Navigator.pushReplacementNamed(context, '/codeConfirmation');
+        }else{
+          throw Exception('Error al enviar el correo');
+        }
+        
+      } on InvalidEmailException {
+        showErrorDialog(context: context, message: 'Correo no válido.');
+      } on UserNotFoundException {
+        showErrorDialog(context: context, message: 'Usuario no encontrado.');
+      } on ServerException {
+        showErrorDialog(context: context, message: 'Error en el servidor.');
+      } on NetworkException {
+        showErrorDialog(context: context, message: 'Error de red.');
+      } on BadRequestException {
+        showErrorDialog(context: context, message: 'Correo no válido.');           
+      } catch (e) {
+        print(e);
+      } finally {
+        setState(() {
+          _isloading = false;
+        });
+      }
+    }
+  }
+
+  String? validateEmail(String? value) {
+    final RegExp emailRegExp = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+
+    if (value == null || value.isEmpty) {
+      setState(() {
+        _isValidUserEmail = false;
+      });
+      return 'Por favor, ingrese su correo electrónico';
+    } else if (!emailRegExp.hasMatch(value)) {
+      setState(() {
+        _isValidUserEmail = false;
+      });
+      return 'Por favor, ingrese un correo electrónico válido';
+    }
+    setState(() {
+      _isValidUserEmail = true;
+    });
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +117,24 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
                 Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment
-                        .center, 
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextFormField(
+                        validator: validateEmail,
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'Correo electrónico',
-                          labelStyle: const TextStyle(color: Colors.grey),
-                          suffixIcon: const Icon(Icons.email_outlined,
-                              color: Colors.grey),
+                          labelStyle: TextStyle(
+                            color: _isValidUserEmail
+                                ? Colors.grey // Si la validación es exitosa
+                                : Colors.red, // Si la validación falla
+                          ),
+                          suffixIcon: Icon(
+                            Icons.email_outlined,
+                            color: _isValidUserEmail
+                                ? Colors.grey // Si la validación es exitosa
+                                : Colors.red,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                             borderSide: const BorderSide(
@@ -90,39 +158,33 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                          height:
-                              20), 
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
                 const Expanded(child: Column()),
-                
                 Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 20.0), 
+                  padding: const EdgeInsets.only(bottom: 20.0),
                   child: SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          print("AQUI VA LA LOGICA DEL ENVIO DE CORREOS");
-                        }
-                      },
+                      onPressed: _isloading ? null : _recoveryPassword,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),
-                      child: Text(
-                        'Enviar',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      child: _isloading
+                          ? const LoadingWidget() // Mostrar loading si está cargando
+                          : Text(
+                              'Enviar',
+                              style: GoogleFonts.roboto(
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                 ),
