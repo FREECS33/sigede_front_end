@@ -129,6 +129,7 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextFormField(
+                        readOnly: _isloading,
                         validator: validateEmail,
                         controller: _emailController,
                         decoration: InputDecoration(

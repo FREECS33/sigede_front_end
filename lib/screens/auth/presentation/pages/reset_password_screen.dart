@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/screens/auth/data/exceptions/reset_password_exceptions.dart';
+import 'package:sigede_flutter/screens/auth/data/models/reset_password_model.dart';
+import 'package:sigede_flutter/screens/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -89,17 +94,123 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
   
 
+void handlePasswordResetResult(BuildContext context, bool error) {
+  if (!error) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          title: const Column(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green, size: 24),
+              SizedBox(width: 8),              
+            ],
+          ),
+          content: const Text("Tu contraseña ha sido restablecida exitosamente.",style: TextStyle(fontWeight: FontWeight.bold),),
+          actions: [
+            Center(
+            child: SizedBox(
+              width: 100,
+              height: 40,
+              child: TextButton(
+                onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/', (Route<dynamic> route) => false);
+              },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black, // Botón verde
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Iniciar sesión',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          ],
+        );
+      },
+    );
 
+
+  } else {
+    showErrorDialog(
+      context: context,
+      message: "Ocurrió un error al intentar cambiar la contraseña.",
+    );
+  }
+}
+
+void showErrorDialog({
+  required BuildContext context,
+  required String message,
+}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Cerrar"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  final GetIt getIt = GetIt.instance;
   Future<void> _changePassword() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isloading = true;
       });
-      // Llamar a la función de cambio de contraseña
-      // Cambiar el estado de _isloading a false
-      setState(() {
-        _isloading = false;
-      });
+
+      try {
+        final String password = _passwordController.text.trim();
+
+        final ResetPasswordModel model = ResetPasswordModel(
+          newPassword: password,
+          userId: userId,
+        );
+
+        final resetPasswordUseCase = getIt<ResetPassword>();
+
+        final result = await resetPasswordUseCase.call(model);
+        handlePasswordResetResult(context, result.error!);
+
+      } on BadRequestException {
+        showErrorDialog(
+            context: context,
+            message: "Ocurrió un error al intentar cambiar la contraseña.");
+      } on UserNotFoundException {
+        showErrorDialog(context: context, message: "Usuario no encontrado.");
+      } on ServerException {
+        showErrorDialog(context: context, message: "Error en el servidor.");
+      } on NetworkException {
+        showErrorDialog(context: context, message: "Error de red.");
+      } catch (e) {
+        showErrorDialog(
+            context: context, message: "Error inesperado: ${e.toString()}");
+      } finally {
+        setState(() {
+          _isloading = false;
+        });
+      }
     }
   }
 
@@ -136,6 +247,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        readOnly: _isloading,
                         obscureText: _isObscure,
                         validator: validatePassword,
                         controller: _passwordController,
@@ -146,7 +258,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 ? Colors.grey // Si la validación es exitosa
                                 : Colors.red, // Si la validación falla
                           ),
-                          
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                             borderSide: const BorderSide(
@@ -174,6 +285,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         height: 40.0,
                       ),
                       TextFormField(
+                        readOnly: _isloading,
                         obscureText: _isObscure,
                         validator: confirmPassword,
                         controller: _confirmPasswordController,
@@ -224,7 +336,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const Expanded(child: Column()),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 100.0),
+                  padding: const EdgeInsets.only(bottom: 30.0),
                   child: SizedBox(
                     width: double.infinity,
                     height: 48,
