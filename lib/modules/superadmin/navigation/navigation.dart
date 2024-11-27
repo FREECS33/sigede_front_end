@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/superadmin/presentation/landing.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({
