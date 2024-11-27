@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/screens/auth/data/exceptions/recovery_password_exceptions.dart';
-import 'package:sigede_flutter/screens/auth/data/models/recovery_password_model.dart';
-import 'package:sigede_flutter/screens/auth/domain/use_cases/recovery_password.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/code_confirmation_screen.dart';
+import 'package:sigede_flutter/modules/auth/data/exceptions/recovery_password_exceptions.dart';
+import 'package:sigede_flutter/modules/auth/data/models/recovery_password_model.dart';
+import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/code_confirmation_screen.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';

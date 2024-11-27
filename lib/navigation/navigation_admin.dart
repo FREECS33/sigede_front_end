@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
-import 'package:sigede_flutter/screens/public/preview_qr.dart';
+import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
+import 'package:sigede_flutter/modules/public/preview_qr.dart';
 
 class NavigationAdmin extends StatefulWidget {
   const NavigationAdmin({super.key});
