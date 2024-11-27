@@ -24,7 +24,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/':(context)=> const Loginscreen(),
+        '/':(context)=> const ResetPasswordScreen(),
         '/landing':(context)=> const Administratormanagementscreen(),
         '/recoverPassword':(context)=> const Recoverpasswordscreen(),
         '/codeConfirmation':(context)=> const CodeConfirmationScreen(),
