@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:sigede_flutter/screens/auth/data/exceptions/code_exceptions.dart';
+import 'package:sigede_flutter/screens/auth/data/models/code_confirmation_model.dart';
+import 'package:sigede_flutter/screens/auth/domain/use_cases/code_confirmation.dart';
+import 'package:sigede_flutter/screens/auth/presentation/pages/reset_password_screen.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
-class CodeConfirmation extends StatefulWidget {
-  const CodeConfirmation({super.key});
+class CodeConfirmationScreen extends StatefulWidget {
+  final int? userId;
+  const CodeConfirmationScreen({super.key, this.userId});
 
   @override
-  State<CodeConfirmation> createState() => _CodeConfirmationState();
+  State<CodeConfirmationScreen> createState() => _CodeConfirmationState();
 }
 
-class _CodeConfirmationState extends State<CodeConfirmation> {
+class _CodeConfirmationState extends State<CodeConfirmationScreen> {
+  late int? userId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Asignar el userId recibido
+    userId = widget.userId;
+  }
+
   final TextEditingController _codeController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isloading = false;
@@ -30,20 +47,7 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
 
     return null;
   }
-
-  Future<void> _codeConfirmation() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isloading = true;
-      });
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isloading = false;
-      });
-    }
-  }
+  
 
   Future<void> _checkClipboardForCode() async {
     ClipboardData? clipboardData = await Clipboard.getData('text/plain');
@@ -58,15 +62,72 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("No hay un código válido en el portapapeles")),
+          const SnackBar(
+              content: Text("No hay un código válido en el portapapeles")),
         );
       }
     }
   }
 
-  
   bool _isNumeric(String str) {
     return RegExp(r'^[0-9]+$').hasMatch(str);
+  }
+
+  final GetIt getIt = GetIt.instance;
+  Future<void> _codeConfirmationDio() async {
+    print(userId);
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isloading = true;
+      });
+
+      try {
+        final String verificationCode = _codeController.text.trim();
+
+        final CodeConfirmationModel model = CodeConfirmationModel(
+          code: verificationCode,
+          userId: userId,
+        );
+
+        final codeUseCase = getIt<CodeConfirmation>();
+
+        final result = await codeUseCase.call(model);
+        if (result.error == false) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Código verificado correctamente")),
+          );
+          showSuccessDialog(context: context, message: "Código verificado correctamente");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordScreen(userId: result.data),
+            ),
+          );
+        } else {
+          throw Exception("Error: codigo");
+        }
+      } on BadRequestException {
+        showErrorDialog(context: context, message: "Código no válido");
+      } on UserNotFoundException {
+        showErrorDialog(context: context, message: "Usuario no encontrado");
+      } on CodeVerificationException {
+        showErrorDialog(context: context, message: "Error en la verificación del código");
+      } on InvalidCodeException {
+        showErrorDialog(context: context, message: "Código inválido");
+      } on CodeExpiredException {
+        showErrorDialog(context: context, message: "Código expirado");
+      } on ServerException {
+        showErrorDialog(context: context, message: "Error en el servidor");
+      } on NetworkException {
+        showErrorDialog(context: context, message: "Error de red");
+      } on UnexpectedException {
+        showErrorDialog(context: context, message: "Error inesperado");
+      } finally {
+        setState(() {
+          _isloading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -105,7 +166,7 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
                       children: [
                         PinCodeTextField(
                             appContext: context,
-                            length: 6, 
+                            length: 6,
                             controller: _codeController,
                             onChanged: (value) {
                               setState(() {
@@ -139,7 +200,7 @@ class _CodeConfirmationState extends State<CodeConfirmation> {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: _isloading ? null : _codeConfirmation,
+                      onPressed: _isloading ? null : _codeConfirmationDio,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),

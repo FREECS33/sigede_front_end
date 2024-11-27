@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/screens/auth/data/exceptions/recovery_password_exceptions.dart';
 import 'package:sigede_flutter/screens/auth/data/models/recovery_password_model.dart';
 import 'package:sigede_flutter/screens/auth/domain/use_cases/recovery_password.dart';
+import 'package:sigede_flutter/screens/auth/presentation/pages/code_confirmation_screen.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
@@ -37,13 +38,21 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
         final recoveryUseCase = getIt<RecoveryPassword>();
 
         final result = await recoveryUseCase.call(model);
-        if (result.error == false){
-          showSuccessDialog(context: context, message: "Se ha enviado un correo con las instrucciones para restablecer tu contraseña");
-          Navigator.pushReplacementNamed(context, '/codeConfirmation');
-        }else{
+        print(result.data);
+        if (result.error == false) {
+          showSuccessDialog(
+              context: context,
+              message:
+                  "Se ha enviado un correo con las instrucciones para restablecer tu contraseña");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CodeConfirmationScreen(userId: result.data),
+            ),
+          );
+        } else {
           throw Exception('Error al enviar el correo');
         }
-        
       } on InvalidEmailException {
         showErrorDialog(context: context, message: 'Correo no válido.');
       } on UserNotFoundException {
@@ -53,7 +62,7 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
       } on NetworkException {
         showErrorDialog(context: context, message: 'Error de red.');
       } on BadRequestException {
-        showErrorDialog(context: context, message: 'Correo no válido.');           
+        showErrorDialog(context: context, message: 'Correo no válido.');
       } catch (e) {
         print(e);
       } finally {

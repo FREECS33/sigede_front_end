@@ -1,13 +1,22 @@
+
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  final int? userId;
+  const ResetPasswordScreen({super.key, this.userId});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  late int? userId;
+  @override
+  void initState() {
+    super.initState();
+    // Asignar el userId recibido
+    userId = widget.userId;
+  }
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();

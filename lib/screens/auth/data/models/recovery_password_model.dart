@@ -2,12 +2,13 @@ import 'package:sigede_flutter/screens/auth/domain/entities/recovery_password_en
 
 class RecoveryPasswordModel extends RecoveryPasswordEntity{
   RecoveryPasswordModel({
-    super.error, super.userEmail
+    super.error, super.userEmail,super.data
   });
 
   factory RecoveryPasswordModel.fromJson(Map<String, dynamic> json) {
     return RecoveryPasswordModel(
       error: json['error'],
+      data: json['data'],
     );
   }
 
