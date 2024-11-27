@@ -165,6 +165,7 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
                     child: Column(
                       children: [
                         PinCodeTextField(
+                            readOnly: _isloading,
                             appContext: context,
                             length: 6,
                             controller: _codeController,
