@@ -1,4 +1,4 @@
-import 'package:sigede_flutter/screens/auth/domain/entities/code_confirmation_entity.dart';
+import 'package:sigede_flutter/modules/auth/domain/entities/code_confirmation_entity.dart';
 
 class CodeConfirmationModel extends CodeConfirmationEntity{
   CodeConfirmationModel({

@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
-import 'package:sigede_flutter/screens/auth/data/exceptions/code_exceptions.dart';
-import 'package:sigede_flutter/screens/auth/data/models/code_confirmation_model.dart';
-import 'package:sigede_flutter/screens/auth/domain/entities/code_confirmation_entity.dart';
+import 'package:sigede_flutter/modules/auth/data/exceptions/code_exceptions.dart';
+import 'package:sigede_flutter/modules/auth/data/models/code_confirmation_model.dart';
+import 'package:sigede_flutter/modules/auth/domain/entities/code_confirmation_entity.dart';
 
 abstract class CodeConfirmationDataSource {
   Future<CodeConfirmationEntity> codeConfirmation(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/screens/auth/data/exceptions/reset_password_exceptions.dart';
-import 'package:sigede_flutter/screens/auth/data/models/reset_password_model.dart';
-import 'package:sigede_flutter/screens/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/auth/data/exceptions/reset_password_exceptions.dart';
+import 'package:sigede_flutter/modules/auth/data/models/reset_password_model.dart';
+import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 

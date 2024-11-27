@@ -1,4 +1,4 @@
-import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
+import 'package:sigede_flutter/modules/auth/domain/entities/login_entity.dart';
 
 class LoginModel extends LoginEntity{
   LoginModel({

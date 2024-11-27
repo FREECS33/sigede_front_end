@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
-import 'package:sigede_flutter/screens/auth/data/exceptions/recovery_password_exceptions.dart';
-import 'package:sigede_flutter/screens/auth/data/models/recovery_password_model.dart';
-import 'package:sigede_flutter/screens/auth/domain/entities/recovery_password_entity.dart';
+import 'package:sigede_flutter/modules/auth/data/exceptions/recovery_password_exceptions.dart';
+import 'package:sigede_flutter/modules/auth/data/models/recovery_password_model.dart';
+import 'package:sigede_flutter/modules/auth/domain/entities/recovery_password_entity.dart';
 
 abstract class RecoveryPasswordRemoteDataSource {
   Future<RecoveryPasswordEntity> recoveryPassword(RecoveryPasswordModel model);

@@ -1,6 +1,6 @@
-import 'package:sigede_flutter/screens/auth/data/datasources/login_remote_data_source.dart';
-import 'package:sigede_flutter/screens/auth/data/models/login_model.dart';
-import 'package:sigede_flutter/screens/auth/domain/entities/login_entity.dart';
+import 'package:sigede_flutter/modules/auth/data/datasources/login_remote_data_source.dart';
+import 'package:sigede_flutter/modules/auth/data/models/login_model.dart';
+import 'package:sigede_flutter/modules/auth/domain/entities/login_entity.dart';
 
 abstract class LoginRepository {
   Future<LoginEntity> login(LoginModel model);

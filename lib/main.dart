@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/navigation/navigation_admin.dart';
-import 'package:sigede_flutter/screens/AdministratorManagementScreen.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/login_screen.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/code_confirmation_screen.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/recovery_password_screen.dart';
-import 'package:sigede_flutter/screens/auth/presentation/pages/reset_password_screen.dart';
-import 'package:sigede_flutter/screens/admin/admin_registration_screen.dart';
-import 'package:sigede_flutter/screens/public/preview_qr.dart';
+import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/code_confirmation_screen.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/recovery_password_screen.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/reset_password_screen.dart';
+import 'package:sigede_flutter/modules/admin/admin_registration_screen.dart';
+import 'package:sigede_flutter/modules/public/preview_qr.dart';
 
 
 void main() {
