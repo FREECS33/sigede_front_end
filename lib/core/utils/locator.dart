@@ -12,6 +12,9 @@ import 'package:sigede_flutter/modules/auth/domain/use_cases/code_confirmation.d
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 
 final locator = GetIt.instance;
 
@@ -49,4 +52,13 @@ void setupLocator(){
   locator.registerFactory<ResetPasswordRepository>(() => ResetPasswordRepositoryImpl(resetPasswordDataSource: locator()));
   // Registrar el caso de uso ResetPassword
   locator.registerFactory<ResetPassword>(() => ResetPassword(repository: locator()));
+
+  //Registrar el InstitucionDataSource
+  locator.registerFactory<InstitutionsAllDataSource>(() => InstitutionsAllDataSourceImpl(dioClient: locator()));
+
+  //Registrar el InstitucionRepository
+  locator.registerFactory<InstitutionsRepository>(() => InstitutionsRepositoryImpl(institutionsAllDataSource: locator()));
+
+  //Registrar el caso de uso Institucion
+  locator.registerFactory<Institutions>(() => Institutions(repository: locator()));
 }

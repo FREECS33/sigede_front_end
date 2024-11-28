@@ -5,7 +5,7 @@ import 'package:sigede_flutter/modules/superadmin/data/models/institutions_model
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
 abstract class InstitutionsAllDataSource {
-  Future<InstitutionsEntity> getAllInstitutions(InstitutionsModel model);
+  Future<InstitutionsEntity> getAllInstitutions();
 }
 
 class InstitutionsAllDataSourceImpl implements InstitutionsAllDataSource{
@@ -14,7 +14,7 @@ class InstitutionsAllDataSourceImpl implements InstitutionsAllDataSource{
   InstitutionsAllDataSourceImpl({required this.dioClient});
   
   @override
-  Future<InstitutionsEntity> getAllInstitutions(InstitutionsModel model) async {
+  Future<InstitutionsEntity> getAllInstitutions() async {
     try {
       final response = await dioClient.dio.get(
         '/api/institutions/get-all'

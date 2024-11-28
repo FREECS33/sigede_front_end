@@ -1,5 +1,9 @@
 class InstitutionsEntity {
-  final List<String> data;
+  final int? id;
+  final String? name;
+  final String? email_contact;
+  final String? logo;
+  final List<InstitutionsEntity> data;
 
-  InstitutionsEntity({required this.data});
+  InstitutionsEntity({ this.id,  this.name,  this.email_contact,  this.logo,required this.data, });
 }
