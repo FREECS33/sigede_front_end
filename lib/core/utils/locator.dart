@@ -4,11 +4,13 @@ import 'package:sigede_flutter/modules/auth/data/datasources/code_confirmation_d
 import 'package:sigede_flutter/modules/auth/data/datasources/login_remote_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/recovery_password_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/reset_password_data_source.dart';
+import 'package:sigede_flutter/modules/auth/data/repositories/capturista_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/code_confirmation_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/login_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/recovery_password_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/reset_password_repository.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/code_confirmation.dart';
+import 'package:sigede_flutter/modules/auth/domain/use_cases/get_capturistas.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
@@ -49,4 +51,9 @@ void setupLocator(){
   locator.registerFactory<ResetPasswordRepository>(() => ResetPasswordRepositoryImpl(resetPasswordDataSource: locator()));
   // Registrar el caso de uso ResetPassword
   locator.registerFactory<ResetPassword>(() => ResetPassword(repository: locator()));
+
+  // Repositorios
+  locator.registerFactory<CapturistaRepository>(() => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()));
+  // Casos de uso
+  locator.registerFactory(() => GetCapturistas(repository: locator()));
 }
