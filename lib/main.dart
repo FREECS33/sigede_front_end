@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 import 'package:sigede_flutter/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart';
@@ -34,8 +35,8 @@ class MainApp extends StatelessWidget {
         '/admin-registration':(context)=> const AdminRegistrationScreen(),
         '/preview-qr':(context)=>const PreviewQR(),
         '/navigation':(context)=>const NavigationAdmin(),
-        '/landing-super':(context)=>const Landing(),
-        //'/navigation-super':(context)=>const Navigator(),
+        '/landing-super':(context)=> Landing(),
+        //'/navigation-super':(context)=>const Navigation(),
       },
     );
   }

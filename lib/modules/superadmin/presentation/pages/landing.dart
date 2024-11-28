@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 
 class Landing extends StatelessWidget {
-  const Landing({super.key});
-
+  //Landing({super.key});
+  final List<Map<String, String>> institutions = [
+    {
+      'logoUrl': 'https://www.utez.edu.mx/wp-content/uploads/2024/08/LOGO_UTEZ-2016.png',
+      'institutionName': 'Universidad Tecnológica Emiliano Zapata',
+      'role': 'Administrador',
+      'location': 'San Marcos de la O Fonseca',
+    },
+    {
+      'logoUrl': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Example_logo.svg/512px-Example_logo.svg.png',
+      'institutionName': 'Universidad Nacional Autónoma de México',
+      'role': 'Coordinador',
+      'location': 'Ciudad Universitaria, CDMX',
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +73,7 @@ class Landing extends StatelessWidget {
                   ],
                 ),
                 child: TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Buscar cliente', // Texto placeholder
                       hintStyle: TextStyle(
                           color: Colors.grey), // Color del placeholder
@@ -68,10 +82,27 @@ class Landing extends StatelessWidget {
                         Icons.search,
                         color: Colors.grey, // Icono de búsqueda
                       ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12)),
+                      contentPadding: EdgeInsets.symmetric(vertical: 12)),
                 ),
               ),
             ),
+            const SizedBox(
+              height: 30.0,
+            ),            
+            Expanded(
+            child: ListView.builder(
+              itemCount: institutions.length,
+              itemBuilder: (context, index) {
+                final institution = institutions[index];
+                return CustomListInstitution(
+                  logoUrl: institution['logoUrl']!,
+                  institutionName: institution['institutionName']!,
+                  role: institution['role']!,
+                  location: institution['location']!,
+                );
+              },
+            ),
+          ),
           ],
         ),
       ),
