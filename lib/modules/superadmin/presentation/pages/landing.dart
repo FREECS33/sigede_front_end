@@ -52,7 +52,7 @@ class _LandingState extends State<Landing> {
     }
 
     return Scaffold(
-      //appBar: AppBar(),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -82,7 +82,7 @@ class _LandingState extends State<Landing> {
             ),
             Center(
               child: Container(
-                width: 300, // Ajusta el ancho según lo necesites
+                width: 500, // Ajusta el ancho según lo necesites
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color:
