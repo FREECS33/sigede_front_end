@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
 class CustomListInstitution extends StatelessWidget {
-  final List<InstitutionsEntity> institutions;
+  final InstitutionsEntity institutions;
   const CustomListInstitution({
     super.key,
     required this.institutions,
@@ -30,7 +30,7 @@ class CustomListInstitution extends StatelessWidget {
             children: [
               Center(
                 child: Image.network(
-                  institutions.logo,
+                  institutions.logo!,
                   height: 60.0,
                   width: 60.0,
                   fit: BoxFit.cover,
@@ -48,7 +48,7 @@ class CustomListInstitution extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      institutions.name,
+                      institutions.name!,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16.0,
@@ -59,21 +59,22 @@ class CustomListInstitution extends StatelessWidget {
                           .ellipsis, // Agrega "..." al final si es demasiado largo
                     ),
                     const SizedBox(height: 8.0),
-                    Text(
+                    const Text(
                       "correo electrónico",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.0,
-                        color: Colors.black54,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      institutions.email_contact,
+                      institutions.emailContact!,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 14.0,
-                          color: Colors.black,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500),
                     ),
                   ],

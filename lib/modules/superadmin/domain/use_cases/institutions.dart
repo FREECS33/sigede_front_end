@@ -7,7 +7,7 @@ class Institutions {
 
   Institutions({required this.repository});
 
-  Future<InstitutionsEntity> call() async {
+  Future<InstitutionsModel> call() async {
     return await repository.getAllInstitutions();
   }
 }

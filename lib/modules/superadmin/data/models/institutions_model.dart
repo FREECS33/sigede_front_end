@@ -1,13 +1,15 @@
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
-class InstitutionsModel extends InstitutionsEntity{
-  // ignore: use_super_parameters
-  InstitutionsModel({required data}) : super(data: data);
-    factory InstitutionsModel.fromJson(Map<String, dynamic> json) {
-    return InstitutionsModel(
-      data: (json['data'] as List)
-          .map((item) => InstitutionsModel.fromJson(item))
-          .toList(),
-    );
+class InstitutionsModel {
+  final List<InstitutionsEntity> data;
+
+  InstitutionsModel({required this.data});
+  factory InstitutionsModel.fromJson(Map<String, dynamic> json) {
+    var list = json['data'] as List;
+    List<InstitutionsEntity> institutionsList = list
+        .map((item) => InstitutionsEntity.fromJson(item))
+        .toList();
+
+    return InstitutionsModel(data: institutionsList);
   }
 }

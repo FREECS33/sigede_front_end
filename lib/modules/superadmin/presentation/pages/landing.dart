@@ -15,6 +15,7 @@ class Landing extends StatefulWidget {
 class _LandingState extends State<Landing> {
   List<InstitutionsEntity> institutions = [];
   bool _isLoading = true;
+  bool _notData = false;
   final GetIt getIt = GetIt.instance;
   Future<void> getInstitutions() async {
     try {
@@ -22,57 +23,47 @@ class _LandingState extends State<Landing> {
       final response = await institutionsUseCase.call();
 
       setState(() {
-        institutions = response.data; // Asigna los datos obtenidos
-        _isLoading = false; // Quita el indicador de carga
+        institutions = response.data;
+        _isLoading = false;
       });
     } catch (error) {
-      // Manejo de errores
       setState(() {
         _isLoading = false;
+        _notData = true;
       });
       print('Error al obtener instituciones: $error');
     }
   }
-/*
-  final List<Map<String, String>> institutions = [
-    {
-      'logoUrl':
-          'https://www.utez.edu.mx/wp-content/uploads/2024/08/LOGO_UTEZ-2016.png',
-      'institutionName': 'Universidad Tecnológica Emiliano Zapata',
-      'role': 'Administrador',
-      'location': 'San Marcos de la O Fonseca',
-    },
-    {
-      'logoUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Example_logo.svg/512px-Example_logo.svg.png',
-      'institutionName': 'Universidad Nacional Autónoma de México',
-      'role': 'Coordinador',
-      'location': 'Ciudad Universitaria, CDMX',
-    },
-  ];
-*/
+
   @override
   void initState() {
     super.initState();
-    getInstitutions(); // Realiza la petición cuando el widget se construye
+    getInstitutions();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(),
+      //appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment
-              .start, // Asegura que ambos textos comiencen en el mismo punto horizontal
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Clientes',
               style: GoogleFonts.rubikMonoOne(
                 textStyle: const TextStyle(
                   fontSize: 30,
-                  height: 1.2, // Ajusta la altura de línea
+                  height: 1.2,
                 ),
               ),
             ),
@@ -128,16 +119,36 @@ class _LandingState extends State<Landing> {
             const SizedBox(
               height: 30.0,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: institutions.length,
-                itemBuilder: (context, index) {                  
-                  return CustomListInstitution(
-                    institutions: institutions[index],
-                  );
-                },
-              ),
-            ),
+            _notData
+                ? const Expanded(
+                  child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,                        
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                          Text(
+                            "Clientes no encontrados",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: institutions.length,
+                      itemBuilder: (context, index) {
+                        return CustomListInstitution(
+                          institutions: institutions[index],
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),

@@ -1,8 +1,9 @@
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institutions_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
 abstract class InstitutionsRepository {
-  Future<InstitutionsEntity> getAllInstitutions();
+  Future<InstitutionsModel> getAllInstitutions();
 }
 
 class InstitutionsRepositoryImpl implements InstitutionsRepository{
@@ -11,7 +12,7 @@ class InstitutionsRepositoryImpl implements InstitutionsRepository{
   InstitutionsRepositoryImpl({required this.institutionsAllDataSource});
 
   @override
-  Future<InstitutionsEntity> getAllInstitutions()async{
+  Future<InstitutionsModel> getAllInstitutions()async{
     return await institutionsAllDataSource.getAllInstitutions();
   }
 }
