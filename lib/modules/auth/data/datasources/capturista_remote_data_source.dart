@@ -12,10 +12,10 @@ abstract class CapturistaRemoteDataSource {
   Future<void> deleteUser(String id);
 }
 
-class UserRemoteDataSourceImpl implements CapturistaRemoteDataSource {
+class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
   final DioClient dioClient;
 
-  UserRemoteDataSourceImpl({required this.dioClient});
+  CapturistaRemoteDataSourceImpl({required this.dioClient});
 
   @override
   Future<List<Capturista>> getAllCapturistas({
