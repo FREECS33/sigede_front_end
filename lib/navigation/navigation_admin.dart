@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
-import 'package:sigede_flutter/modules/public/preview_qr.dart';
+import 'package:sigede_flutter/modules/admin/management_capturist.dart';
 
 class NavigationAdmin extends StatefulWidget {
   const NavigationAdmin({super.key});
@@ -14,7 +14,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Administratormanagementscreen(),
-    PreviewQR()
+    ManagementCapturist()
   ];
 
   void _onItemTapped(int index) {
