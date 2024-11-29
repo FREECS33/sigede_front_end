@@ -75,198 +75,202 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             'Registrar cliente',
-            style: GoogleFonts.rubikMonoOne(
-              textStyle: const TextStyle(fontSize: 30, height: 1.2),
+            style: TextStyle(
+              fontFamily: 'RubikOne',
+              fontSize: 39,
+              height: 1.2,
             ),
+            textAlign: TextAlign.center, // Asegura que el texto esté centrado
           ),
           const SizedBox(height: 35),
           Form(
             key: _formKey,
             child: GestureDetector(
               onTap: _pickImage,
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: _image == null
-                      ? const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.image, size: 30, color: Colors.grey),
-                            SizedBox(height: 5),
-                            Icon(Icons.add, size: 20, color: Colors.grey),
-                          ],
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(_image!.path),
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: _image == null
+                          ? const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.image, size: 30, color: Colors.grey),
+                                SizedBox(height: 5),
+                                Icon(Icons.add, size: 20, color: Colors.grey),
+                              ],
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                File(_image!.path),
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: 35),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Nombre de la institución',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.apartment,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
                           ),
                         ),
-                ),
-                const SizedBox(height: 35),
-                TextFormField(
-                  validator: validateName,
-                  controller: _nameInstController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre de la institución',
-                    labelStyle: TextStyle(
-                      color: _isValidName
-                          ? Colors.grey // Si la validación es exitosa
-                          : Colors.red, // Si la validación falla
-                    ),
-                    suffixIcon: Icon(
-                      Icons.apartment,
-                      color: _isValidName ? Colors.grey : Colors.red,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Dirección',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.pin_drop_outlined,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.mail_outline,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  validator: validateName,
-                  controller: _nameInstController,
-                  decoration: InputDecoration(
-                    labelText: 'Dirección',
-                    labelStyle: TextStyle(
-                      color: _isValidName
-                          ? Colors.grey // Si la validación es exitosa
-                          : Colors.red, // Si la validación falla
-                    ),
-                    suffixIcon: Icon(
-                      Icons.pin_drop_outlined,
-                      color: _isValidName ? Colors.grey : Colors.red,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Número telefónico',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  validator: validateName,
-                  controller: _nameInstController,
-                  decoration: InputDecoration(
-                    labelText: 'Correo electrónico',
-                    labelStyle: TextStyle(
-                      color: _isValidName
-                          ? Colors.grey // Si la validación es exitosa
-                          : Colors.red, // Si la validación falla
-                    ),
-                    suffixIcon: Icon(
-                      Icons.mail_outline,
-                      color: _isValidName ? Colors.grey : Colors.red,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  validator: validateName,
-                  controller: _nameInstController,
-                  decoration: InputDecoration(
-                    labelText: 'Número telefónico',
-                    labelStyle: TextStyle(
-                      color: _isValidName
-                          ? Colors.grey // Si la validación es exitosa
-                          : Colors.red, // Si la validación falla
-                    ),
-                    suffixIcon: Icon(
-                      Icons.phone_outlined,
-                      color: _isValidName ? Colors.grey : Colors.red,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ]),
+                  ]),
             ),
           ),
           const Expanded(child: Column()),

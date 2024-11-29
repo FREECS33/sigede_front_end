@@ -47,7 +47,6 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
 
     return null;
   }
-  
 
   Future<void> _checkClipboardForCode() async {
     ClipboardData? clipboardData = await Clipboard.getData('text/plain');
@@ -96,7 +95,8 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Código verificado correctamente")),
           );
-          showSuccessDialog(context: context, message: "Código verificado correctamente");
+          showSuccessDialog(
+              context: context, message: "Código verificado correctamente");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -111,7 +111,8 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
       } on UserNotFoundException {
         showErrorDialog(context: context, message: "Usuario no encontrado");
       } on CodeVerificationException {
-        showErrorDialog(context: context, message: "Error en la verificación del código");
+        showErrorDialog(
+            context: context, message: "Error en la verificación del código");
       } on InvalidCodeException {
         showErrorDialog(context: context, message: "Código inválido");
       } on CodeExpiredException {
@@ -140,12 +141,15 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Verificar código',
-                  style: GoogleFonts.rubikMonoOne(
-                      textStyle: const TextStyle(
-                    fontSize: 30,
-                  )),
+                  style: TextStyle(
+                    fontFamily: 'RubikOne',
+                    fontSize: 39,
+                    height: 1.2,
+                  ),
+                  textAlign:
+                      TextAlign.center, // Asegura que el texto esté centrado
                 ),
                 const SizedBox(
                   height: 16.0,

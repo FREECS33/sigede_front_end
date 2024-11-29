@@ -58,15 +58,15 @@ class _LandingState extends State<Landing> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Clientes',
-              style: GoogleFonts.rubikMonoOne(
-                textStyle: const TextStyle(
-                  fontSize: 30,
-                  height: 1.2,
-                ),
-              ),
+            const Text(
+            'Clientes',
+            style: TextStyle(
+              fontFamily: 'RubikOne',
+              fontSize: 39,
+              height: 1.2,
             ),
+            textAlign: TextAlign.center, // Asegura que el texto esté centrado
+          ),
             Text(
               'Todos los clientes',
               style: GoogleFonts.roboto(
@@ -78,7 +78,7 @@ class _LandingState extends State<Landing> {
               ),
             ),
             const SizedBox(
-              height: 50.0,
+              height: 35.0,
             ),
             Center(
               child: Container(

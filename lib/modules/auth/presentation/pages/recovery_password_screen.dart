@@ -105,12 +105,15 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Restablecer contraseña',
-                  style: GoogleFonts.rubikMonoOne(
-                      textStyle: const TextStyle(
-                    fontSize: 30,
-                  )),
+                  style: TextStyle(
+                    fontFamily: 'RubikOne',
+                    fontSize: 39,
+                    height: 1.2,
+                  ),
+                  textAlign:
+                      TextAlign.center, // Asegura que el texto esté centrado
                 ),
                 const SizedBox(
                   height: 16.0,

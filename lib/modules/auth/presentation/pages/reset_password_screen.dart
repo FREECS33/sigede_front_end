@@ -92,86 +92,86 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
     return null;
   }
-  
 
-void handlePasswordResetResult(BuildContext context, bool error) {
-  if (!error) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          title: const Column(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 24),
-              SizedBox(width: 8),              
-            ],
-          ),
-          content: const Text("Tu contraseña ha sido restablecida exitosamente.",style: TextStyle(fontWeight: FontWeight.bold),),
-          actions: [
-            Center(
-            child: SizedBox(
-              width: 100,
-              height: 40,
-              child: TextButton(
-                onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black, // Botón verde
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+  void handlePasswordResetResult(BuildContext context, bool error) {
+    if (!error) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            title: const Column(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green, size: 24),
+                SizedBox(width: 8),
+              ],
+            ),
+            content: const Text(
+              "Tu contraseña ha sido restablecida exitosamente.",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            actions: [
+              Center(
+                child: SizedBox(
+                  width: 100,
+                  height: 40,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/', (Route<dynamic> route) => false);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.black, // Botón verde
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Iniciar sesión',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
               ),
+            ],
+          );
+        },
+      );
+    } else {
+      showErrorDialog(
+        context: context,
+        message: "Ocurrió un error al intentar cambiar la contraseña.",
+      );
+    }
+  }
+
+  void showErrorDialog({
+    required BuildContext context,
+    required String message,
+  }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cerrar"),
             ),
-          ),
           ],
         );
       },
     );
-
-
-  } else {
-    showErrorDialog(
-      context: context,
-      message: "Ocurrió un error al intentar cambiar la contraseña.",
-    );
   }
-}
-
-void showErrorDialog({
-  required BuildContext context,
-  required String message,
-}) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Error"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text("Cerrar"),
-          ),
-        ],
-      );
-    },
-  );
-}
 
   final GetIt getIt = GetIt.instance;
   Future<void> _changePassword() async {
@@ -192,7 +192,6 @@ void showErrorDialog({
 
         final result = await resetPasswordUseCase.call(model);
         handlePasswordResetResult(context, result.error!);
-
       } on BadRequestException {
         showErrorDialog(
             context: context,
@@ -224,12 +223,15 @@ void showErrorDialog({
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Restablecer contraseña',
-                  style: GoogleFonts.rubikMonoOne(
-                      textStyle: const TextStyle(
-                    fontSize: 30,
-                  )),
+                  style: TextStyle(
+                    fontFamily: 'RubikOne',
+                    fontSize: 39,
+                    height: 1.2,
+                  ),
+                  textAlign:
+                      TextAlign.center, // Asegura que el texto esté centrado
                 ),
                 const SizedBox(
                   height: 16.0,

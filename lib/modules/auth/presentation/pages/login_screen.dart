@@ -55,18 +55,21 @@ class _LoginscreenState extends State<Loginscreen> {
           throw Exception("Error: Token no recibido");
         }
       } on InvalidCredentialsException {
-        showErrorDialog(context: context, message: 'correo o contraseña incorrectos.');
+        showErrorDialog(
+            context: context, message: 'correo o contraseña incorrectos.');
       } on UserNotFoundException {
         showErrorDialog(context: context, message: 'Usuario no encontrado.');
       } on NetworkException {
-        showErrorDialog(context: context, message: 'No se puede conectar al servidor.');
+        showErrorDialog(
+            context: context, message: 'No se puede conectar al servidor.');
       } on AuthException catch (authError) {
         showErrorDialog(context: context, message: authError.message);
-      } on BadRequestException{
-        showErrorDialog(context: context, message: 'Correo o contraseña incorrectos.');
-      }catch (error) {
+      } on BadRequestException {
+        showErrorDialog(
+            context: context, message: 'Correo o contraseña incorrectos.');
+      } catch (error) {
         //showErrorDialog(context: context, message: 'Unexpected error: ${error.toString()}');
-      }finally {
+      } finally {
         setState(() {
           _isloading = false;
         });
@@ -153,9 +156,16 @@ class _LoginscreenState extends State<Loginscreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Bienvenido',
-                      style: GoogleFonts.rubikMonoOne(
-                          textStyle: const TextStyle(fontSize: 28))),
+                  const Text(
+                    'Bienvenido',
+                    style: TextStyle(
+                      fontFamily: 'RubikOne',
+                      fontSize: 39,
+                      height: 1.2,
+                    ),
+                    textAlign:
+                        TextAlign.center, // Asegura que el texto esté centrado
+                  ),
                   const SizedBox(height: 16),
                   Image.asset(
                     'Logo_sigede.png',
