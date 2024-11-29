@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
-import 'package:sigede_flutter/modules/auth/domain/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
 
 class ManagementCapturist extends StatefulWidget {
   const ManagementCapturist({super.key});
@@ -37,20 +37,21 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
       isLoading = false;
     });
   } on DioError catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error de red: ${e.message}')),
-    );
-  } catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error inesperado: $e')),
-    );
+  setState(() {
+    isLoading = false;
+  });
+  debugPrint('DioError: ${e.type} - ${e.message}');
+  if (e.response != null) {
+    debugPrint('DioError response: ${e.response!.data}');
+    debugPrint('DioError status code: ${e.response!.statusCode}');
+  } else {
+    debugPrint('DioError no response: ${e.error}');
   }
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Error de red: ${e.message}')),
+  );
+}
+
 }
 
 

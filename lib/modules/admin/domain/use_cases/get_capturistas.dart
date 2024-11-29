@@ -1,10 +1,10 @@
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
-import 'package:sigede_flutter/modules/auth/data/repositories/capturista_repository.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository.dart';
 
 class GetCapturistas {
   final CapturistaRepository repository;
 
-  GetCapturistas({required this.repository});
+  GetCapturistas({required this.repository}) ;
 
   Future<List<Capturista>> call({
     required String role,

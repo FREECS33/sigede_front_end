@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 
 class EditCapturist extends StatefulWidget {
   const EditCapturist({super.key});

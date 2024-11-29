@@ -6,7 +6,7 @@ import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart
 import 'package:sigede_flutter/modules/auth/presentation/pages/code_confirmation_screen.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/recovery_password_screen.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/reset_password_screen.dart';
-import 'package:sigede_flutter/modules/admin/admin_registration_screen.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/admin_registration_screen.dart';
 import 'package:sigede_flutter/modules/public/preview_qr.dart';
 
 

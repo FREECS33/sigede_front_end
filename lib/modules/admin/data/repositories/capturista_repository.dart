@@ -1,5 +1,5 @@
-import 'package:sigede_flutter/modules/auth/data/datasources/capturista_remote_data_source.dart';
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/data/datasources/capturista_remote_data_source.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 
 abstract class CapturistaRepository {
   Future<List<Capturista>> getAllCapturistas({

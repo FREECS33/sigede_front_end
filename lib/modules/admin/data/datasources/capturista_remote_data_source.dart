@@ -1,5 +1,5 @@
 import 'package:sigede_flutter/core/utils/dio_client.dart';
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 
 abstract class CapturistaRemoteDataSource {
   Future<List<Capturista>> getAllCapturistas({
@@ -23,13 +23,14 @@ class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
     required int institutionId,
   }) async {
     final response = await dioClient.dio.post(
-      '/users/get-all-by-institution-rolename?page=0&size=10&sort=name,desc',
+      '/api/users/get-all-by-institution-rolename?page=0&size=10&sort=name,desc',
       data: {
         "role": role,
         "institutionId": institutionId,
       },
     );
-    final List<dynamic> data = response.data['content'];
+    print('LLEGO: ${response}');
+    final List<dynamic> data = response.data['content'] ?? [];
     return data.map((json) => Capturista.fromJson(json)).toList();
   }
 
