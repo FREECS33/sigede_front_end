@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/register_institution.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({
@@ -14,7 +15,10 @@ class _NavigationState extends State<Navigation> {
   // ignore: unused_field
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static final List<Widget> _widgetOptions = <Widget>[Landing()];
+  static final List<Widget> _widgetOptions = <Widget>[
+    Landing(),
+    const RegisterInstitution()
+  ];
 
   void _onItemTapped(int index) {
     //es obligatorio
