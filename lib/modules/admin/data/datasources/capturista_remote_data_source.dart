@@ -30,7 +30,7 @@ class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
       },
     );
     print('LLEGO: ${response}');
-    final List<dynamic> data = response.data['content'] ?? [];
+    final List<dynamic> data = response.data['data']['content'] ?? [];
     return data.map((json) => Capturista.fromJson(json)).toList();
   }
 

@@ -8,7 +8,7 @@ class DioClient {
           BaseOptions(
             baseUrl: baseUrl,
             headers: {
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6Ilt7XCJhdXRob3JpdHlcIjpcImNhcHR1cmlzdGFcIn1dIiwic3ViIjoidWxpQGdtYWlsLmNvbSIsImlhdCI6MTczMjkwOTE5MiwiZXhwIjoxNzMyOTEyNzkyfQ.CNAmBpcQcRzbCKdkN0QjlOMFW42y1UdJ-jxtUJn2lBs',
+              'Authorization': '',
               'Content-Type': 'application/json',
             },
             connectTimeout: const Duration(seconds: 5),
