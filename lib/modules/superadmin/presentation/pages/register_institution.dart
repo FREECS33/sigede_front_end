@@ -23,7 +23,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   bool _isloading = false;
   bool _isValidName = true;
   int _currentStep = 0;
-
+  bool _isObscure = true;
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage =
@@ -317,30 +317,219 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Paso 2',
-              style: GoogleFonts.roboto(
-                textStyle:
-                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'Registrar Administrador',
+            style: TextStyle(
+              fontFamily: 'RubikOne',
+              fontSize: 39,
+              height: 1.2,
+            ),
+            textAlign: TextAlign.center, // Asegura que el texto esté centrado
+          ),
+          const SizedBox(height: 35),
+          Form(
+            key: _formKey,
+            child: GestureDetector(
+              onTap: _pickImage,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //aqui va la imagen y nombre de la institución
+                    const SizedBox(height: 35),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Nombre administrador',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.admin_panel_settings_outlined,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.email_outlined,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      obscureText: _isObscure,
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.key_outlined,
+                          color: _isValidName ? Colors.grey : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    TextFormField(
+                      obscureText: _isObscure,
+                      validator: validateName,
+                      controller: _nameInstController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar contraseña',
+                        labelStyle: TextStyle(
+                          color: _isValidName
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                          color: _isValidName                            
+                                ? Colors.grey // Si la validación es exitosa
+                                : Colors.red, // Si la validación falla
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+            ),
+          ),
+          const Expanded(child: Column()),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: SizedBox(
+              width: 300,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _isloading ? null : _uploadImage,
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
+                child: _isloading
+                    ? const LoadingWidget() // Mostrar loading si está cargando
+                    : Text(
+                        'Paso 2',
+                        style: GoogleFonts.roboto(
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text('Aquí va el contenido del segundo paso'),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _currentStep = 0; // Regresa al paso 1 si es necesario
-                });
-              },
-              child: const Text('Regresar al Paso 1'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
