@@ -230,7 +230,6 @@ class _LoginscreenState extends State<Loginscreen> {
                   ),
                   TextFormField(
                     obscureText: _isObscure,
-                    validator: validatePassword,
                     controller: _passwordcontroller,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',

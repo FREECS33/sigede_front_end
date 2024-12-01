@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
-import 'package:sigede_flutter/modules/public/preview_qr.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/management_capturist.dart';
 
 class NavigationAdmin extends StatefulWidget {
   const NavigationAdmin({super.key});
@@ -13,8 +12,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Administratormanagementscreen(),
-    PreviewQR()
+    ManagementCapturist()
   ];
 
   void _onItemTapped(int index) {
@@ -29,12 +27,20 @@ class _NavigationAdminState extends State<NavigationAdmin> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'preview-qr',
+            icon: Icon(Icons.badge_outlined),
+            label: 'Credenciales',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.post_add),
+            label: 'Formulario',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_2_outlined),
+            label: 'Perfil',
           ),
         ],
         currentIndex: _selectedIndex,

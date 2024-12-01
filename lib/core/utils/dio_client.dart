@@ -7,6 +7,10 @@ class DioClient {
       : _dio = Dio(
           BaseOptions(
             baseUrl: baseUrl,
+            headers: {
+              'Authorization': '',
+              'Content-Type': 'application/json',
+            },
             connectTimeout: const Duration(seconds: 5),
             receiveTimeout: const Duration(seconds: 20),
           ),
