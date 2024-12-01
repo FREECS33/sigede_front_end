@@ -52,22 +52,21 @@ class _LandingState extends State<Landing> {
     }
 
     return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      appBar: AppBar(
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+        children: [
+          const Text(
             'Clientes',
             style: TextStyle(
               fontFamily: 'RubikOne',
               fontSize: 39,
               height: 1.2,
             ),
-            textAlign: TextAlign.center, // Asegura que el texto esté centrado
+            textAlign: TextAlign.center,
           ),
-            Text(
+          Text(
               'Todos los clientes',
               style: GoogleFonts.roboto(
                 textStyle: const TextStyle(
@@ -77,9 +76,13 @@ class _LandingState extends State<Landing> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 35.0,
-            ),
+        ],
+      )),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [            
             Center(
               child: Container(
                 width: 500, // Ajusta el ancho según lo necesites
@@ -121,9 +124,9 @@ class _LandingState extends State<Landing> {
             ),
             _notData
                 ? const Expanded(
-                  child: Center(
+                    child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,                        
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.error_outline,
@@ -133,12 +136,13 @@ class _LandingState extends State<Landing> {
                           Text(
                             "Clientes no encontrados",
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.grey),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
                           ),
                         ],
                       ),
                     ),
-                )
+                  )
                 : Expanded(
                     child: ListView.builder(
                       itemCount: institutions.length,
