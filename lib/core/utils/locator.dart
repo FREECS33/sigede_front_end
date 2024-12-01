@@ -53,16 +53,12 @@ void setupLocator(){
   // Registrar el caso de uso ResetPassword
   locator.registerFactory<ResetPassword>(() => ResetPassword(repository: locator()));
 
-   // Registro de CapturistaRemoteDataSource
+  // Registro de CapturistaRemoteDataSource
   locator.registerFactory<CapturistaRemoteDataSource>(
-    () => CapturistaRemoteDataSourceImpl(dioClient: locator()),
-  );
-
+    () => CapturistaRemoteDataSourceImpl(dioClient: locator()));
   // Repositorios
   locator.registerFactory<CapturistaRepository>(
-    () => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()),
-  );
-
+    () => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()));
   // Casos de uso
   locator.registerFactory(() => GetCapturistas(repository: locator()));
 }

@@ -1,31 +1,25 @@
 class Capturista {
-  final int userId;
-  final String name;
   final String email;
-  //bool isActive;
+  final String name;
+  final String rol;
+  final String status;
+  final int institution;
 
   Capturista({
-    required this.userId,
-    required this.name,
     required this.email,
-    //this.isActive = true,
+    required this.name,
+    required this.rol,
+    required this.status,
+    required this.institution,
   });
 
   factory Capturista.fromJson(Map<String, dynamic> json) {
     return Capturista(
-      userId: json['userId'],
-      name: json['name'],
       email: json['email'],
-      //isActive: json['isActive'] ?? true,
+      name: json['name'],
+      rol: json['rol'],
+      status: json['status'],
+      institution: json['institution'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'name': name,
-      'email': email,
-      //'isActive': isActive,
-    };
   }
 }

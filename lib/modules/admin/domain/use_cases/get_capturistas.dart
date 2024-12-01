@@ -1,4 +1,4 @@
-import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
 import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository.dart';
 
 class GetCapturistas {
@@ -6,7 +6,7 @@ class GetCapturistas {
 
   GetCapturistas({required this.repository}) ;
 
-  Future<List<Capturista>> call({
+  Future<List<SimpleCapturista>> call({
     required String role,
     required int institutionId,
   }) {

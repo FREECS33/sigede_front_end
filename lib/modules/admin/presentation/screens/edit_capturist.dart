@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 
@@ -9,25 +10,53 @@ class EditCapturist extends StatefulWidget {
 }
 
 class _EditCapturistState extends State<EditCapturist> {
-  late Capturista capturista; 
+  late int userId;
+  Capturista? capturista;
   bool light = true;
   bool _isObscure = true;
   bool _isObscure2 = true;
+  bool isLoading = true;
+  bool? isActive;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
-    capturista = ModalRoute.of(context)!.settings.arguments as Capturista;
+    userId = ModalRoute.of(context)!.settings.arguments as int;
+    _fetchCapturistaDetails();
+  }
 
-    _nameController.text = capturista.name;
-    _emailController.text = capturista.email;
+  Future<void> _fetchCapturistaDetails() async {
+    try {
+      final dio = Dio();
+      final response = await dio.post(
+        '/api/users/get-account',
+        data: {'userId': userId},
+      );
+
+      if (response.statusCode == 200 && !response.data['error']) {
+        setState(() {
+          capturista = Capturista.fromJson(response.data['data']);
+          isLoading = false;
+          isActive = capturista?.status == 'activo' ? true : false;
+        });
+      } else {
+        throw Exception('Error en la respuesta del servidor');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al obtener los datos del usuario: $e')),
+      );
+    }
   }
 
   String? validateEmail(String? value) {
@@ -61,12 +90,12 @@ class _EditCapturistState extends State<EditCapturist> {
     }
   }
 
-  String? validateName(String? value){
-    if(value == null || value.isEmpty){
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
       return 'Ingrese un nombre';
-    }else if(value.length < 3){
+    } else if (value.length < 3) {
       return 'Ingrese un nombre valido';
-    }else{
+    } else {
       return null;
     }
   }
@@ -74,157 +103,179 @@ class _EditCapturistState extends State<EditCapturist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Switch(
-                      value: light,
-                      activeColor: Colors.green,
-                      onChanged: (bool value) {
-                        setState(() {
-                          light = value;
-                        });
-                      })
-                ],
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Editar Capturista',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Image.network(
-                      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Logo-utez.png/460px-Logo-utez.png',
-                      height: 90,
-                      width: 110,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 8.0,
-                  ),
-                  const Expanded(
-                    flex: 2,
-                    child: Text(
-                      'Universidad Tecnológica Emiliano Zapata',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      maxLines: 2,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  )
-                ],
-              ),
-              Form(
-                key: _formKey,
+      appBar: AppBar(
+        title: Text(''),
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      validator: validateName,
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                          labelText: 'Nombre de Capturista',
-                          hintText: 'Nombre de Capturista',
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: Icon(Icons.sensor_occupied_rounded)),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFormField(
-                      validator: validateEmail,
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                          labelText: 'Correo electrónico',
-                          hintText: 'Correo electrónico',
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: Icon(Icons.email_outlined)),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFormField(
-                      validator: validatePassword,
-                      obscureText: _isObscure,
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          hintText: 'Contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              icon: Icon(_isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off))),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFormField(
-                        validator: validatePasswordConfirm,
-                        obscureText: _isObscure2,
-                        controller: _passwordConfirmController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar contraseña',
-                          hintText: 'Confirmar contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure2 = !_isObscure2;
-                                });
-                              },
-                              icon: Icon(_isObscure2
-                                  ? Icons.visibility
-                                  : Icons.visibility_off)),
-                        )),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Switch(
+                          value: isActive!,
+                          activeColor: Colors.green,
+                          onChanged: (bool value) {
+                            setState(() {
+                              isActive = value;
+                            });
+                          },
                         ),
+                      ],
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Editar Capturista',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Image.network(
+                            'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Logo-utez.png/460px-Logo-utez.png',
+                            height: 90,
+                            width: 110,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 8.0,
+                        ),
+                        const Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Universidad Tecnológica Emiliano Zapata',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold),
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
+                      ],
+                    ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            validator: validateName,
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                                labelText: 'Nombre de Capturista',
+                                hintText: 'Nombre de Capturista',
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                suffixIcon:
+                                    Icon(Icons.sensor_occupied_rounded)),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          TextFormField(
+                            validator: validateEmail,
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                                labelText: 'Correo electrónico',
+                                hintText: 'Correo electrónico',
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                suffixIcon: Icon(Icons.email_outlined)),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          TextFormField(
+                            validator: validatePassword,
+                            obscureText: _isObscure,
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                                labelText: 'Contraseña',
+                                hintText: 'Contraseña',
+                                border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isObscure = !_isObscure;
+                                      });
+                                    },
+                                    icon: Icon(_isObscure
+                                        ? Icons.visibility
+                                        : Icons.visibility_off))),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          TextFormField(
+                              validator: validatePasswordConfirm,
+                              obscureText: _isObscure2,
+                              controller: _passwordConfirmController,
+                              decoration: InputDecoration(
+                                labelText: 'Confirmar contraseña',
+                                hintText: 'Confirmar contraseña',
+                                border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isObscure2 = !_isObscure2;
+                                      });
+                                    },
+                                    icon: Icon(_isObscure2
+                                        ? Icons.visibility
+                                        : Icons.visibility_off)),
+                              )),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  final data = {
+                                    "userId": userId,
+                                    "name": _nameController,
+                                    "password": _passwordController,
+                                    "fkStatus": isActive
+                                  };
+                                  Navigator.pushNamed(
+                                      context, '/managementCapturist');
+                                }
+                              },
+                              child: const Text(
+                                'Editar',
+                                style: TextStyle(fontSize: 22),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(context, '/managementCapturist');
-                        }
-                      },
-                      child: const Text('Editar',style: TextStyle(fontSize: 22),),
                     )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }
