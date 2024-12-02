@@ -5,10 +5,13 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class RegisterInstitution extends StatefulWidget {
   const RegisterInstitution({super.key});
@@ -42,45 +45,68 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   int? _institutionId = 0;
   final GetIt getIt = GetIt.instance;
 
-  Future<String> _postAdmin() async {
-    return 'Admin registrado';
-  }
-
-  Future<void> _postInstitution() async {
-    setState(() {
-      _isloading = true;
-    });
+  Future<void> _registerInstitutionAndAdmin() async {
+    _setLoadingState(true); // Activa el estado de carga
     try {
-      final model = InstitutionNewModel(
-        name: _nameInstController.text,
-        address: _addressController.text,
-        emailContact: _emailController.text,
-        phone: _phoneController.text,
+      // Crear la institución
+      final institutionModel = InstitutionNewModel(
+        institutionName: _nameInstController.text,
+        institutionAddress: _addressController.text,
+        institutionEmail: _emailController.text,
+        institutionPhone: _phoneController.text,
         logo: _imageUrl,
       );
-      final response = await getIt<PostInstitution>().call(model);
-      if (response != null) {
-        _institutionId = response.id;
-        final responseAdmin = await _postAdmin();
-        if (responseAdmin != null) {
-          Navigator.of(context).pop();
+
+      print('Intentando registrar la institución...');
+      final institutionResponse = await getIt<PostInstitution>().call(institutionModel);  
+      if (institutionResponse.id != null) {
+        print(institutionResponse.id);
+        _institutionId =institutionResponse.id; // Asigna el ID de la institución
+
+        print('Institución registrada con ID: $_institutionId');
+        // Crear el administrador
+        final adminModel = AdminModel(
+          name: _nameAdminController.text,
+          email: _emailAdminController.text,
+          fkInstitution: _institutionId,
+        );
+
+        print('Intentando registrar el administrador...');
+        final adminResponse =
+            await getIt<AdminDataSource>().postAdmin(adminModel);
+
+        if (adminResponse.status == 201) {
+          print('Administrador registrado correctamente');
+          showSuccessDialog(
+            context: context,
+            message: "Institución y administrador registrados correctamente",
+          );
         } else {
+          print('Error al registrar el administrador');
           showErrorDialog(
-              context: context, message: "Error al registrar el administrador");
+            context: context,
+            message: "Error al registrar el administrador",
+          );
         }
       } else {
+        print('Error al registrar la institución');
         showErrorDialog(
-            context: context, message: "Error al registrar la institución");
+          context: context,
+          message: "Error al registrar la institución",
+        );
       }
-      setState(() {
-        _isloading = false;
-      });
     } catch (e) {
-      print('Error al registrar la institución: $e');
-      setState(() {
-        _isloading = false;
-      });
+      print('Error durante el registro: $e');
+      showErrorDialog(context: context, message: "Error inesperado: $e");
+    } finally {
+      _setLoadingState(false); // Desactiva el estado de carga
     }
+  }
+
+  void _setLoadingState(bool isLoading) {
+    setState(() {
+      _isloading = isLoading;
+    });
   }
 
   Future<void> _pickImage() async {
@@ -775,7 +801,6 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                 ),
               ),
               const SizedBox(height: 30),
-            
             ]),
           ),
           const Expanded(child: Column()),
@@ -785,7 +810,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
               width: 300,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isloading ? null : _uploadImage,
+                onPressed: _isloading ? null : _registerInstitutionAndAdmin,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
@@ -814,7 +839,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: _currentStep == 1 ? buildFirstStep() : buildSecondStep(),
+        child: _currentStep == 0 ? buildFirstStep() : buildSecondStep(),
       ),
     );
   }

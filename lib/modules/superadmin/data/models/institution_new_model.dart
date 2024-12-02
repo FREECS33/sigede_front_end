@@ -2,33 +2,35 @@ import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_ne
 
 class InstitutionNewModel extends InstitutionNewEntity{
   InstitutionNewModel({
-    int? id,
-    required super.name,
-    required super.address,
-    required super.emailContact,
-    required super.phone,
-    required super.logo,
+    super.id,
+    required super.institutionName,
+    required super.institutionAddress,
+    required super.institutionEmail,
+    required super.institutionPhone,
+    super.logo,
+    super.data,
   });
 
   factory InstitutionNewModel.fromJson(Map<String, dynamic> json) {
     return InstitutionNewModel(
+      
       id: json['id'],
-      name: json['name'],
-      address: json['address'],
-      emailContact: json['emailContact'],
-      phone: json['phone'],
+      institutionName: json['name'],
+      institutionAddress: json['address'],
+      institutionEmail: json['emailContact'],
+      institutionPhone: json['phone'],
       logo: json['logo'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'address': address,
-      'emailContact': emailContact,
-      'phone': phone,
+    return {      
+      'institutionName': institutionName,
+      'institutionAddress': institutionAddress,
+      'institutionEmail': institutionEmail,
+      'institutionPhone': institutionPhone,
       'logo': logo,
     };
   }
 }
+

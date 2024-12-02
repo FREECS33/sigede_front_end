@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_new_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
 abstract class InstitutionPostDataSource {
-  Future<InstitutionNewEntity> postInstitution(InstitutionNewModel model);
+  Future<InstitutionsEntity> postInstitution(InstitutionNewModel model);
 }
 
 class InstitutionPostDataSourceImpl implements InstitutionPostDataSource {
@@ -13,7 +14,7 @@ class InstitutionPostDataSourceImpl implements InstitutionPostDataSource {
   InstitutionPostDataSourceImpl({required this.dioClient});
 
   @override
-  Future<InstitutionNewEntity> postInstitution(InstitutionNewModel model) async {
+  Future<InstitutionsEntity> postInstitution(InstitutionNewModel model) async {
     try {
       final response = await dioClient.dio.post(
         '/api/institutions/post-institution',
@@ -23,7 +24,8 @@ class InstitutionPostDataSourceImpl implements InstitutionPostDataSource {
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
-        return InstitutionNewModel.fromJson(response.data);
+        final responseData = response.data['data']; // Extrae 'data'
+        return InstitutionsEntity.fromJson(responseData);
       } else {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -35,4 +37,3 @@ class InstitutionPostDataSourceImpl implements InstitutionPostDataSource {
     }
   }
 }
-  

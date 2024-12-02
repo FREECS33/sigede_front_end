@@ -1,13 +1,14 @@
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_new_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_new_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
 class PostInstitution {
-  final InstitutionNewRepository _institutionRepository;
+  final InstitutionNewRepository repository;
 
-  PostInstitution(this._institutionRepository);
+  PostInstitution({required this.repository});
 
-  Future<InstitutionNewEntity> call(InstitutionNewModel model) async {
-    return await _institutionRepository.postInstitution(model);
+  Future<InstitutionsEntity> call(InstitutionNewModel model) async {
+    return await repository.postInstitution(model);
   }
 }
