@@ -15,8 +15,11 @@ import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.da
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 
 final locator = GetIt.instance;
@@ -73,4 +76,10 @@ void setupLocator(){
   // Casos de uso
   locator.registerFactory(() => GetCapturistas(repository: locator()));
 
+  //Registrar institutionDataSource
+  locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
+  //Registrar institutionRepository
+  locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
+  //Registrar el caso de uso GetInstitutionsByName
+  locator.registerFactory<GetInstitutionsByName>(() => GetInstitutionsByName(repository: locator()));
 }
