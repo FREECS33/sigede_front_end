@@ -36,7 +36,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
         capturistas = users;
         isLoading = false;
       });
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       setState(() {
         isLoading = false;
       });
@@ -137,7 +137,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
                                                     Navigator.pushNamed(
                                                       context,
                                                       '/editCapturist',
-                                                      arguments: capturista.userId,
+                                                      arguments:capturista.userId,
                                                     );
                                                   }),
                                             ],
@@ -160,7 +160,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
           Navigator.pushNamed(context, '/registerCapturist');
         },
         backgroundColor: Colors.black,
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color:Colors.white),
       ),
     );
   }

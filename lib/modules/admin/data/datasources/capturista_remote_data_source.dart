@@ -1,7 +1,6 @@
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
-import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 
 abstract class CapturistaRemoteDataSource {
   Future<List<SimpleCapturista>> getAllCapturistas({
@@ -37,14 +36,13 @@ class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
   }
 
   @override
-  Future<Capturista> getCapturista({required int userId}) async {
-    final response = await dioClient.dio.post(
-      '/api/users/get-account',
-      data: {
-        "userId":userId
-      }
+  Future<Capturista> getCapturista({
+    required int userId
+  }) async {
+    final response = await dioClient.dio.get(
+      '/api/capturists/get-capturist/$userId',
     );
-    print('LLEGO: $response');
+    print('LLEGO: ${response.data['data']}');
     return Capturista.fromJson(response.data);
   }
 

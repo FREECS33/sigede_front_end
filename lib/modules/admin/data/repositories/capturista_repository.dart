@@ -32,8 +32,12 @@ class CapturistaRepositoryImpl implements CapturistaRepository {
   }
 
   @override
-  Future<Capturista> getCapturista({required int userId}) async {
-    return await capturistaRemoteDataSource.getCapturista(userId:userId);
+  Future<Capturista> getCapturista({
+    required int userId
+  }) async {
+    return await capturistaRemoteDataSource.getCapturista(
+      userId:userId
+    );
   }
 
   @override

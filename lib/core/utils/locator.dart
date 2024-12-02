@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/admin/data/datasources/capturista_remote_data_source.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/code_confirmation_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/login_remote_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/recovery_password_data_source.dart';
@@ -75,6 +76,7 @@ void setupLocator(){
     () => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()));
   // Casos de uso
   locator.registerFactory(() => GetCapturistas(repository: locator()));
+  locator.registerFactory(() => GetCapturista(repository: locator()));
 
   //Registrar institutionDataSource
   locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
