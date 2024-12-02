@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
-import 'package:sigede_flutter/modules/auth/data/models/capturista.dart';
-import 'package:sigede_flutter/modules/auth/domain/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
 
 class ManagementCapturist extends StatefulWidget {
   const ManagementCapturist({super.key});
@@ -13,7 +13,7 @@ class ManagementCapturist extends StatefulWidget {
 
 class _ManagementCapturistState extends State<ManagementCapturist> {
   late GetCapturistas getCapturistas;
-  List<Capturista> capturistas = [];
+  List<SimpleCapturista> capturistas = [];
   bool isLoading = true;
 
   @override
@@ -24,35 +24,34 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
   }
 
   Future<void> _loadCapturistas() async {
-  try { 
-    final role = "capturista";
-    final institutionId = 1;
+    try {
+      final role = "capturista";
+      final institutionId = 1;
 
-    final users = await getCapturistas.call(
-      role: role,
-      institutionId: institutionId,
-    );
-    setState(() {
-      capturistas = users;
-      isLoading = false;
-    });
-  } on DioError catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error de red: ${e.message}')),
-    );
-  } catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error inesperado: $e')),
-    );
+      final users = await getCapturistas.call(
+        role: role,
+        institutionId: institutionId,
+      );
+      setState(() {
+        capturistas = users;
+        isLoading = false;
+      });
+    } on DioError catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      debugPrint('DioError: ${e.type} - ${e.message}');
+      if (e.response != null) {
+        debugPrint('DioError response: ${e.response!.data}');
+        debugPrint('DioError status code: ${e.response!.statusCode}');
+      } else {
+        debugPrint('DioError no response: ${e.error}');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de red: ${e.message}')),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,28 +130,16 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
                                           Row(
                                             children: [
                                               IconButton(
-                                                icon: const Icon(
-                                                    Icons.edit_outlined),
-                                                color: Colors.grey,
-                                                onPressed: () {
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    '/editCapturist',
-                                                    arguments: capturista,
-                                                  );
-                                                },
-                                              ),
-                                              // Switch(
-                                              //   value: capturista.isActive,
-                                              //   activeColor: Colors.green,
-                                              //   onChanged: (bool value) {
-                                              //     setState(() {
-                                              //       capturista.isActive =
-                                              //           value; // Actualiza localmente
-                                              //     });
-                                              //     // Aquí puedes hacer una llamada para actualizar el estado en la API
-                                              //   },
-                                              // )
+                                                  icon: const Icon(
+                                                      Icons.edit_outlined),
+                                                  color: Colors.grey,
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      '/editCapturist',
+                                                      arguments: capturista.userId,
+                                                    );
+                                                  }),
                                             ],
                                           ),
                                         ],

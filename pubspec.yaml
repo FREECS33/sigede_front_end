@@ -26,4 +26,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+  fonts:
+    - family: RubikOne
+      fonts:
+        - asset: assets/fonts/Rubik One Regular 400.ttf
   

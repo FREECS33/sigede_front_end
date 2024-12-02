@@ -1,20 +1,26 @@
 import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
-import 'package:sigede_flutter/modules/auth/data/datasources/capturista_remote_data_source.dart';
+import 'package:sigede_flutter/modules/admin/data/datasources/capturista_remote_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/code_confirmation_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/login_remote_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/recovery_password_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/reset_password_data_source.dart';
-import 'package:sigede_flutter/modules/auth/data/repositories/capturista_repository.dart';
+import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/code_confirmation_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/login_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/recovery_password_repository.dart';
 import 'package:sigede_flutter/modules/auth/data/repositories/reset_password_repository.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/code_confirmation.dart';
-import 'package:sigede_flutter/modules/auth/domain/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 
 final locator = GetIt.instance;
 
@@ -53,16 +59,27 @@ void setupLocator(){
   // Registrar el caso de uso ResetPassword
   locator.registerFactory<ResetPassword>(() => ResetPassword(repository: locator()));
 
-   // Registro de CapturistaRemoteDataSource
-  locator.registerFactory<CapturistaRemoteDataSource>(
-    () => CapturistaRemoteDataSourceImpl(dioClient: locator()),
-  );
+  //Registrar el InstitucionDataSource
+  locator.registerFactory<InstitutionsAllDataSource>(() => InstitutionsAllDataSourceImpl(dioClient: locator()));
 
+  //Registrar el InstitucionRepository
+  locator.registerFactory<InstitutionsRepository>(() => InstitutionsRepositoryImpl(institutionsAllDataSource: locator()));
+
+  //Registrar el caso de uso Institucion
+  locator.registerFactory<Institutions>(() => Institutions(repository: locator()));
+  // Registro de CapturistaRemoteDataSource
+  locator.registerFactory<CapturistaRemoteDataSource>(
+    () => CapturistaRemoteDataSourceImpl(dioClient: locator()));
   // Repositorios
   locator.registerFactory<CapturistaRepository>(
-    () => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()),
-  );
-
+    () => CapturistaRepositoryImpl(capturistaRemoteDataSource: locator()));
   // Casos de uso
   locator.registerFactory(() => GetCapturistas(repository: locator()));
+
+  //Registrar institutionDataSource
+  locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
+  //Registrar institutionRepository
+  locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
+  //Registrar el caso de uso GetInstitutionsByName
+  locator.registerFactory<GetInstitutionsByName>(() => GetInstitutionsByName(repository: locator()));
 }

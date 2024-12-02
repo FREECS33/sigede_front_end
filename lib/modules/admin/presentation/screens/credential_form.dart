@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/shared/widgets.dart/custom_input.dart';
+import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_input.dart';
 
 class CredentialForm extends StatefulWidget {
   const CredentialForm({super.key});
