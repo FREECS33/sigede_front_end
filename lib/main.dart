@@ -5,7 +5,7 @@ import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/edit_capturist.dart';
-import 'package:sigede_flutter/navigation/navigation_admin.dart';
+import 'package:sigede_flutter/modules/admin/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/code_confirmation_screen.dart';

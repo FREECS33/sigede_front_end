@@ -1,4 +1,3 @@
-import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository.dart';
 
 class DisableCapturista {

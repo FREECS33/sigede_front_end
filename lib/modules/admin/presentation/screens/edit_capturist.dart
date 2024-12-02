@@ -5,7 +5,6 @@ import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/put_capturista.dart';
-import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
@@ -55,19 +54,14 @@ class _EditCapturistState extends State<EditCapturist> {
   Future<void> _loadCapturista() async {
   try {
     final user = await getCapturista.call(userId: userAccountId);
-    if (user != null) {
-      setState(() {
-        capturista = user;
-        isLoading = false;
-        _nameController.text = capturista!.name;
-        _emailController.text = capturista!.email;
-        isActive = capturista!.status == 'activo';
-      });
-    } else {
-      print("Error: No se ha recibido un capturista válido");
-      Navigator.pushReplacementNamed(context, '/navigation');
-    }
-  } on DioException catch (e) {
+    setState(() {
+      capturista = user;
+      isLoading = false;
+      _nameController.text = capturista!.name;
+      _emailController.text = capturista!.email;
+      isActive = capturista!.status == 'activo';
+    });
+    } on DioException catch (e) {
     setState(() {
       isLoading = false;
     });
@@ -105,23 +99,18 @@ class _EditCapturistState extends State<EditCapturist> {
 
     String st = await _validateStatus();
 
-    // Hacer la petición de actualización de estado si es necesario
     if ((capturista?.status != 'activo' && isActive == true) || 
         (capturista?.status == 'activo' && isActive == false)) {
       await _updateStatusCapturista(_emailController.text, st);
-    } else {
-      print('No hubo cambio de estado');
     }
 
-    // Siempre hacer la petición de actualización del nombre
     final response = await putCapturista.call(userId: userAccountId, name: _nameController.text);
-    print('DESDE edit ${response.data['status']}');
 
     if (response.data['status'] == 200) {
       setState(() {
         isUpdating = false;
       });
-      showSuccessDialog(context: context, message: "Capturista actualizado correctamente");
+      await showSuccessDialog(context: context, message: "Capturista actualizado correctamente");
       Navigator.pushReplacementNamed(context, '/navigation');
     }
   } catch (e) {

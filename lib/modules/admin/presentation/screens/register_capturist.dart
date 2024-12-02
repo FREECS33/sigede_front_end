@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/post_capturista.dart';
+import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class RegisterCapturist extends StatefulWidget {
   const RegisterCapturist({super.key});
@@ -14,6 +16,7 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   late PostCapturista postCapturista;
+  bool isLoading=false;
 
   @override
   void initState() {
@@ -23,9 +26,16 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
 
   Future<void> _registerCapturista()async{
     try {
-      // OBTENER EL ID DE LA INSTITUCION
+      setState(() {
+        isLoading=true;
+      });
+      // OBTENER EL ID DE LA INSTITUCION MEDIANTE EL SHARE PREFERENCES PARA ENVIARLO A postCapturista.call()
       final response = await postCapturista.call(name: _nameController.text, email: _emailController.text, fkInstitution: 1);
       print('LLEGO _registerCapturista: $response');
+      setState(() {
+        isLoading=false;
+      });
+      await showSuccessDialog(context: context, message: "Capturista registrado correctamente");
       Navigator.pushReplacementNamed(context, '/navigation'); 
     } catch (e) {
       print('Error en _registerCapturista: $e');
@@ -161,7 +171,7 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
                             _registerCapturista();
                           }
                         },
-                        child: const Text(
+                        child: isLoading?const LoadingWidget(): const Text(
                           'Guardar',
                           style: TextStyle(
                             fontSize: 22,
