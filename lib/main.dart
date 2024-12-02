@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
         '/preview-qr':(context)=>const PreviewQR(),
         '/navigation':(context)=>const NavigationAdmin(),
         '/landing-super':(context)=> Landing(),
-        //'/navigation-super':(context)=>const Navigation(),
+        '/navigation-super':(context)=>const Navigation(),
         '/editCapturist':(context)=>const EditCapturist()
       },
     );

@@ -12,6 +12,7 @@ import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institut
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog_super.dart';
 
 class RegisterInstitution extends StatefulWidget {
   const RegisterInstitution({super.key});
@@ -57,13 +58,10 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         logo: _imageUrl,
       );
 
-      print('Intentando registrar la institución...');
-      final institutionResponse = await getIt<PostInstitution>().call(institutionModel);  
+      final institutionResponse =
+          await getIt<PostInstitution>().call(institutionModel);
       if (institutionResponse.id != null) {
-        print(institutionResponse.id);
-        _institutionId =institutionResponse.id; // Asigna el ID de la institución
-
-        print('Institución registrada con ID: $_institutionId');
+        _institutionId = institutionResponse.id;
         // Crear el administrador
         final adminModel = AdminModel(
           name: _nameAdminController.text,
@@ -71,32 +69,39 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           fkInstitution: _institutionId,
         );
 
-        print('Intentando registrar el administrador...');
         final adminResponse =
             await getIt<AdminDataSource>().postAdmin(adminModel);
 
         if (adminResponse.status == 201) {
-          print('Administrador registrado correctamente');
-          showSuccessDialog(
+          showSuccessDialogSuper(
             context: context,
             message: "Institución y administrador registrados correctamente",
+            onPressed: () {              
+              _nameInstController.clear();
+              _nameAdminController.clear();
+              _emailAdminController.clear();
+              _addressController.clear();
+              _emailController.clear();
+              _phoneController.clear();              
+              setState(() {
+                _currentStep = 0;  
+                _imageUrl = ''; 
+              });              
+            },
           );
         } else {
-          print('Error al registrar el administrador');
           showErrorDialog(
             context: context,
             message: "Error al registrar el administrador",
           );
         }
       } else {
-        print('Error al registrar la institución');
         showErrorDialog(
           context: context,
           message: "Error al registrar la institución",
         );
       }
     } catch (e) {
-      print('Error durante el registro: $e');
       showErrorDialog(context: context, message: "Error inesperado: $e");
     } finally {
       _setLoadingState(false); // Desactiva el estado de carga
