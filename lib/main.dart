@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/register_capturist.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
@@ -38,7 +39,8 @@ class MainApp extends StatelessWidget {
         '/navigation':(context)=>const NavigationAdmin(),
         '/landing-super':(context)=> Landing(),
         //'/navigation-super':(context)=>const Navigation(),
-        '/editCapturist':(context)=>const EditCapturist()
+        '/editCapturist':(context)=>const EditCapturist(),
+        '/registerCapturist':(context)=>const RegisterCapturist()
       },
     );
   }

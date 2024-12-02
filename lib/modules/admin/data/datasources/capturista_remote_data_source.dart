@@ -8,9 +8,11 @@ abstract class CapturistaRemoteDataSource {
     required int institutionId,
   });
   Future<Capturista> getCapturista({required int userId});
-  Future<Capturista> createUser(Capturista capturista);
-  Future<Capturista> updateUser(String id, Capturista capturista);
-  Future<void> deleteUser(String id);
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution});
+  Future<dynamic> updateCapturista({
+    required int userId,
+    required String name});
+  Future<dynamic> disableCapturista({required String email, required String status});
 }
 
 class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
@@ -47,27 +49,40 @@ class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
   }
 
   @override
-  Future<Capturista> createUser(Capturista capturista) async {
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution}) async {
     final response = await dioClient.dio.post(
-      '/api/users/create',
-      data: capturista,
+      '/api/capturists/register',
+      data: {
+        "name":name,
+        "email":email,
+        "fkInstitution":fkInstitution
+      },
     );
-    return Capturista.fromJson(response.data);
+    return response;
   }
 
   @override
-  Future<Capturista> updateUser(String id, Capturista capturista) async {
-    final response = await dioClient.dio.put(
-      '/api/users/update/$id',
-      data: capturista,
+  Future<dynamic> updateCapturista({required int userId, required String name}) async {
+    final response = await dioClient.dio.post(
+      '/api/users/update-data',
+      data: {
+        "userId":userId,
+        "name":name
+      },
     );
-    return Capturista.fromJson(response.data);
+    print("LLEGO: $response");
+    return response;
   }
 
   @override
-  Future<void> deleteUser(String id) async {
-    await dioClient.dio.delete(
-      '/api/users/delete/$id',
+  Future<dynamic> disableCapturista({required String email, required String status}) async {
+    print("DESDE datasource: $email, $status");
+    await dioClient.dio.post(
+      '/api/users/update-status',
+      data: {
+        "email":email,
+        "status":status
+      }
     );
   }
 }

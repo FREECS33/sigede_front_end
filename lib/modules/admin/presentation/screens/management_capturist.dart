@@ -101,48 +101,59 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: Card(
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: ListTile(
-                                              leading: const Icon(
-                                                Icons.account_circle,
-                                              ),
-                                              title: Text(
-                                                capturista.name,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/editCapturist',
+                                        arguments: capturista.userId,
+                                      );
+                                    },
+                                    child: Card(
+                                      elevation: 4,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: ListTile(
+                                                leading: const Icon(
+                                                  Icons.account_circle,
                                                 ),
+                                                title: Text(
+                                                  capturista.name,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                subtitle:
+                                                    Text(capturista.email),
                                               ),
-                                              subtitle: Text(capturista.email),
                                             ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              IconButton(
-                                                  icon: const Icon(
-                                                      Icons.edit_outlined),
-                                                  color: Colors.grey,
-                                                  onPressed: () {
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      '/editCapturist',
-                                                      arguments:capturista.userId,
-                                                    );
-                                                  }),
-                                            ],
-                                          ),
-                                        ],
+                                            // Row(
+                                            //   children: [
+                                            //     IconButton(
+                                            //         icon: const Icon(
+                                            //             Icons.edit_outlined),
+                                            //         color: Colors.grey,
+                                            //         onPressed: () {
+                                            //           Navigator.pushNamed(
+                                            //             context,
+                                            //             '/editCapturist',
+                                            //             arguments:
+                                            //                 capturista.userId,
+                                            //           );
+                                            //         }),
+                                            //   ],
+                                            // ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -160,7 +171,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
           Navigator.pushNamed(context, '/registerCapturist');
         },
         backgroundColor: Colors.black,
-        child: const Icon(Icons.add, color:Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

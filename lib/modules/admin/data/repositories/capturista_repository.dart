@@ -10,9 +10,9 @@ abstract class CapturistaRepository {
   Future<Capturista> getCapturista({
     required int userId
   });
-  Future<Capturista> createUser(Capturista capturista);
-  Future<Capturista> updateUser(String id, Capturista capturista);
-  Future<void> deleteUser(String id);
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution});
+  Future<dynamic> updateCapturista({required int userId, required String name});
+  Future<dynamic> disableCapturista({required String email, required String status});
 }
 
 class CapturistaRepositoryImpl implements CapturistaRepository {
@@ -41,17 +41,17 @@ class CapturistaRepositoryImpl implements CapturistaRepository {
   }
 
   @override
-  Future<Capturista> createUser(Capturista capturista) async {
-    return await capturistaRemoteDataSource.createUser(capturista);
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution}) async {
+    return await capturistaRemoteDataSource.createCapturista(name: name, email: email, fkInstitution: fkInstitution);
   }
 
   @override
-  Future<Capturista> updateUser(String id, Capturista capturista) async {
-    return await capturistaRemoteDataSource.updateUser(id, capturista);
+  Future<dynamic> updateCapturista({required int userId, required String name}) async {
+    return await capturistaRemoteDataSource.updateCapturista(userId: userId, name: name);
   }
 
   @override
-  Future<void> deleteUser(String id) async {
-    await capturistaRemoteDataSource.deleteUser(id);
+  Future<dynamic> disableCapturista({required String email, required String status}) async {
+    await capturistaRemoteDataSource.disableCapturista(email: email, status: status);
   }
 }

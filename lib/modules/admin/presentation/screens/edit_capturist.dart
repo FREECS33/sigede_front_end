@@ -2,7 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/put_capturista.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
+import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class EditCapturist extends StatefulWidget {
   const EditCapturist({super.key});
@@ -14,9 +19,12 @@ class EditCapturist extends StatefulWidget {
 class _EditCapturistState extends State<EditCapturist> {
   late int userAccountId;
   late GetCapturista getCapturista;
+  late PutCapturista putCapturista;
+  late DisableCapturista disableCapturista;
   Capturista? capturista;
   bool light = true;
   bool isLoading = true;
+  bool isUpdating=false;
   bool? isActive;
 
   final _formKey = GlobalKey<FormState>();
@@ -27,12 +35,13 @@ class _EditCapturistState extends State<EditCapturist> {
   void initState() {
     super.initState();
     getCapturista = locator<GetCapturista>();
+    putCapturista = locator<PutCapturista>();
+    disableCapturista = locator<DisableCapturista>();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Obtenemos el userId de los argumentos pasados
     final userId = ModalRoute.of(context)?.settings.arguments as int?;
     if (userId != null) {
       userAccountId = userId;
@@ -64,6 +73,63 @@ class _EditCapturistState extends State<EditCapturist> {
     });
     print("Error $e");
   }
+  }
+
+  Future<void> _updateStatusCapturista(String email, String status)async{
+    try {
+      if((capturista?.status=='activo')!=isActive){
+        final response = await disableCapturista.call(email: email, status: status);
+        print('DESDE _updateStatusCapturista: $response');
+      }else{
+        print('No hubo cambio de estado');
+      }
+    } catch (e) {
+      print('Error en _updateStatusCapturista $e');
+    }
+  }
+
+  Future<String> _validateStatus()async{
+    try {
+      return isActive!?'inactivo':'activo';
+    } catch (e) {
+      print('Error en _validateStatus: $e');
+      return 'inactivo';
+    }
+  }
+
+  Future<void> _updateCapturista() async {
+  try {
+    setState(() {
+      isUpdating = true;
+    });
+
+    String st = await _validateStatus();
+
+    // Hacer la petición de actualización de estado si es necesario
+    if ((capturista?.status != 'activo' && isActive == true) || 
+        (capturista?.status == 'activo' && isActive == false)) {
+      await _updateStatusCapturista(_emailController.text, st);
+    } else {
+      print('No hubo cambio de estado');
+    }
+
+    // Siempre hacer la petición de actualización del nombre
+    final response = await putCapturista.call(userId: userAccountId, name: _nameController.text);
+    print('DESDE edit ${response.data['status']}');
+
+    if (response.data['status'] == 200) {
+      setState(() {
+        isUpdating = false;
+      });
+      showSuccessDialog(context: context, message: "Capturista actualizado correctamente");
+      Navigator.pushReplacementNamed(context, '/navigation');
+    }
+  } catch (e) {
+    setState(() {
+      isUpdating = false;
+    });
+    print('Error en _updateCapturista $e');
+  }
 }
 
 
@@ -81,14 +147,18 @@ class _EditCapturistState extends State<EditCapturist> {
   }
 
   String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese un nombre';
-    } else if (value.length < 3) {
-      return 'Ingrese un nombre valido';
-    } else {
-      return null;
-    }
+  final RegExp nameRegExp = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$");
+  
+  if (value == null || value.trim().isEmpty) {
+    return 'Por favor, ingrese un nombre';
+  } else if (value.trim().length < 3) {
+    return 'El nombre debe tener al menos 3 caracteres';
+  } else if (!nameRegExp.hasMatch(value)) {
+    return 'El nombre solo debe contener letras y espacios';
   }
+  return null;
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +185,7 @@ class _EditCapturistState extends State<EditCapturist> {
                               isActive = value;
                             });
                           },
-                        )
+                        ),
                       ],
                     ),
                     const Row(
@@ -172,9 +242,10 @@ class _EditCapturistState extends State<EditCapturist> {
                                     Icon(Icons.sensor_occupied_rounded)),
                           ),
                           const SizedBox(
-                            height: 12,
+                            height: 16,
                           ),
                           TextFormField(
+                            enabled: false,
                             validator: validateEmail,
                             controller: _emailController,
                             decoration: const InputDecoration(
@@ -186,7 +257,7 @@ class _EditCapturistState extends State<EditCapturist> {
                                 suffixIcon: Icon(Icons.email_outlined)),
                           ),
                           const SizedBox(
-                            height: 12,
+                            height: 68,
                           ),
                           SizedBox(
                             width: double.infinity,
@@ -200,14 +271,10 @@ class _EditCapturistState extends State<EditCapturist> {
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  Navigator.pushNamed(
-                                      context, '/managementCapturist');
+                                  _updateCapturista();
                                 }
                               },
-                              child: const Text(
-                                'Editar',
-                                style: TextStyle(fontSize: 22),
-                              ),
+                              child: isUpdating? const LoadingWidget():const Text('Editar',style: TextStyle(fontSize: 22),),
                             ),
                           )
                         ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/core/utils/locator.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/post_capturista.dart';
 
 class RegisterCapturist extends StatefulWidget {
   const RegisterCapturist({super.key});
@@ -8,19 +10,27 @@ class RegisterCapturist extends StatefulWidget {
 }
 
 class _RegisterCapturistState extends State<RegisterCapturist> {
-  bool _isObscure = true;
-
-  bool _isObscure2 = true;
-
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _emailController = TextEditingController();
+  late PostCapturista postCapturista;
 
-  final TextEditingController _passwordController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    postCapturista = locator<PostCapturista>();
+  }
 
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  Future<void> _registerCapturista()async{
+    try {
+      // OBTENER EL ID DE LA INSTITUCION
+      final response = await postCapturista.call(name: _nameController.text, email: _emailController.text, fkInstitution: 1);
+      print('LLEGO _registerCapturista: $response');
+      Navigator.pushReplacementNamed(context, '/navigation'); 
+    } catch (e) {
+      print('Error en _registerCapturista: $e');
+    }
+  }
 
   String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
@@ -35,56 +45,45 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
     return null;
   }
 
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else {
-      return null;
-    }
-  }
+  String? validateName(String? value) {
+    final RegExp nameRegExp = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$");
 
-  String? validatePasswordConfirm(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else if (value != _passwordController.text) {
-      return 'Las contraseñas no coinciden';
-    } else {
-      return null;
+    if (value == null || value.trim().isEmpty) {
+      return 'Por favor, ingrese un nombre';
+    } else if (value.trim().length < 3) {
+      return 'El nombre debe tener al menos 3 caracteres';
+    } else if (!nameRegExp.hasMatch(value)) {
+      return 'El nombre solo debe contener letras y espacios';
     }
-  }
-
-  String? validateName(String? value){
-    if(value == null || value.isEmpty){
-      return 'Ingrese un nombre';
-    }else if(value.length < 3){
-      return 'Ingrese un nombre valido';
-    }else{
-      return null;
-    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(''),
+      ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
             children: [
-              const SizedBox(height: 32,),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     children: [
                       Text(
-                    'Registrar',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Capturista',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  )
+                        'Registrar',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Capturista',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
                     ],
                   )
                 ],
@@ -124,8 +123,8 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
                       validator: validateName,
                       controller: _nameController,
                       decoration: const InputDecoration(
-                          labelText: 'Nombre de Capturista',
-                          hintText: 'Nombre de Capturista',
+                          labelText: 'Nombre del Capturista',
+                          hintText: 'Nombre del Capturista',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
@@ -145,69 +144,29 @@ class _RegisterCapturistState extends State<RegisterCapturist> {
                                   BorderRadius.all(Radius.circular(10))),
                           suffixIcon: Icon(Icons.email_outlined)),
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                      validator: validatePassword,
-                      obscureText: _isObscure,
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          hintText: 'Contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              icon: Icon(_isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off))),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                        validator: validatePasswordConfirm,
-                        obscureText: _isObscure2,
-                        controller: _passwordConfirmController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar contraseña',
-                          hintText: 'Confirmar contraseña',
-                          border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure2 = !_isObscure2;
-                                });
-                              },
-                              icon: Icon(_isObscure2
-                                  ? Icons.visibility
-                                  : Icons.visibility_off)),
-                        )),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 68),
                     SizedBox(
                       width: double.infinity,
-                      height: 40,
+                      height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            Navigator.pushNamed(context, '/managementCapturist');
+                            _registerCapturista();
                           }
                         },
-                        child: const Text('Guardar',style: TextStyle( fontSize: 22,),),
+                        child: const Text(
+                          'Guardar',
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
+                        ),
                       ),
                     )
                   ],
