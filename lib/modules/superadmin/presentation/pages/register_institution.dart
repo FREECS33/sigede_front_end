@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class RegisterInstitution extends StatefulWidget {
@@ -18,15 +19,17 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final CloudinaryService _cloudinaryService = CloudinaryService();
   String? _imageError;
   File? _image;
-  bool _isloading = false;  
+  bool _isloading = false;
   int _currentStep = 0;
   bool _isObscure = true;
   bool _isValidName = true;
   bool _isValidAddress = true;
   bool _isValidUserEmail = true;
   bool _isValidPhoneNumber = true;
+  String _imageUrl = '';
   Future<void> _pickImage() async {
     try {
       final pickedFile =
@@ -81,40 +84,37 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
 
   Future<void> _uploadImage() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_image == null) {
-      setState(() {
-        _imageError = 'Selecciona una imagen';
-      });
-      return;
+    if (_image != null) {
+      final imageUrl = await _cloudinaryService.uploadImage(_image!);
+      if (imageUrl != null) {
+        setState(() {
+          _imageUrl = imageUrl;
+        });
+      } else {
+        // Manejar el caso en que la carga falla
+        print('Error al cargar la imagen');
+      }
     }
-    setState(() {
-      _isloading = true;
-    });
-
-    // Simulando la subida de la imagen (puedes usar tu lógica aquí)
-    await Future.delayed(const Duration(seconds: 2));
-
     setState(() {
       _isloading = false;
       _currentStep = 1; // Cambia al segundo paso
     });
   }
 
-  String? validateName(String? value) {    
-  
+  String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
         _isValidName = false;
       });
       return 'Campo obligatorio';
-    }    
+    }
     final RegExp nameRegExp = RegExp(r'^[a-zA-Z0-9 ]+$');
     if (!nameRegExp.hasMatch(value)) {
       setState(() {
         _isValidName = false;
       });
       return 'Solo se permiten letras y números';
-    }    
+    }
     if (value.trim() != value) {
       setState(() {
         _isValidName = false;
@@ -132,7 +132,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     });
   }
 
-  String? validateAddress(String? value){
+  String? validateAddress(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
         _isValidAddress = false;
@@ -162,9 +162,8 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       _isValidAddress = true;
     });
   }
-  
-  String? validateEmail (String? value){
-    
+
+  String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
     );
@@ -185,7 +184,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     });
     return null;
   }
-  
+
   String? validatePhoneNumber(String? value) {
     final RegExp phoneRegExp = RegExp(r'^[0-9]+$');
     if (value == null || value.isEmpty) {
@@ -248,7 +247,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,            
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 25),
                 Form(
@@ -264,22 +263,26 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                               width: 100,
                               height: 100,
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey, width: 2),
+                                border:
+                                    Border.all(color: Colors.grey, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: _image == null
                                   ? const Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(Icons.image,
                                             size: 30, color: Colors.grey),
                                         SizedBox(height: 5),
-                                        Icon(Icons.add, size: 20, color: Colors.grey),
+                                        Icon(Icons.add,
+                                            size: 20, color: Colors.grey),
                                         SizedBox(height: 5),
                                         Text(
                                           "Toca para seleccionar",
                                           style: TextStyle(color: Colors.grey),
-                                          maxLines: 1, // Limita a una sola línea
+                                          maxLines:
+                                              1, // Limita a una sola línea
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
@@ -457,7 +460,8 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                           ),
                           suffixIcon: Icon(
                             Icons.phone_outlined,
-                            color: _isValidPhoneNumber ? Colors.grey : Colors.red,
+                            color:
+                                _isValidPhoneNumber ? Colors.grey : Colors.red,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -526,6 +530,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   }
 
   Widget buildSecondStep() {
+    print(_imageUrl);
     return Scaffold(
       appBar: AppBar(
         title: const Row(
@@ -558,7 +563,40 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //aqui va la imagen y nombre de la institución
+                    SizedBox(
+                      width: double.infinity,
+                      height: 100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            _imageUrl,
+                            width: 125,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                              Icons.image_not_supported,
+                              size: 60.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(width: 50),
+                          SizedBox(
+                            width: 150,
+                            child: Text(
+                              _nameInstController.text,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,                                                            
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 35),
                     TextFormField(
                       validator: validateName,
