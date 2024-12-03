@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-Future<void> showSuccessDialog({
-  required BuildContext context,
-  required String message,
-}) {
+Future<void> showSuccessDialogSuper(
+    {required BuildContext context,
+    required String message,
+    required VoidCallback onPressed}) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -27,7 +27,11 @@ Future<void> showSuccessDialog({
               width: 100,
               height: 40,
               child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  // Ejecutar la acción pasada como callback
+                  onPressed();
+                  Navigator.of(context).pop(); // Cerrar el dialog
+                },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.black, // Botón verde
                   foregroundColor: Colors.white,

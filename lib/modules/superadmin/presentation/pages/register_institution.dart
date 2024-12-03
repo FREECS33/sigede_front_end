@@ -1,9 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog_super.dart';
 
 class RegisterInstitution extends StatefulWidget {
   const RegisterInstitution({super.key});
@@ -18,15 +27,93 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+
+  final TextEditingController _nameAdminController = TextEditingController();
+  final TextEditingController _emailAdminController = TextEditingController();
+  final CloudinaryService _cloudinaryService = CloudinaryService();
   String? _imageError;
   File? _image;
-  bool _isloading = false;  
+  bool _isloading = false;
   int _currentStep = 0;
   bool _isObscure = true;
   bool _isValidName = true;
   bool _isValidAddress = true;
   bool _isValidUserEmail = true;
   bool _isValidPhoneNumber = true;
+  bool _isValidAdminName = true;
+  bool _isValidAdminEmail = true;
+  String _imageUrl = '';
+  int? _institutionId = 0;
+  final GetIt getIt = GetIt.instance;
+
+  Future<void> _registerInstitutionAndAdmin() async {
+    _setLoadingState(true); // Activa el estado de carga
+    try {
+      // Crear la institución
+      final institutionModel = InstitutionNewModel(
+        institutionName: _nameInstController.text,
+        institutionAddress: _addressController.text,
+        institutionEmail: _emailController.text,
+        institutionPhone: _phoneController.text,
+        logo: _imageUrl,
+      );
+
+      final institutionResponse =
+          await getIt<PostInstitution>().call(institutionModel);
+      if (institutionResponse.id != null) {
+        _institutionId = institutionResponse.id;
+        // Crear el administrador
+        final adminModel = AdminModel(
+          name: _nameAdminController.text,
+          email: _emailAdminController.text,
+          fkInstitution: _institutionId,
+        );
+
+        final adminResponse =
+            await getIt<AdminDataSource>().postAdmin(adminModel);
+
+        if (adminResponse.status == 201) {
+          showSuccessDialogSuper(
+            context: context,
+            message: "Institución y administrador registrados correctamente",
+            onPressed: () {              
+              _nameInstController.clear();
+              _nameAdminController.clear();
+              _emailAdminController.clear();
+              _addressController.clear();
+              _emailController.clear();
+              _phoneController.clear();              
+              setState(() {
+                _currentStep = 0;  
+                _imageUrl = ''; 
+              });              
+            },
+          );
+        } else {
+          showErrorDialog(
+            context: context,
+            message: "Error al registrar el administrador",
+          );
+        }
+      } else {
+        showErrorDialog(
+          context: context,
+          message: "Error al registrar la institución",
+        );
+      }
+    } catch (e) {
+      showErrorDialog(context: context, message: "Error inesperado: $e");
+    } finally {
+      _setLoadingState(false); // Desactiva el estado de carga
+    }
+  }
+
+  void _setLoadingState(bool isLoading) {
+    setState(() {
+      _isloading = isLoading;
+    });
+  }
+
   Future<void> _pickImage() async {
     try {
       final pickedFile =
@@ -81,40 +168,90 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
 
   Future<void> _uploadImage() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_image == null) {
-      setState(() {
-        _imageError = 'Selecciona una imagen';
-      });
-      return;
+    if (_image != null) {
+      final imageUrl = await _cloudinaryService.uploadImage(_image!);
+      if (imageUrl != null) {
+        setState(() {
+          _imageUrl = imageUrl;
+        });
+      } else {
+        // Manejar el caso en que la carga falla
+        print('Error al cargar la imagen');
+      }
     }
-    setState(() {
-      _isloading = true;
-    });
-
-    // Simulando la subida de la imagen (puedes usar tu lógica aquí)
-    await Future.delayed(const Duration(seconds: 2));
-
     setState(() {
       _isloading = false;
       _currentStep = 1; // Cambia al segundo paso
     });
   }
 
-  String? validateName(String? value) {    
-  
+  String? validateEmailAdmin(String? value) {
+    final RegExp emailRegExp = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+
+    if (value == null || value.isEmpty) {
+      setState(() {
+        _isValidAdminEmail = false;
+      });
+      return 'Por favor, ingrese su correo electrónico';
+    } else if (!emailRegExp.hasMatch(value)) {
+      setState(() {
+        _isValidAdminEmail = false;
+      });
+      return 'Por favor, ingrese un correo electrónico válido';
+    }
+    setState(() {
+      _isValidAdminEmail = true;
+    });
+    return null;
+  }
+
+  String? validateNameAdmin(String? value) {
+    if (value == null || value.isEmpty) {
+      setState(() {
+        _isValidAdminName = false;
+      });
+      return 'Campo obligatorio';
+    }
+    final RegExp nameRegExp = RegExp(r'^[a-zA-Z ]+$');
+    if (!nameRegExp.hasMatch(value)) {
+      setState(() {
+        _isValidAdminName = false;
+      });
+      return 'Solo se permiten letras';
+    }
+    if (value.trim() != value) {
+      setState(() {
+        _isValidAdminName = false;
+      });
+      return 'No debe contener espacios al inicio o al final';
+    }
+    if (value.length > 50) {
+      setState(() {
+        _isValidAdminName = false;
+      });
+      return 'No debe superar los 50 caracteres';
+    }
+    setState(() {
+      _isValidAdminName = true;
+    });
+  }
+
+  String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
         _isValidName = false;
       });
       return 'Campo obligatorio';
-    }    
+    }
     final RegExp nameRegExp = RegExp(r'^[a-zA-Z0-9 ]+$');
     if (!nameRegExp.hasMatch(value)) {
       setState(() {
         _isValidName = false;
       });
       return 'Solo se permiten letras y números';
-    }    
+    }
     if (value.trim() != value) {
       setState(() {
         _isValidName = false;
@@ -132,7 +269,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     });
   }
 
-  String? validateAddress(String? value){
+  String? validateAddress(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
         _isValidAddress = false;
@@ -162,9 +299,8 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       _isValidAddress = true;
     });
   }
-  
-  String? validateEmail (String? value){
-    
+
+  String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
     );
@@ -185,7 +321,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     });
     return null;
   }
-  
+
   String? validatePhoneNumber(String? value) {
     final RegExp phoneRegExp = RegExp(r'^[0-9]+$');
     if (value == null || value.isEmpty) {
@@ -248,7 +384,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,            
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 25),
                 Form(
@@ -264,22 +400,26 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                               width: 100,
                               height: 100,
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey, width: 2),
+                                border:
+                                    Border.all(color: Colors.grey, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: _image == null
                                   ? const Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(Icons.image,
                                             size: 30, color: Colors.grey),
                                         SizedBox(height: 5),
-                                        Icon(Icons.add, size: 20, color: Colors.grey),
+                                        Icon(Icons.add,
+                                            size: 20, color: Colors.grey),
                                         SizedBox(height: 5),
                                         Text(
                                           "Toca para seleccionar",
                                           style: TextStyle(color: Colors.grey),
-                                          maxLines: 1, // Limita a una sola línea
+                                          maxLines:
+                                              1, // Limita a una sola línea
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
@@ -457,7 +597,8 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                           ),
                           suffixIcon: Icon(
                             Icons.phone_outlined,
-                            color: _isValidPhoneNumber ? Colors.grey : Colors.red,
+                            color:
+                                _isValidPhoneNumber ? Colors.grey : Colors.red,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -553,176 +694,119 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           const SizedBox(height: 35),
           Form(
             key: _formKey,
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Column(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              SizedBox(
+                width: double.infinity,
+                height: 100,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //aqui va la imagen y nombre de la institución
-                    const SizedBox(height: 35),
-                    TextFormField(
-                      validator: validateName,
-                      controller: _nameInstController,
-                      decoration: InputDecoration(
-                        labelText: 'Nombre administrador',
-                        labelStyle: TextStyle(
-                          color: _isValidName
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
-                        ),
-                        suffixIcon: Icon(
-                          Icons.admin_panel_settings_outlined,
-                          color: _isValidName ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
+                    Image.network(
+                      _imageUrl,
+                      width: 125,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.image_not_supported,
+                        size: 60.0,
+                        color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      validator: validateName,
-                      controller: _nameInstController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        labelStyle: TextStyle(
-                          color: _isValidName
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
+                    const SizedBox(width: 50),
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        _nameInstController.text,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        suffixIcon: Icon(
-                          Icons.email_outlined,
-                          color: _isValidName ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      obscureText: _isObscure,
-                      validator: validateName,
-                      controller: _nameInstController,
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        labelStyle: TextStyle(
-                          color: _isValidName
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
-                        ),
-                        suffixIcon: Icon(
-                          Icons.key_outlined,
-                          color: _isValidName ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 35),
+              TextFormField(
+                validator: validateNameAdmin,
+                controller: _nameAdminController,
+                decoration: InputDecoration(
+                  labelText: 'Nombre administrador',
+                  labelStyle: TextStyle(
+                    color: _isValidAdminName
+                        ? Colors.grey // Si la validación es exitosa
+                        : Colors.red, // Si la validación falla
+                  ),
+                  suffixIcon: Icon(
+                    Icons.admin_panel_settings_outlined,
+                    color: _isValidAdminName ? Colors.grey : Colors.red,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
                     ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      obscureText: _isObscure,
-                      validator: validateName,
-                      controller: _nameInstController,
-                      decoration: InputDecoration(
-                        labelText: 'Confirmar contraseña',
-                        labelStyle: TextStyle(
-                          color: _isValidName
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
-                        ),
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isObscure = !_isObscure;
-                              });
-                            },
-                            color: _isValidName
-                                ? Colors.grey // Si la validación es exitosa
-                                : Colors.red, // Si la validación falla
-                            icon: Icon(_isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
                     ),
-                  ]),
-            ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              TextFormField(
+                validator: validateEmailAdmin,
+                controller: _emailAdminController,
+                decoration: InputDecoration(
+                  labelText: 'Correo electrónico',
+                  labelStyle: TextStyle(
+                    color: _isValidAdminEmail
+                        ? Colors.grey // Si la validación es exitosa
+                        : Colors.red, // Si la validación falla
+                  ),
+                  suffixIcon: Icon(
+                    Icons.email_outlined,
+                    color: _isValidAdminEmail ? Colors.grey : Colors.red,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+            ]),
           ),
           const Expanded(child: Column()),
           Padding(
@@ -731,7 +815,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
               width: 300,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isloading ? null : _uploadImage,
+                onPressed: _isloading ? null : _registerInstitutionAndAdmin,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),

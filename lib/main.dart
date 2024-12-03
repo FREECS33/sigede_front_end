@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
@@ -14,8 +15,9 @@ import 'package:sigede_flutter/modules/admin/presentation/screens/admin_registra
 import 'package:sigede_flutter/modules/public/preview_qr.dart';
 
 
-void main() {
+void main() async{
   setupLocator();
+  await dotenv.load(fileName: ".env");
   runApp(const MainApp());
 }
 
@@ -37,7 +39,7 @@ class MainApp extends StatelessWidget {
         '/preview-qr':(context)=>const PreviewQR(),
         '/navigation':(context)=>const NavigationAdmin(),
         '/landing-super':(context)=> Landing(),
-        //'/navigation-super':(context)=>const Navigation(),
+        '/navigation-super':(context)=>const Navigation(),
         '/editCapturist':(context)=>const EditCapturist()
       },
     );
