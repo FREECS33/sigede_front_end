@@ -19,12 +19,18 @@ import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.da
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_post_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/admin_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_new_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_admin.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
 
 final locator = GetIt.instance;
 
@@ -90,4 +96,20 @@ void setupLocator(){
   locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
   //Registrar el caso de uso GetInstitutionsByName
   locator.registerFactory<GetInstitutionsByName>(() => GetInstitutionsByName(repository: locator()));
+
+  //Registrar InstitutionPostDataSource
+  locator.registerFactory<InstitutionPostDataSource>(() => InstitutionPostDataSourceImpl(dioClient: locator()));
+  //Registrar InstitutionPostRepository
+  locator.registerFactory<InstitutionNewRepository>(() => InstitutionNewRepositoryImpl(institutionPostDataSource: locator()));
+  //Registrar el caso de uso PostInstitution
+  locator.registerFactory<PostInstitution>(() => PostInstitution(repository: locator()));
+
+  //registrar admin_data_source
+  locator.registerFactory<AdminDataSource>(() => AdminDataSourceImpl(dioClient: locator()));
+  //registrar admin_repository
+  locator.registerFactory<AdminRepository>(() => AdminRepositoryImpl(adminDataSource: locator()));
+  //registrar el caso de uso PostAdmin
+  locator.registerFactory<PostAdmin>(() => PostAdmin(repository: locator()));
+  
 }
+
