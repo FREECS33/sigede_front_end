@@ -16,7 +16,13 @@ class _NavigationState extends State<Navigation> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    Landing(),
+    Navigator(
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) => Landing(),
+        );
+      },
+    ),
     const RegisterInstitution()
   ];
 

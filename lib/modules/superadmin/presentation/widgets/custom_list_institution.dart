@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/admin_page.dart';
 
 class CustomListInstitution extends StatelessWidget {
   final InstitutionsEntity institutions;
@@ -11,7 +12,7 @@ class CustomListInstitution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => print('Institución seleccionada'),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPage(institutions: institutions,))),
       child: Card(
         color: const Color(0xFFF6F5F5),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
