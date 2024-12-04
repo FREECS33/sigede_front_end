@@ -23,7 +23,7 @@ class _LandingState extends State<Landing> {
           return MaterialPageRoute(builder: (context) => const AddAdmin());
         }
         
-        return MaterialPageRoute(builder: (context) => const AdminPage());
+        return MaterialPageRoute(builder: (context) => const LandingHome());
       },
     );
   }

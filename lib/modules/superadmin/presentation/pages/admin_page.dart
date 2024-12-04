@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/add_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_admin.dart';
 
 class AdminPage extends StatefulWidget {
@@ -209,7 +210,7 @@ class _AdminPageState extends State<AdminPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/post-admin');
+          Navigator.push(context,MaterialPageRoute(builder: (context) => AddAdmin(logo: data?.logo, name: data?.name,)));          
         },
         backgroundColor: Colors.black,
         child: const IconTheme(
