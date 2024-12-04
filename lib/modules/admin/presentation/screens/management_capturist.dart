@@ -15,6 +15,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
   late GetCapturistas getCapturistas;
   List<SimpleCapturista> capturistas = [];
   bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -24,34 +25,36 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
   }
 
   Future<void> _loadCapturistas() async {
-    try {
-      final role = "capturista";
-      final institutionId = 1;
+  try {
+    final role = "capturista";
+    final institutionId = 1;
 
-      final users = await getCapturistas.call(
-        role: role,
-        institutionId: institutionId,
-      );
-      setState(() {
-        capturistas = users;
-        isLoading = false;
-      });
-    } on DioError catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      debugPrint('DioError: ${e.type} - ${e.message}');
-      if (e.response != null) {
-        debugPrint('DioError response: ${e.response!.data}');
-        debugPrint('DioError status code: ${e.response!.statusCode}');
-      } else {
-        debugPrint('DioError no response: ${e.error}');
+    final users = await getCapturistas.call(
+      role: role,
+      institutionId: institutionId,
+    );
+
+    setState(() {
+      capturistas = users;
+      isLoading = false;
+      if (users.isEmpty) {
+        errorMessage = 'No se encontraron capturistas.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de red: ${e.message}')),
-      );
+    });
+  } on DioException catch (e) {
+    setState(() {
+      isLoading = false;
+      errorMessage = 'Error al cargar los capturistas';
+    });
+    debugPrint('DioError: ${e.type} - ${e.message}');
+    if (e.response != null) {
+      debugPrint('DioError response: ${e.response!.data}');
+      debugPrint('DioError status code: ${e.response!.statusCode}');
+    } else {
+      debugPrint('DioError no response: ${e.error}');
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +74,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
                   ),
                 ],
               ),
+              SizedBox(height: 18,),
               Row(
                 children: [
                   Expanded(
@@ -90,67 +94,104 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
                 ],
               ),
               const SizedBox(height: 16),
-              isLoading
-                  ? const CircularProgressIndicator()
-                  : capturistas.isEmpty
-                      ? const Text('No hay capturistas disponibles.')
-                      : Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: capturistas.map((capturista) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: Card(
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: ListTile(
-                                              leading: const Icon(
-                                                Icons.account_circle,
-                                              ),
-                                              title: Text(
-                                                capturista.name,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              subtitle: Text(capturista.email),
-                                            ),
+              if (isLoading)
+                const CircularProgressIndicator()
+              else if (errorMessage != null)
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 60,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16, color: Colors.red),
+                      ),
+                    ],
+                  ),
+                )
+              else if (capturistas.isEmpty)
+                const Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                        size: 60,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No hay capturistas disponibles.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: capturistas.map((capturista) {
+                        return Padding(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 6.0,horizontal: 12),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/editCapturist',
+                                arguments: capturista.userId,
+                              );
+                            },
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        leading: const Icon(
+                                          Icons.account_circle,
+                                        ),
+                                        title: Text(
+                                          capturista.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                          Row(
-                                            children: [
-                                              IconButton(
-                                                  icon: const Icon(
-                                                      Icons.edit_outlined),
-                                                  color: Colors.grey,
-                                                  onPressed: () {
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      '/editCapturist',
-                                                      arguments: capturista.userId,
-                                                    );
-                                                  }),
-                                            ],
-                                          ),
-                                        ],
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        subtitle: Text(
+                                          capturista.email,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -160,7 +201,7 @@ class _ManagementCapturistState extends State<ManagementCapturist> {
           Navigator.pushNamed(context, '/registerCapturist');
         },
         backgroundColor: Colors.black,
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

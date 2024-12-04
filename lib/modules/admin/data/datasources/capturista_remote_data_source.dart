@@ -1,7 +1,6 @@
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
-import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 
 abstract class CapturistaRemoteDataSource {
   Future<List<SimpleCapturista>> getAllCapturistas({
@@ -9,9 +8,11 @@ abstract class CapturistaRemoteDataSource {
     required int institutionId,
   });
   Future<Capturista> getCapturista({required int userId});
-  Future<Capturista> createUser(Capturista capturista);
-  Future<Capturista> updateUser(String id, Capturista capturista);
-  Future<void> deleteUser(String id);
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution});
+  Future<dynamic> updateCapturista({
+    required int userId,
+    required String name});
+  Future<dynamic> disableCapturista({required String email, required String status});
 }
 
 class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
@@ -37,39 +38,51 @@ class CapturistaRemoteDataSourceImpl implements CapturistaRemoteDataSource {
   }
 
   @override
-  Future<Capturista> getCapturista({required int userId}) async {
+  Future<Capturista> getCapturista({
+    required int userId
+  }) async {
+    final response = await dioClient.dio.get(
+      '/api/capturists/get-capturist/$userId',
+    );
+    print('LLEGO: ${response.data['data']}');
+    return Capturista.fromJson(response.data);
+  }
+
+  @override
+  Future<dynamic> createCapturista({required String name, required String email, required int fkInstitution}) async {
     final response = await dioClient.dio.post(
-      '/api/users/get-account',
+      '/api/capturists/register',
       data: {
-        "userId":userId
-      }
+        "name":name,
+        "email":email,
+        "fkInstitution":fkInstitution
+      },
     );
-    print('LLEGO: $response');
-    return Capturista.fromJson(response.data);
+    return response;
   }
 
   @override
-  Future<Capturista> createUser(Capturista capturista) async {
+  Future<dynamic> updateCapturista({required int userId, required String name}) async {
     final response = await dioClient.dio.post(
-      '/api/users/create',
-      data: capturista,
+      '/api/users/update-data',
+      data: {
+        "userId":userId,
+        "name":name
+      },
     );
-    return Capturista.fromJson(response.data);
+    print("LLEGO: $response");
+    return response;
   }
 
   @override
-  Future<Capturista> updateUser(String id, Capturista capturista) async {
-    final response = await dioClient.dio.put(
-      '/api/users/update/$id',
-      data: capturista,
-    );
-    return Capturista.fromJson(response.data);
-  }
-
-  @override
-  Future<void> deleteUser(String id) async {
-    await dioClient.dio.delete(
-      '/api/users/delete/$id',
+  Future<dynamic> disableCapturista({required String email, required String status}) async {
+    print("DESDE datasource: $email, $status");
+    await dioClient.dio.post(
+      '/api/users/update-status',
+      data: {
+        "email":email,
+        "status":status
+      }
     );
   }
 }

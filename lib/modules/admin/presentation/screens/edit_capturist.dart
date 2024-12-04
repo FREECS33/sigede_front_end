@@ -1,6 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/put_capturista.dart';
+import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class EditCapturist extends StatefulWidget {
   const EditCapturist({super.key});
@@ -10,54 +16,111 @@ class EditCapturist extends StatefulWidget {
 }
 
 class _EditCapturistState extends State<EditCapturist> {
-  late int userId;
+  late int userAccountId;
+  late GetCapturista getCapturista;
+  late PutCapturista putCapturista;
+  late DisableCapturista disableCapturista;
   Capturista? capturista;
   bool light = true;
-  bool _isObscure = true;
-  bool _isObscure2 = true;
   bool isLoading = true;
+  bool isUpdating=false;
   bool? isActive;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController =
-      TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getCapturista = locator<GetCapturista>();
+    putCapturista = locator<PutCapturista>();
+    disableCapturista = locator<DisableCapturista>();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userId = ModalRoute.of(context)!.settings.arguments as int;
-    _fetchCapturistaDetails();
-  }
-
-  Future<void> _fetchCapturistaDetails() async {
-    try {
-      final dio = Dio();
-      final response = await dio.post(
-        '/api/users/get-account',
-        data: {'userId': userId},
-      );
-
-      if (response.statusCode == 200 && !response.data['error']) {
-        setState(() {
-          capturista = Capturista.fromJson(response.data['data']);
-          isLoading = false;
-          isActive = capturista?.status == 'activo' ? true : false;
-        });
-      } else {
-        throw Exception('Error en la respuesta del servidor');
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al obtener los datos del usuario: $e')),
-      );
+    final userId = ModalRoute.of(context)?.settings.arguments as int?;
+    if (userId != null) {
+      userAccountId = userId;
+      _loadCapturista();
+    } else {
+      print("Error: No se ha proporcionado un userId");
+      Navigator.pushReplacementNamed(context, '/navigation');
     }
   }
+
+  Future<void> _loadCapturista() async {
+  try {
+    final user = await getCapturista.call(userId: userAccountId);
+    setState(() {
+      capturista = user;
+      isLoading = false;
+      _nameController.text = capturista!.name;
+      _emailController.text = capturista!.email;
+      isActive = capturista!.status == 'activo';
+    });
+    } on DioException catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+    print("Error $e");
+  }
+  }
+
+  Future<void> _updateStatusCapturista(String email, String status)async{
+    try {
+      if((capturista?.status=='activo')!=isActive){
+        final response = await disableCapturista.call(email: email, status: status);
+        print('DESDE _updateStatusCapturista: $response');
+      }else{
+        print('No hubo cambio de estado');
+      }
+    } catch (e) {
+      print('Error en _updateStatusCapturista $e');
+    }
+  }
+
+  Future<String> _validateStatus()async{
+    try {
+      return isActive!?'inactivo':'activo';
+    } catch (e) {
+      print('Error en _validateStatus: $e');
+      return 'inactivo';
+    }
+  }
+
+  Future<void> _updateCapturista() async {
+  try {
+    setState(() {
+      isUpdating = true;
+    });
+
+    String st = await _validateStatus();
+
+    if ((capturista?.status != 'activo' && isActive == true) || 
+        (capturista?.status == 'activo' && isActive == false)) {
+      await _updateStatusCapturista(_emailController.text, st);
+    }
+
+    final response = await putCapturista.call(userId: userAccountId, name: _nameController.text);
+
+    if (response.data['status'] == 200) {
+      setState(() {
+        isUpdating = false;
+      });
+      await showSuccessDialog(context: context, message: "Capturista actualizado correctamente");
+      Navigator.pushReplacementNamed(context, '/navigation');
+    }
+  } catch (e) {
+    setState(() {
+      isUpdating = false;
+    });
+    print('Error en _updateCapturista $e');
+  }
+}
+
 
   String? validateEmail(String? value) {
     final RegExp emailRegExp = RegExp(
@@ -72,39 +135,25 @@ class _EditCapturistState extends State<EditCapturist> {
     return null;
   }
 
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else {
-      return null;
-    }
-  }
-
-  String? validatePasswordConfirm(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese una contraseña';
-    } else if (value != _passwordController.text) {
-      return 'Las contraseñas no coinciden';
-    } else {
-      return null;
-    }
-  }
-
   String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ingrese un nombre';
-    } else if (value.length < 3) {
-      return 'Ingrese un nombre valido';
-    } else {
-      return null;
-    }
+  final RegExp nameRegExp = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$");
+  
+  if (value == null || value.trim().isEmpty) {
+    return 'Por favor, ingrese un nombre';
+  } else if (value.trim().length < 3) {
+    return 'El nombre debe tener al menos 3 caracteres';
+  } else if (!nameRegExp.hasMatch(value)) {
+    return 'El nombre solo debe contener letras y espacios';
   }
+  return null;
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        title: const Text(''),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -117,7 +166,8 @@ class _EditCapturistState extends State<EditCapturist> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Switch(
-                          value: isActive!,
+                          value: isActive ??
+                              false, // Si isActive es null, lo considera como false
                           activeColor: Colors.green,
                           onChanged: (bool value) {
                             setState(() {
@@ -181,9 +231,10 @@ class _EditCapturistState extends State<EditCapturist> {
                                     Icon(Icons.sensor_occupied_rounded)),
                           ),
                           const SizedBox(
-                            height: 12,
+                            height: 16,
                           ),
                           TextFormField(
+                            enabled: false,
                             validator: validateEmail,
                             controller: _emailController,
                             decoration: const InputDecoration(
@@ -195,52 +246,8 @@ class _EditCapturistState extends State<EditCapturist> {
                                 suffixIcon: Icon(Icons.email_outlined)),
                           ),
                           const SizedBox(
-                            height: 12,
+                            height: 68,
                           ),
-                          TextFormField(
-                            validator: validatePassword,
-                            obscureText: _isObscure,
-                            controller: _passwordController,
-                            decoration: InputDecoration(
-                                labelText: 'Contraseña',
-                                hintText: 'Contraseña',
-                                border: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _isObscure = !_isObscure;
-                                      });
-                                    },
-                                    icon: Icon(_isObscure
-                                        ? Icons.visibility
-                                        : Icons.visibility_off))),
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          TextFormField(
-                              validator: validatePasswordConfirm,
-                              obscureText: _isObscure2,
-                              controller: _passwordConfirmController,
-                              decoration: InputDecoration(
-                                labelText: 'Confirmar contraseña',
-                                hintText: 'Confirmar contraseña',
-                                border: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _isObscure2 = !_isObscure2;
-                                      });
-                                    },
-                                    icon: Icon(_isObscure2
-                                        ? Icons.visibility
-                                        : Icons.visibility_off)),
-                              )),
-                          const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -253,20 +260,10 @@ class _EditCapturistState extends State<EditCapturist> {
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  final data = {
-                                    "userId": userId,
-                                    "name": _nameController,
-                                    "password": _passwordController,
-                                    "fkStatus": isActive
-                                  };
-                                  Navigator.pushNamed(
-                                      context, '/managementCapturist');
+                                  _updateCapturista();
                                 }
                               },
-                              child: const Text(
-                                'Editar',
-                                style: TextStyle(fontSize: 22),
-                              ),
+                              child: isUpdating? const LoadingWidget():const Text('Editar',style: TextStyle(fontSize: 22),),
                             ),
                           )
                         ],
