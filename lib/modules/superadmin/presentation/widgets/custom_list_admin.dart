@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/edit_admin.dart';
 
 class CustomListAdmin extends StatefulWidget {
   final AdminEntity? admins;
@@ -72,6 +73,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
             IconButton(
               icon: Icon(Icons.edit_outlined,color: Colors.grey[750],),
               onPressed: () {
+                Navigator.push(context,MaterialPageRoute(builder: (context) => EditAdmin(adminId:widget.admins.)));          
                 // Navigator.pushNamed(context, '/post-admin');
               },
             ),

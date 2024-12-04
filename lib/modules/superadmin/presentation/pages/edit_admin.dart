@@ -1,90 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+class EditAdmin extends StatefulWidget {
 
-class AddAdmin extends StatefulWidget {
-  final String? logo;
-  final String? name;
-  const AddAdmin({super.key, this.logo, this.name});
+const EditAdmin({ super.key});
 
   @override
-  State<AddAdmin> createState() => _AddAdminState();
+  State<EditAdmin> createState() => _EditAdminState();
 }
 
-class _AddAdminState extends State<AddAdmin> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameAdminController = TextEditingController();
-  final TextEditingController _emailAdminController = TextEditingController();
-  bool _isloading = false;
-  bool _isValidAdminName = true;
-  bool _isValidAdminEmail = true;
-  String? validateEmailAdmin(String? value) {
-    final RegExp emailRegExp = RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    );
-
-    if (value == null || value.isEmpty) {
-      setState(() {
-        _isValidAdminEmail = false;
-      });
-      return 'Por favor, ingrese su correo electrónico';
-    } else if (!emailRegExp.hasMatch(value)) {
-      setState(() {
-        _isValidAdminEmail = false;
-      });
-      return 'Por favor, ingrese un correo electrónico válido';
-    }
-    setState(() {
-      _isValidAdminEmail = true;
-    });
-    return null;
-  }
-
-  String? validateNameAdmin(String? value) {
-    if (value == null || value.isEmpty) {
-      setState(() {
-        _isValidAdminName = false;
-      });
-      return 'Campo obligatorio';
-    }
-    final RegExp nameRegExp = RegExp(r'^[a-zA-Z ]+$');
-    if (!nameRegExp.hasMatch(value)) {
-      setState(() {
-        _isValidAdminName = false;
-      });
-      return 'Solo se permiten letras';
-    }
-    if (value.trim() != value) {
-      setState(() {
-        _isValidAdminName = false;
-      });
-      return 'No debe contener espacios al inicio o al final';
-    }
-    if (value.length > 50) {
-      setState(() {
-        _isValidAdminName = false;
-      });
-      return 'No debe superar los 50 caracteres';
-    }
-    setState(() {
-      _isValidAdminName = true;
-    });
-  }
-
-  Future<void> _registerAdmin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isloading = true;
-      });
-      // Lógica para registrar al administrador
-      setState(() {
-        _isloading = false;
-      });
-    }
-  }
+class _EditAdminState extends State<EditAdmin> {
+bool _isLoading = true;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,7 +50,7 @@ class _AddAdminState extends State<AddAdmin> {
                 SizedBox(
                   width: 150,
                   child: Text(
-                    widget.name ?? 'Nombre del administrador',
+                    widget.name ?? 'Nombre de la institución',
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -225,11 +155,11 @@ class _AddAdminState extends State<AddAdmin> {
               width: 300,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isloading ? null : _registerAdmin,
+                onPressed: _isLoading ? null : _registerAdmin,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
-                child: _isloading
+                child: _isLoading
                     ? const LoadingWidget() // Mostrar loading si está cargando
                     : Text(
                         'Guardar',

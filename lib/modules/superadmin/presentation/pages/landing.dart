@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/add_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/admin_page.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/edit_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing_home.dart';
 
 class Landing extends StatefulWidget {
@@ -21,6 +22,9 @@ class _LandingState extends State<Landing> {
         }
         if (settings.name == '/post-admin') {
           return MaterialPageRoute(builder: (context) => const AddAdmin());
+        }
+        if (settings.name == '/edit-admin'){
+          return MaterialPageRoute(builder: (context) => const EditAdmin());
         }
         
         return MaterialPageRoute(builder: (context) => const LandingHome());
