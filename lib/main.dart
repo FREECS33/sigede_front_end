@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/register_capturist.dart';
+import 'package:sigede_flutter/modules/capturista/navigation/navigation_capturist.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
@@ -38,11 +39,12 @@ class MainApp extends StatelessWidget {
         '/resetPassword':(context)=> const ResetPasswordScreen(),
         '/admin-registration':(context)=> const AdminRegistrationScreen(),
         '/preview-qr':(context)=>const PreviewQR(),
-        '/navigation':(context)=>const NavigationAdmin(),
+        '/navigation-admin':(context)=>const NavigationAdmin(),
         '/landing-super':(context)=> Landing(),
         '/navigation-super':(context)=>const Navigation(),
         '/editCapturist':(context)=>const EditCapturist(),
-        '/registerCapturist':(context)=>const RegisterCapturist()
+        '/registerCapturist':(context)=>const RegisterCapturist(),
+        '/navigation-capturist':(context)=>const NavigationCapturist()
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/capturista/presentation/pages/credentials_management.dart';
+import 'package:sigede_flutter/modules/capturista/presentation/pages/register_credential.dart';
 
 class NavigationCapturist extends StatefulWidget {
   const NavigationCapturist({super.key});
@@ -14,6 +15,7 @@ class _NavigationCapturistState extends State<NavigationCapturist> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     CredentialsManagement(),
+    RegisterCredential()
   ];
 
   void _onItemTapped(int index) {
