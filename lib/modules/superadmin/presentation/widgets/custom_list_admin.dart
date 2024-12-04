@@ -69,6 +69,12 @@ class _CustomListAdminState extends State<CustomListAdmin> {
               ],
             ),
             const Spacer(),
+            IconButton(
+              icon: Icon(Icons.edit_outlined,color: Colors.grey[750],),
+              onPressed: () {
+                // Navigator.pushNamed(context, '/post-admin');
+              },
+            ),
             Switch(
               inactiveThumbColor: Colors.red,
               inactiveTrackColor: Colors.red.withOpacity(0.5),
