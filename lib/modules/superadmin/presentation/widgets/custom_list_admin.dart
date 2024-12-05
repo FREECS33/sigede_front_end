@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/edit_admin.dart';
 
 class CustomListAdmin extends StatefulWidget {
   final AdminsEntity? admins;
-  const CustomListAdmin({super.key, this.admins});
+  final InstitutionsEntity? institution;
+  const CustomListAdmin({super.key, this.admins, this.institution});
 
   @override
   State<CustomListAdmin> createState() => _CustomListAdminState();
@@ -74,8 +76,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
             IconButton(
               icon: Icon(Icons.edit_outlined,color: Colors.grey[750],),
               onPressed: () {
-                Navigator.push(context,MaterialPageRoute(builder: (context) => EditAdmin(admin:widget.admins)));          
-                // Navigator.pushNamed(context, '/post-admin');
+                Navigator.push(context,MaterialPageRoute(builder: (context) => EditAdmin(admin:widget.admins,logo: widget.institution?.logo,name: widget.institution?.name,)));              
               },
             ),
             Switch(

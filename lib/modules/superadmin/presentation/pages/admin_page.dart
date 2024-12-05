@@ -99,7 +99,7 @@ class _AdminPageState extends State<AdminPage> {
   
   @override
   void initState() {
-    super.initState();
+    super.initState();  
     data = widget.institutions;
     _getAllAdmins();
   }
@@ -237,6 +237,7 @@ class _AdminPageState extends State<AdminPage> {
                       itemBuilder: (context, index) {
                         return CustomListAdmin(
                           admins: admins[index],
+                          institution: data,
                         );
                       },
                     ),
