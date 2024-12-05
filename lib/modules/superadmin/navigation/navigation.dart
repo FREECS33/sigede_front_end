@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/profile.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/register_institution.dart';
 
 class Navigation extends StatefulWidget {
@@ -23,7 +24,8 @@ class _NavigationState extends State<Navigation> {
         );
       },
     ),
-    const RegisterInstitution()
+    const RegisterInstitution(),
+    const Profile()
   ];
 
   void _onItemTapped(int index) {

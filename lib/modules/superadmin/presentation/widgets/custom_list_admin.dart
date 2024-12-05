@@ -73,7 +73,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
             IconButton(
               icon: Icon(Icons.edit_outlined,color: Colors.grey[750],),
               onPressed: () {
-                Navigator.push(context,MaterialPageRoute(builder: (context) => EditAdmin(adminId:widget.admins.)));          
+                Navigator.push(context,MaterialPageRoute(builder: (context) => EditAdmin(admin:widget.admins)));          
                 // Navigator.pushNamed(context, '/post-admin');
               },
             ),

@@ -51,8 +51,7 @@ class _LandingHomeState extends State<LandingHome> {
       setState(() {
         institutions = response.content;
         _isLoading = false;
-      });
-      print("si sali ");
+      });      
     } catch (e) {
       setState(() {
         _notData = true;
@@ -151,11 +150,11 @@ class _LandingHomeState extends State<LandingHome> {
                     controller: _searchController,                    
                     decoration: InputDecoration(
                       hintText: 'Buscar cliente', // Texto placeholder
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.grey), // Color del placeholder
                       border: InputBorder.none, // Quita el borde predeterminado
                       suffixIcon: IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.search,
                           color: Colors.grey, // Icono de búsqueda
                         ),
@@ -164,7 +163,7 @@ class _LandingHomeState extends State<LandingHome> {
                           _loadInstitutions(_searchController.text);
                         },
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
