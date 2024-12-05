@@ -45,7 +45,7 @@ class _AdminPageState extends State<AdminPage> {
     });    
     try {
       final AdminsModel adminsModel = AdminsModel(
-        role: 'admin',
+        role: 'ADMIN',
         fkInstitution: data?.id,
       );
 
@@ -77,7 +77,7 @@ class _AdminPageState extends State<AdminPage> {
     });
     try {
       final AdminsModel adminsModel = AdminsModel(
-        role: 'admin',
+        role: "ADMIN",
         fkInstitution: data?.id,
       );
 

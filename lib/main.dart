@@ -38,7 +38,7 @@ class MainApp extends StatelessWidget {
         '/resetPassword':(context)=> const ResetPasswordScreen(),
         '/admin-registration':(context)=> const AdminRegistrationScreen(),
         '/preview-qr':(context)=>const PreviewQR(),
-        '/navigation':(context)=>const NavigationAdmin(),
+        //'/navigation':(ontext)=>const NavigationAdmin(),
         '/landing-super':(context)=> Landing(),
         '/navigation-super':(context)=>const Navigation(),
         '/editCapturist':(context)=>const EditCapturist(),

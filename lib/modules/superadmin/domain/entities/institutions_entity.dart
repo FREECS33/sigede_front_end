@@ -8,7 +8,7 @@ class InstitutionsEntity {
 
   factory InstitutionsEntity.fromJson(Map<String, dynamic> json) {
     return InstitutionsEntity(
-      id: json['id'],
+      id: json['institutionId'],
       name: json['name'],
       emailContact: json['email_contact'],
       logo: json['logo'],
