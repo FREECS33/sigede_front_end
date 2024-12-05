@@ -20,13 +20,16 @@ import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
+import 'package:sigede_flutter/modules/superadmin/data/datasources/admins_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_post_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/admin_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/data/repositories/admins_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_new_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_admins.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_admin.dart';
@@ -111,5 +114,11 @@ void setupLocator(){
   //registrar el caso de uso PostAdmin
   locator.registerFactory<PostAdmin>(() => PostAdmin(repository: locator()));
   
+  //Registrar Admins data source
+  locator.registerFactory<AdminsDataSource>(() => AdminsDataSourceImpl(dioClient: locator()));
+  //Registrar AdminRepository
+  locator.registerFactory<AdminsRepository>(() => AdminsRepositoryImpl(adminsDataSource: locator()));
+  //Registrar el caso de uso GetAdmins
+  locator.registerFactory<GetAllAdmins>(() => GetAllAdmins(repository: locator()));
 }
 

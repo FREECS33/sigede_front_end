@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class EditAdmin extends StatefulWidget {
-  final AdminEntity? admin;
+  final AdminsEntity? admin;
   final String? logo;
   final String? name;
   const EditAdmin({super.key, this.admin, this.logo, this.name});

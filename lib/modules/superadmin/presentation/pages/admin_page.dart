@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admins_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_admins.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/add_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_admin.dart';
 
@@ -15,22 +18,12 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   late InstitutionsEntity? data;
-
-  @override
-  void initState() {
-    super.initState();
-    data = widget.institutions;
-  }
-
+  
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _notData = false;
-  List<AdminEntity> admins = [
-    AdminEntity(name: 'Admin 1', email: 'admin1@gmail.com'),
-    AdminEntity(name: 'Admin 2', email: 'admin2@gmail.com'),
-    AdminEntity(name: 'Admin 3', email: 'admin3@gmail.com'),
-  ];
+  List<AdminsEntity> admins = [];
 
   String? validateSearch(String? value) {
     if (value == null || value.isEmpty) {
@@ -43,29 +36,72 @@ class _AdminPageState extends State<AdminPage> {
     }
     return null;
   }
+  final GetIt getIt = GetIt.instance;
 
-  Future<void> _loadAdmins(String text) async {
-    /*
+  Future<void> _getAllAdmins() async {    
     setState(() {
       _isLoading = true;
       _notData = false;
-    });
+    });    
     try {
-      final adminByName = getIt<>();
-      final response = await adminByName.call(
-          text, 0, 10); 
-      setState(() {
-        admins = response.content;
-        _isLoading = false;
-      });
-      print("si sali ");
+      final AdminsModel adminsModel = AdminsModel(
+        role: 'admin',
+        fkInstitution: data?.id,
+      );
+
+      final adminsByInstitution = getIt<GetAllAdmins>();      
+      final result = await adminsByInstitution.call(adminsModel);      
+      if(result.isEmpty){
+        setState(() {
+          _notData = true;
+          _isLoading = false;
+        });
+      }else{
+        setState(() {
+          admins = result;
+          _isLoading = false;
+        });
+      }      
     } catch (e) {
       setState(() {
         _notData = true;
         _isLoading = false;
       });
-    }
-    */
+    }    
+  }
+
+  Future<void> _loadAdmins(String text) async {    
+    setState(() {
+      _isLoading = true;
+      _notData = false;
+    });
+    try {
+      final AdminsModel adminsModel = AdminsModel(
+        role: 'admin',
+        fkInstitution: data?.id,
+      );
+
+      final adminsByInstitution = getIt<GetAllAdmins>();
+      final result = await adminsByInstitution(adminsModel);
+      print(result);
+      setState(() {
+        admins = result;
+        _isLoading = false;
+      });
+      print("si sali ");
+    } catch (e) {
+      setState(() {
+        _notData = false;
+        _isLoading = false;
+      });
+    }    
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    data = widget.institutions;
+    _getAllAdmins();
   }
 
   @override
