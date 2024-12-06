@@ -10,7 +10,7 @@ class InstitutionsEntity {
     return InstitutionsEntity(
       id: json['institutionId'],
       name: json['name'],
-      emailContact: json['email_contact'],
+      //emailContact: json['email_contact'],
       logo: json['logo'],
     );
   }

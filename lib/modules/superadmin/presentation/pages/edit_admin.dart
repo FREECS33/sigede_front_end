@@ -19,30 +19,20 @@ class _EditAdminState extends State<EditAdmin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameAdminController = TextEditingController();
   final TextEditingController _emailAdminController = TextEditingController();
-  bool _isValidAdminName = true;
-  bool _isValidAdminEmail = true;
-  String? validateEmailAdmin(String? value) {
-    final RegExp emailRegExp = RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    );
+  bool _isValidAdminName = true;  
 
-    if (value == null || value.isEmpty) {
-      setState(() {
-        _isValidAdminEmail = false;
-      });
-      return 'Por favor, ingrese su correo electrónico';
-    } else if (!emailRegExp.hasMatch(value)) {
-      setState(() {
-        _isValidAdminEmail = false;
-      });
-      return 'Por favor, ingrese un correo electrónico válido';
-    }
-    setState(() {
-      _isValidAdminEmail = true;
-    });
-    return null;
-  }
+  bool light = true;
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
 
+  
   String? validateNameAdmin(String? value) {
     if (value == null || value.isEmpty) {
       setState(() {
@@ -175,43 +165,31 @@ class _EditAdminState extends State<EditAdmin> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
-                      validator: validateEmailAdmin,
-                      controller: _emailAdminController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        labelStyle: TextStyle(
-                          color: _isValidAdminEmail
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
-                        ),
-                        suffixIcon: Icon(
-                          Icons.email_outlined,
-                          color: _isValidAdminEmail ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
+                    Row(children: [
+                      const Text(
+                        'Cambiar estado del administrador',
+                        style: TextStyle(
+                          fontFamily: 'RubikOne',
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                      Switch(
+                        inactiveThumbColor: Colors.red,
+                        inactiveTrackColor: Colors.red.withOpacity(0.5),
+                        activeTrackColor: Colors.green.withOpacity(0.5),
+                        thumbIcon: thumbIcon,
+                        value: light,
+                        activeColor: Colors.green,
+                        onChanged: (bool value) {
+                          // This is called when the user toggles the switch.
+                          setState(() {
+                            light = value;
+                          });
+                        },
+                      )
+                    ])
                   ]),
             ),
           ),

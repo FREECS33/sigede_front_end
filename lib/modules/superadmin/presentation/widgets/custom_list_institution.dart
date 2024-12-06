@@ -31,7 +31,7 @@ class CustomListInstitution extends StatelessWidget {
             children: [
               Center(
                 child: Image.network(
-                  institutions.logo!,
+                  institutions.logo??'',
                   height: 60.0,
                   width: 60.0,
                   fit: BoxFit.cover,
@@ -71,7 +71,7 @@ class CustomListInstitution extends StatelessWidget {
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      institutions.emailContact!,
+                      institutions.emailContact??'',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 14.0,
