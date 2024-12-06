@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/edit_admin.dart';
 
 class CustomListAdmin extends StatefulWidget {
-  final AdminsEntity? admins;
+  final AdminEntity? admins;
   final InstitutionEntity? institution;
   const CustomListAdmin({super.key, this.admins, this.institution});
 
@@ -49,7 +50,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.admins!.name!,
+                  widget.admins!.name,
                   textAlign: TextAlign.start,
                   style: const TextStyle(
                       fontSize: 14.0,
@@ -59,7 +60,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  widget.admins!.email!,
+                  widget.admins!.email,
                   textAlign: TextAlign.start,
                   style: const TextStyle(
                       fontSize: 12.0,

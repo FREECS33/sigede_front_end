@@ -31,3 +31,21 @@ class RequestAdminModel extends RequestAdminEntity {
     };
   }
 }
+
+class FilterAdminModel extends FilterAdminEntity {
+  FilterAdminModel({
+    required super.institutionId,
+    required super.name,
+    required super.page,
+    required super.size,    
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'institutionId': institutionId,
+      'name': name,
+      'page': page,
+      'size': size,
+    };
+  }
+}

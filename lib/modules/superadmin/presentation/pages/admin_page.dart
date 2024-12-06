@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/get_all_admin.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/add_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_admin.dart';
 
@@ -76,19 +76,19 @@ class _AdminPageState extends State<AdminPage> {
       _notData = false;
     });
     try {
-      final RequestAdminModel adminsModel = RequestAdminModel(
-        role: "ADMIN",
+      final FilterAdminModel adminsModel = FilterAdminModel(
+        name: text,        
         institutionId: data?.institutionId ?? 0,
+        page: 0,
+        size: 200
       );
 
-      final adminsByInstitution = getIt<GetAllAdmin>();
+      final adminsByInstitution = getIt<GetAdminByName>();
       final result = await adminsByInstitution.call(adminsModel);
-      print(result);
       setState(() {
         admins = result;
         _isLoading = false;
       });
-      print("si sali ");
     } catch (e) {
       setState(() {
         _notData = false;

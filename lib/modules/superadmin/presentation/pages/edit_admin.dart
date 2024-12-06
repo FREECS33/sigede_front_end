@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class EditAdmin extends StatefulWidget {
-  final AdminsEntity? admin;
+  final AdminEntity? admin;
   final String? logo;
   final String? name;
   const EditAdmin({super.key, this.admin, this.logo, this.name});
@@ -18,7 +17,7 @@ class _EditAdminState extends State<EditAdmin> {
   bool _isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameAdminController = TextEditingController();
-  final TextEditingController _emailAdminController = TextEditingController();
+
   bool _isValidAdminName = true;  
 
   bool light = true;
@@ -67,7 +66,7 @@ class _EditAdminState extends State<EditAdmin> {
   Future<void> _editAdmin() async {
     setState(() {
       _isLoading = true;
-    });
+    });   
   }
 
   @override

@@ -10,3 +10,13 @@ class GetAllAdmin {
     return await repository.getAllAdmins(model);
   }
 }
+
+class GetAdminByName {
+  final AdminRepository repository;
+
+  GetAdminByName({required this.repository});
+
+  Future<List<AdminModel>> call(FilterAdminModel model) async {
+    return await repository.getAdminByName(model);
+  }
+}

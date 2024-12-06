@@ -3,8 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/get_all_institutions.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/get_institution_by_name.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 
 class LandingHome extends StatefulWidget {

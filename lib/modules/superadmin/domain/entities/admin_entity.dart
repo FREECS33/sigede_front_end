@@ -12,3 +12,11 @@ class RequestAdminEntity {
   final int institutionId;
   RequestAdminEntity({required this.role, required this.institutionId});
 }
+
+class FilterAdminEntity {  
+  final int institutionId;
+  final String name;  
+  final int page;
+  final int size;
+  FilterAdminEntity({required this.institutionId, required this.name, required this.page, required this.size});
+}
