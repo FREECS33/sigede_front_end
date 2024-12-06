@@ -31,6 +31,7 @@ import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_admins.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_institutions.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institution_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_admin.dart';
@@ -93,12 +94,8 @@ void setupLocator(){
   locator.registerFactory(()=> DisableCapturista(repository: locator()));
   locator.registerFactory(()=>PostCapturista(repository: locator()));
 
-  //Registrar institutionDataSource
-  locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
-  //Registrar institutionRepository
-  locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
   //Registrar el caso de uso GetInstitutionsByName
-  locator.registerFactory<GetInstitutionsByName>(() => GetInstitutionsByName(repository: locator()));
+  locator.registerFactory<GetInstitutionByName>(() => GetInstitutionByName(repository: locator()));
  /*
   //Registrar InstitutionPostDataSource
   locator.registerFactory<InstitutionPostDataSource>(() => InstitutionPostDataSourceImpl(dioClient: locator()));

@@ -18,3 +18,17 @@ class InstitutionModel extends InstitutionEntity{
     );
   }
 }
+
+class PageModel extends PageEntity{
+  PageModel({
+    required super.name, required super.page, required super.size
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'page': page,
+      'size': size,
+    };
+  }
+}

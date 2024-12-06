@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_institutions.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institution_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 
 class LandingHome extends StatefulWidget {
@@ -44,11 +46,10 @@ class _LandingHomeState extends State<LandingHome> {
       _notData = false;
     });
     try {
-      final institutionByName = getIt<GetInstitutionsByName>();
-      final response = await institutionByName.call(
-          text, 0, 10); 
+      final institutionByName = getIt<GetInstitutionByName>();
+      final response = await institutionByName.call(PageModel(name: text, page: 1, size: 10));
       setState(() {
-        institutions = response.content;
+        institutions = response;
         _isLoading = false;
       });      
     } catch (e) {

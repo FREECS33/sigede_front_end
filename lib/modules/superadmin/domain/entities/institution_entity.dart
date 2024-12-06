@@ -6,3 +6,11 @@ class InstitutionEntity {
 
   InstitutionEntity({required this.institutionId, required this.name, required this.emailContact, required this.logo});
 }
+
+class PageEntity {
+  final String name;
+  final int page;
+  final int size;
+
+  PageEntity({required this.name, required this.page, required this.size});
+}

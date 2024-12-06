@@ -3,6 +3,7 @@ import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.
 
 abstract class InstitutionRepository {
   Future<List<InstitutionModel>> getAllInstitutions();
+  Future<List<InstitutionModel>> getInstitutionByName(PageModel model);
 }
 
 class InstitutionRepositoryImpl implements InstitutionRepository {
@@ -13,5 +14,10 @@ class InstitutionRepositoryImpl implements InstitutionRepository {
   @override
   Future<List<InstitutionModel>> getAllInstitutions() async {
     return institutionDataSource.getAllInstitutions();
+  }
+
+  @override
+  Future<List<InstitutionModel>> getInstitutionByName(PageModel model) async {
+    return institutionDataSource.getInstitutionByName(model);
   }
 }
