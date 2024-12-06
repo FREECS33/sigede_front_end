@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_institutions.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 
 class LandingHome extends StatefulWidget {
@@ -16,18 +15,18 @@ class LandingHome extends StatefulWidget {
 class _LandingHomeState extends State<LandingHome> {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  List<InstitutionsEntity> institutions = [];
+  List<InstitutionEntity> institutions = [];
 
   bool _isLoading = true;
   bool _notData = false;
   final GetIt getIt = GetIt.instance;
   Future<void> getInstitutions() async {
     try {
-      final institutionsUseCase = getIt<Institutions>();
+      final institutionsUseCase = getIt<GetAllInstitutions>();
       final response = await institutionsUseCase.call();
 
       setState(() {
-        institutions = response.data;
+        institutions = response;
         _isLoading = false;
       });
     } catch (error) {

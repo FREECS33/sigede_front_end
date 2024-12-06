@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/edit_admin.dart';
 
 class CustomListAdmin extends StatefulWidget {
   final AdminsEntity? admins;
-  final InstitutionsEntity? institution;
+  final InstitutionEntity? institution;
   const CustomListAdmin({super.key, this.admins, this.institution});
 
   @override
