@@ -29,9 +29,10 @@ import 'package:sigede_flutter/modules/superadmin/data/repositories/admins_repos
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_new_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/get_all_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_admins.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_institutions.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institution_by_name.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/get_all_institutions.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/get_institution_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_admin.dart';
@@ -96,6 +97,13 @@ void setupLocator(){
 
   //Registrar el caso de uso GetInstitutionsByName
   locator.registerFactory<GetInstitutionByName>(() => GetInstitutionByName(repository: locator()));
+
+  //Registrar AdminDataSource
+  locator.registerFactory<AdminDataSource>(() => AdminsDataSourceImpl(dioClient: locator()));
+  //Registrar AdminRepository
+  locator.registerFactory<AdminRepository>(() => AdminRepositoryImpl(adminDataSource: locator()));
+  //Registrar el caso de uso GetAdmins
+  locator.registerFactory<GetAllAdmin>(() => GetAllAdmin(repository: locator()));
  /*
   //Registrar InstitutionPostDataSource
   locator.registerFactory<InstitutionPostDataSource>(() => InstitutionPostDataSourceImpl(dioClient: locator()));

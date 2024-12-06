@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/modules/superadmin/data/models/admins_model.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/admins_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_all_admins.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/get_all_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/add_admin.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_admin.dart';
 
 class AdminPage extends StatefulWidget {
-  final InstitutionsEntity? institutions;
+  final InstitutionEntity? institutions;
   const AdminPage({super.key, this.institutions});
 
   @override
@@ -17,13 +17,13 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  late InstitutionsEntity? data;
+  late InstitutionEntity? data;
   
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _notData = false;
-  List<AdminsEntity> admins = [];
+  List<AdminEntity> admins = [];
 
   String? validateSearch(String? value) {
     if (value == null || value.isEmpty) {
@@ -44,12 +44,12 @@ class _AdminPageState extends State<AdminPage> {
       _notData = false;
     });    
     try {
-      final AdminsModel adminsModel = AdminsModel(
+      final RequestAdminModel adminsModel = RequestAdminModel(
         role: 'ADMIN',
-        fkInstitution: data?.id,
+        institutionId: data?.institutionId ?? 0,
       );
 
-      final adminsByInstitution = getIt<GetAllAdmins>();      
+      final adminsByInstitution = getIt<GetAllAdmin>();      
       final result = await adminsByInstitution.call(adminsModel);      
       if(result.isEmpty){
         setState(() {
@@ -76,13 +76,13 @@ class _AdminPageState extends State<AdminPage> {
       _notData = false;
     });
     try {
-      final AdminsModel adminsModel = AdminsModel(
+      final RequestAdminModel adminsModel = RequestAdminModel(
         role: "ADMIN",
-        fkInstitution: data?.id,
+        institutionId: data?.institutionId ?? 0,
       );
 
-      final adminsByInstitution = getIt<GetAllAdmins>();
-      final result = await adminsByInstitution(adminsModel);
+      final adminsByInstitution = getIt<GetAllAdmin>();
+      final result = await adminsByInstitution.call(adminsModel);
       print(result);
       setState(() {
         admins = result;
