@@ -30,3 +30,23 @@ class AddNewAdmin {
     return await repository.addAdmin(model);
   }
 }
+
+class UpdateAdminInfo {
+  final AdminRepository repository;
+
+  UpdateAdminInfo({required this.repository});
+
+  Future<ResponseAddAdminModel> call(UpdateAdminStatusModel model) async {
+    return await repository.updateAdmin(model);
+  }
+}
+
+class UpdateInfoAdmin {
+  final AdminRepository repository;
+
+  UpdateInfoAdmin({required this.repository});
+
+  Future<ResponseAddAdminModel> call(UpdateInfoAdminModel model) async {
+    return await repository.updateInfoAdmin(model);
+  }
+}

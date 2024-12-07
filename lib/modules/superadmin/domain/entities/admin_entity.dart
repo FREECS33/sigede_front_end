@@ -32,3 +32,16 @@ class ResponseAddAdminEntity {
   final int status;  
   ResponseAddAdminEntity({required this.status});
 }
+
+class UpdateAdminEntity {  
+  final String email;  
+  final String status;
+  UpdateAdminEntity({required this.email, required this.status});
+}
+
+class UpdateInfoAdminEntity {
+  final int userId;  
+  final String name;
+  final String status;
+  UpdateInfoAdminEntity({required this.userId, required this.name, required this.status});
+}

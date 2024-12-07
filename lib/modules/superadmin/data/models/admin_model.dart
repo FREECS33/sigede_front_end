@@ -77,3 +77,34 @@ class ResponseAddAdminModel extends ResponseAddAdminEntity {
     );
   }
 }
+
+class UpdateAdminStatusModel extends UpdateAdminEntity {
+  UpdateAdminStatusModel({
+    required super.email,
+    required super.status,    
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'status': status,
+    };
+  }
+}
+
+
+class UpdateInfoAdminModel extends UpdateInfoAdminEntity {
+  UpdateInfoAdminModel({
+    required super.userId,
+    required super.name,
+    required super.status,    
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'name': name,
+      'status': status,
+    };
+  }
+}

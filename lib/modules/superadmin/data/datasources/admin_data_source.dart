@@ -5,7 +5,9 @@ import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 abstract class AdminDataSource {
   Future<List<AdminModel>> getAllAdmins(RequestAdminModel model);
   Future<List<AdminModel>> getAdminByName(FilterAdminModel model);
-  Future<ResponseAddAdminModel> addAdmin(AddAdminModel model);
+  Future<ResponseAddAdminModel> addAdmin(AddAdminModel model);  
+  Future<ResponseAddAdminModel> updateAdmin(UpdateAdminStatusModel model);
+  Future<ResponseAddAdminModel> updateInfoAdmin(UpdateInfoAdminModel model);
 }
 
 class AdminsDataSourceImpl implements AdminDataSource {
@@ -102,6 +104,74 @@ class AdminsDataSourceImpl implements AdminDataSource {
   Future<ResponseAddAdminModel> addAdmin(AddAdminModel model) async {
     try {
       final response = await dioClient.dio.post('/api/admin/add-admin', data: model.toJson());
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        return ResponseAddAdminModel.fromJson(response.data);
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError) {
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<ResponseAddAdminModel> updateAdmin(UpdateAdminStatusModel model) async {
+    try {
+      final response = await dioClient.dio.post('/api/admin/update-admin', data: model.toJson());
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        return ResponseAddAdminModel.fromJson(response.data);
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError) {
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<ResponseAddAdminModel> updateInfoAdmin(UpdateInfoAdminModel model) async {
+    try {
+      final response = await dioClient.dio.post('/api/admin/update-info-admin', data: model.toJson());
 
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
