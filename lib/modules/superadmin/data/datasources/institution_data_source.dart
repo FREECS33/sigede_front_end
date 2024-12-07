@@ -5,6 +5,7 @@ import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.
 abstract class InstitutionDataSource {
   Future<List<InstitutionModel>> getAllInstitutions();
   Future<List<InstitutionModel>> getInstitutionByName(PageModel model);
+  Future<ResponseAddInstitutionModel> addInstitution(AddInstitutionModel model);
 }
 
 class InstitutionDataSourceImpl implements InstitutionDataSource {
@@ -71,6 +72,43 @@ class InstitutionDataSourceImpl implements InstitutionDataSource {
         } else {
           throw Exception('Expected a list in response.data["data"]');
         }
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError){
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<ResponseAddInstitutionModel> addInstitution(AddInstitutionModel model) async {
+    try{
+      final response = await dioClient.dio.post(
+        '/api/institutions/post-institution',
+        data: model.toJson()
+      );
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        return ResponseAddInstitutionModel.fromJson(response.data);
       } else {
         throw Exception('Unexpected status code: ${response.statusCode}');
       }

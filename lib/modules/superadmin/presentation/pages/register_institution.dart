@@ -7,7 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
@@ -50,7 +52,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     _setLoadingState(true); // Activa el estado de carga
     try {
       // Crear la institución
-      final institutionModel = InstitutionNewModel(
+      final institutionModel = AddInstitutionModel(
         institutionName: _nameInstController.text,
         institutionAddress: _addressController.text,
         institutionEmail: _emailController.text,
@@ -58,8 +60,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         logo: _imageUrl,
       );
 
-      final institutionResponse =
-          await getIt<PostInstitution>().call(institutionModel);
+      final institutionResponse = await getIt<AddInstitution>().call(institutionModel);
       if (institutionResponse.id != null) {
         _institutionId = institutionResponse.id;
         // Crear el administrador

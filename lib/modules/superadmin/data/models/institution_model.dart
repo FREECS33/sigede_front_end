@@ -32,3 +32,35 @@ class PageModel extends PageEntity{
     };
   }
 }
+
+class AddInstitutionModel extends AddInstitutionEntity{
+  AddInstitutionModel({
+    required super.institutionName,
+    required super.institutionAddress,
+    required super.institutionEmail,
+    required super.institutionPhone,
+    required super.logo,    
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'institutionName': institutionName,
+      'institutionAddress': institutionAddress,
+      'institutionEmail': institutionEmail,
+      'institutionPhone': institutionPhone,
+      'logo': logo,
+    };
+  }
+}
+
+class ResponseAddInstitutionModel extends ResponseAddInstitutionEntity{
+  ResponseAddInstitutionModel({
+    required super.id,    
+  });
+
+  factory ResponseAddInstitutionModel.fromJson(Map<String, dynamic> json) {
+    return ResponseAddInstitutionModel(
+      id: json['id'],
+    );
+  }
+}

@@ -14,3 +14,19 @@ class PageEntity {
 
   PageEntity({required this.name, required this.page, required this.size});
 }
+
+class AddInstitutionEntity {
+  final String institutionName;
+  final String institutionAddress;
+  final String institutionEmail;
+  final String institutionPhone;
+  final String logo;
+
+  AddInstitutionEntity({required this.institutionName, required this.institutionAddress, required this.institutionEmail, required this.institutionPhone, required this.logo});
+}
+
+class ResponseAddInstitutionEntity {
+  final int id;  
+
+  ResponseAddInstitutionEntity({required this.id});
+}

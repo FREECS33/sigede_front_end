@@ -20,3 +20,13 @@ class GetInstitutionByName {
     return await repository.getInstitutionByName(model);
   }
 }
+
+class AddInstitution {
+  final InstitutionRepository repository;
+
+  AddInstitution({required this.repository});
+
+  Future<ResponseAddInstitutionModel> call(AddInstitutionModel model) async {
+    return await repository.addInstitution(model);
+  }
+}
