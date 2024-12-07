@@ -4,6 +4,7 @@ import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 abstract class AdminRepository {
   Future<List<AdminModel>> getAllAdmins(RequestAdminModel model);
   Future<List<AdminModel>> getAdminByName(FilterAdminModel model);
+  Future<ResponseAddAdminModel> addAdmin(AddAdminModel model);
 }
 
 class AdminRepositoryImpl implements AdminRepository {
@@ -19,5 +20,10 @@ class AdminRepositoryImpl implements AdminRepository {
   @override
   Future<List<AdminModel>> getAdminByName(FilterAdminModel model) async {
     return adminDataSource.getAdminByName(model);
+  }
+
+  @override
+  Future<ResponseAddAdminModel> addAdmin(AddAdminModel model) async {
+    return adminDataSource.addAdmin(model);
   }
 }

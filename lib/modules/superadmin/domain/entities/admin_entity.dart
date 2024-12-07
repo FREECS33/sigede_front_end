@@ -20,3 +20,15 @@ class FilterAdminEntity {
   final int size;
   FilterAdminEntity({required this.institutionId, required this.name, required this.page, required this.size});
 }
+
+class AddAdminEntity {
+  final String email;
+  final String name;  
+  final int fkInstitution;
+  AddAdminEntity({required this.email, required this.name,required this.fkInstitution, });
+}
+
+class ResponseAddAdminEntity {
+  final int status;  
+  ResponseAddAdminEntity({required this.status});
+}

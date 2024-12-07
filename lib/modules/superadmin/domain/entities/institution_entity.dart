@@ -27,6 +27,5 @@ class AddInstitutionEntity {
 
 class ResponseAddInstitutionEntity {
   final int id;  
-
   ResponseAddInstitutionEntity({required this.id});
 }

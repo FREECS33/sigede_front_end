@@ -49,3 +49,31 @@ class FilterAdminModel extends FilterAdminEntity {
     };
   }
 }
+
+class AddAdminModel extends AddAdminEntity {
+  AddAdminModel({
+    required super.email,
+    required super.name,
+    required super.fkInstitution,    
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'name': name,
+      'fkInstitution': fkInstitution,
+    };
+  }
+}
+
+class ResponseAddAdminModel extends ResponseAddAdminEntity {
+  ResponseAddAdminModel({
+    required super.status,    
+  });
+
+  factory ResponseAddAdminModel.fromJson(Map<String, dynamic> json) {
+    return ResponseAddAdminModel(
+      status: json['status'],
+    );
+  }
+}

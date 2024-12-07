@@ -98,6 +98,8 @@ void setupLocator(){
   locator.registerFactory<GetAllAdmin>(() => GetAllAdmin(repository: locator()));
   
   locator.registerFactory<GetAdminByName>(() => GetAdminByName(repository: locator()));  
+
+  locator.registerFactory<AddNewAdmin>(() => AddNewAdmin(repository: locator()));
   
  /*
   //Registrar InstitutionPostDataSource

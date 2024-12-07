@@ -20,3 +20,13 @@ class GetAdminByName {
     return await repository.getAdminByName(model);
   }
 }
+
+class AddNewAdmin {
+  final AdminRepository repository;
+
+  AddNewAdmin({required this.repository});
+
+  Future<ResponseAddAdminModel> call(AddAdminModel model) async {
+    return await repository.addAdmin(model);
+  }
+}

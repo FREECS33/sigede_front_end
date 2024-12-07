@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -8,9 +9,8 @@ import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
-import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
@@ -45,12 +45,48 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   bool _isValidAdminName = true;
   bool _isValidAdminEmail = true;
   String _imageUrl = '';
-  int? _institutionId = 0;
+  int _institutionId = 0;
   final GetIt getIt = GetIt.instance;
 
-  Future<void> _registerInstitutionAndAdmin() async {
+  Future<void> _registerAdmin() async{
+    _setLoadingState(true);
+    try {
+      final adminModel = AddAdminModel(
+        name: _nameAdminController.text,
+        email: _emailAdminController.text,        
+        fkInstitution: _institutionId,
+      );
+      final adminResponse = await getIt<AddNewAdmin>().call(adminModel);
+      if (adminResponse.status == 201) {
+        showSuccessDialogSuper(
+          context: context,
+          message: "Administrador registrado correctamente",
+          onPressed: () {
+            _nameAdminController.clear();
+            _emailAdminController.clear();
+            setState(() {
+              _currentStep = 0;
+            });
+          },
+        );
+      } else {
+        showErrorDialog(
+          context: context,
+          message: "Error al registrar el administrador",
+        );
+      }
+    } catch (e) {
+      showErrorDialog(context: context, message: "Error inesperado: $e");
+    } finally {
+      _setLoadingState(false);
+    }
+  }
+
+  Future<void> _registerInstitution() async {
     _setLoadingState(true); // Activa el estado de carga
     try {
+      _imageUrl = await _uploadImage();
+      if (_imageUrl.isEmpty) return;
       // Crear la institución
       final institutionModel = AddInstitutionModel(
         institutionName: _nameInstController.text,
@@ -60,42 +96,28 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         logo: _imageUrl,
       );
 
-      final institutionResponse = await getIt<AddInstitution>().call(institutionModel);
+      final institutionResponse =
+          await getIt<AddInstitution>().call(institutionModel);
       if (institutionResponse.id != null) {
         _institutionId = institutionResponse.id;
         // Crear el administrador
-        final adminModel = AdminModel(
-          name: _nameAdminController.text,
-          email: _emailAdminController.text,
-          fkInstitution: _institutionId,
+        setState(() {
+          _institutionId = institutionResponse.id;
+        });
+
+        showSuccessDialogSuper(
+          context: context,
+          message: "Institución registradA correctamente",
+          onPressed: () {
+            _nameInstController.clear();            
+            _addressController.clear();
+            _emailController.clear();
+            _phoneController.clear();
+            setState(() {              
+              _imageUrl = '';
+            });
+          },
         );
-
-        final adminResponse =
-            await getIt<AdminDataSource>().postAdmin(adminModel);
-
-        if (adminResponse.status == 201) {
-          showSuccessDialogSuper(
-            context: context,
-            message: "Institución y administrador registrados correctamente",
-            onPressed: () {              
-              _nameInstController.clear();
-              _nameAdminController.clear();
-              _emailAdminController.clear();
-              _addressController.clear();
-              _emailController.clear();
-              _phoneController.clear();              
-              setState(() {
-                _currentStep = 0;  
-                _imageUrl = ''; 
-              });              
-            },
-          );
-        } else {
-          showErrorDialog(
-            context: context,
-            message: "Error al registrar el administrador",
-          );
-        }
       } else {
         showErrorDialog(
           context: context,
@@ -167,14 +189,12 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     }
   }
 
-  Future<void> _uploadImage() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<String> _uploadImage() async {
+    if (!_formKey.currentState!.validate()) return '';
     if (_image != null) {
       final imageUrl = await _cloudinaryService.uploadImage(_image!);
       if (imageUrl != null) {
-        setState(() {
-          _imageUrl = imageUrl;
-        });
+        return imageUrl;
       } else {
         // Manejar el caso en que la carga falla
         print('Error al cargar la imagen');
@@ -184,6 +204,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       _isloading = false;
       _currentStep = 1; // Cambia al segundo paso
     });
+    return '';
   }
 
   String? validateEmailAdmin(String? value) {
@@ -640,7 +661,8 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                     width: 300,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: _isloading ? null : _uploadImage,
+                      onPressed:
+                          _isloading ? null : _registerInstitution,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),
@@ -816,7 +838,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
               width: 300,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isloading ? null : _registerInstitutionAndAdmin,
+                onPressed: _isloading ? null : _registerAdmin,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
