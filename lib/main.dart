@@ -31,7 +31,9 @@ class MainApp extends StatelessWidget {
           elevation: 0, // Desactiva la sombra por completo
           shadowColor: Colors.transparent, // Elimina cualquier color de sombra
         ),
+      
       ),
+      
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
@@ -46,7 +48,8 @@ class MainApp extends StatelessWidget {
         '/landing-super': (context) => Landing(),
         '/navigation-super': (context) => const Navigation(),
         '/editCapturist': (context) => const EditCapturist(),
-        '/registerCapturist': (context) => const RegisterCapturist()
+        '/registerCapturist': (context) => const RegisterCapturist(),
+        '/login': (context) => const Loginscreen()
       },
     );
   }
