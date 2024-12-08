@@ -4,7 +4,6 @@ import 'package:sigede_flutter/core/utils/locator.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/register_capturist.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
 import 'package:sigede_flutter/modules/superadmin/presentation/pages/landing.dart';
-import 'package:sigede_flutter/modules/superadmin/presentation/widgets/custom_list_institution.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/edit_capturist.dart';
 import 'package:sigede_flutter/modules/admin/navigation/navigation_admin.dart';
 import 'package:sigede_flutter/modules/AdministratorManagementScreen.dart';
@@ -15,8 +14,7 @@ import 'package:sigede_flutter/modules/auth/presentation/pages/reset_password_sc
 import 'package:sigede_flutter/modules/admin/presentation/screens/admin_registration_screen.dart';
 import 'package:sigede_flutter/modules/public/preview_qr.dart';
 
-
-void main() async{
+void main() async {
   setupLocator();
   await dotenv.load(fileName: ".env");
   runApp(const MainApp());
@@ -28,21 +26,27 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          elevation: 0, // Desactiva la sombra por completo
+          shadowColor: Colors.transparent, // Elimina cualquier color de sombra
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/':(context)=> const Navigation(),
-        '/landing':(context)=> const Administratormanagementscreen(),
-        '/recoverPassword':(context)=> const Recoverpasswordscreen(),
-        '/codeConfirmation':(context)=> const CodeConfirmationScreen(),
-        '/resetPassword':(context)=> const ResetPasswordScreen(),
-        '/admin-registration':(context)=> const AdminRegistrationScreen(),
-        '/preview-qr':(context)=>const PreviewQR(),
+        '/': (context) => const Navigation(),
+        '/landing': (context) => const Administratormanagementscreen(),
+        '/recoverPassword': (context) => const Recoverpasswordscreen(),
+        '/codeConfirmation': (context) => const CodeConfirmationScreen(),
+        '/resetPassword': (context) => const ResetPasswordScreen(),
+        '/admin-registration': (context) => const AdminRegistrationScreen(),
+        '/preview-qr': (context) => const PreviewQR(),
         //'/navigation':(ontext)=>const NavigationAdmin(),
-        '/landing-super':(context)=> Landing(),
-        '/navigation-super':(context)=>const Navigation(),
-        '/editCapturist':(context)=>const EditCapturist(),
-        '/registerCapturist':(context)=>const RegisterCapturist()
+        '/landing-super': (context) => Landing(),
+        '/navigation-super': (context) => const Navigation(),
+        '/editCapturist': (context) => const EditCapturist(),
+        '/registerCapturist': (context) => const RegisterCapturist()
       },
     );
   }

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class EditAdmin extends StatefulWidget {
   final AdminEntity? admin;
@@ -14,13 +19,31 @@ class EditAdmin extends StatefulWidget {
 }
 
 class _EditAdminState extends State<EditAdmin> {
+  late bool isActive;
+  late String _name = '';
+  late bool _status = false;
+  @override
+  void initState() {
+    super.initState();
+    isActive = widget.admin?.status == 'activo';
+    print(isActive);
+    _nameAdminController = TextEditingController(text: widget.admin?.name ?? '');
+    _name = widget.admin?.name ?? '';
+    _status = widget.admin?.status == 'activo';
+  }
+  @override
+  void dispose() {
+    // Asegúrate de limpiar el controlador
+    _nameAdminController.dispose();
+    super.dispose();
+  }
+  
   bool _isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameAdminController = TextEditingController();
+  late TextEditingController _nameAdminController = TextEditingController();
+  
+  bool _isValidAdminName = true;
 
-  bool _isValidAdminName = true;  
-
-  bool light = true;
   final MaterialStateProperty<Icon?> thumbIcon =
       MaterialStateProperty.resolveWith<Icon?>(
     (Set<MaterialState> states) {
@@ -31,8 +54,7 @@ class _EditAdminState extends State<EditAdmin> {
     },
   );
 
-  
-  String? validateNameAdmin(String? value) {
+  String? validateNameAdmin(String? value) {    
     if (value == null || value.isEmpty) {
       setState(() {
         _isValidAdminName = false;
@@ -63,20 +85,56 @@ class _EditAdminState extends State<EditAdmin> {
     });
   }
 
+  GetIt getIt = GetIt.instance;
   Future<void> _editAdmin() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }    
+    if (isActive == _status && _name == _nameAdminController.text) {
+      showErrorDialog(
+          context: context, message: 'Necesitas cambiar al menos un campo');
+      return;
+    }
     setState(() {
       _isLoading = true;
-    });   
+    });
+    try {
+      final UpdateInfoAdminModel updateInfoAdminEntity = UpdateInfoAdminModel(
+        userId: widget.admin?.userId ?? 0,
+        name: _nameAdminController.text,
+        status: isActive ? 'activo' : 'inactivo',
+      );
+      // Llamar al caso de uso para editar el administrador
+      final updateAdmin = getIt<UpdateInfoAdmin>();
+      final result = await updateAdmin.call(updateInfoAdminEntity);
+      if (result.status == 200) {
+        setState(() {
+          _name = _nameAdminController.text;
+          _status = isActive;
+        });
+        showSuccessDialog(
+            context: context, message: 'Información actualizada correctamente');
+      } else {
+        //   // Mostrar mensaje de error
+        showErrorDialog(
+            context: context, message: 'Error al actualizar la información');
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 35),
-          const Text(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
             'Editar Administrador',
             style: TextStyle(
               fontFamily: 'RubikOne',
@@ -85,6 +143,11 @@ class _EditAdminState extends State<EditAdmin> {
             ),
             textAlign: TextAlign.center, // Asegura que el texto esté centrado
           ),
+        centerTitle: true,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [          
           SizedBox(
             width: double.infinity,
             height: 100,
@@ -126,7 +189,7 @@ class _EditAdminState extends State<EditAdmin> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextFormField(
+                    TextFormField(                    
                       validator: validateNameAdmin,
                       controller: _nameAdminController,
                       decoration: InputDecoration(
@@ -179,12 +242,11 @@ class _EditAdminState extends State<EditAdmin> {
                         inactiveTrackColor: Colors.red.withOpacity(0.5),
                         activeTrackColor: Colors.green.withOpacity(0.5),
                         thumbIcon: thumbIcon,
-                        value: light,
+                        value: isActive,
                         activeColor: Colors.green,
                         onChanged: (bool value) {
-                          // This is called when the user toggles the switch.
                           setState(() {
-                            light = value;
+                            isActive = value;
                           });
                         },
                       )
@@ -199,6 +261,7 @@ class _EditAdminState extends State<EditAdmin> {
               width: 300,
               height: 48,
               child: ElevatedButton(
+                
                 onPressed: _isLoading ? null : _editAdmin,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.black,

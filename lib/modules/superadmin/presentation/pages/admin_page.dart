@@ -18,7 +18,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   late InstitutionEntity? data;
-  
+
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -36,55 +36,61 @@ class _AdminPageState extends State<AdminPage> {
     }
     return null;
   }
+
   final GetIt getIt = GetIt.instance;
 
-  Future<void> _getAllAdmins() async {    
+  Future<void> _getAllAdmins() async {
     setState(() {
       _isLoading = true;
       _notData = false;
-    });    
+    });
     try {
       final RequestAdminModel adminsModel = RequestAdminModel(
         role: 'ADMIN',
         institutionId: data?.institutionId ?? 0,
       );
 
-      final adminsByInstitution = getIt<GetAllAdmin>();      
-      final result = await adminsByInstitution.call(adminsModel);      
-      if(result.isEmpty){
+      final adminsByInstitution = getIt<GetAllAdmin>();
+      final result = await adminsByInstitution.call(adminsModel);
+      if (result.isEmpty) {
         setState(() {
           _notData = true;
           _isLoading = false;
         });
-      }else{
+      } else {
         setState(() {
           admins = result;
           _isLoading = false;
         });
-      }      
+      }
     } catch (e) {
       setState(() {
         _notData = true;
         _isLoading = false;
       });
-    }    
+    }
   }
 
-  Future<void> _loadAdmins(String text) async {    
+  Future<void> _loadAdmins(String text) async {
     setState(() {
       _isLoading = true;
       _notData = false;
     });
     try {
       final FilterAdminModel adminsModel = FilterAdminModel(
-        name: text,        
-        institutionId: data?.institutionId ?? 0,
-        page: 0,
-        size: 200
-      );
+          name: text,
+          institutionId: data?.institutionId ?? 0,
+          page: 0,
+          size: 200);
 
       final adminsByInstitution = getIt<GetAdminByName>();
       final result = await adminsByInstitution.call(adminsModel);
+      if(result.isEmpty){
+        setState(() {
+          _notData = true;
+          _isLoading = false;
+        });
+      }
       setState(() {
         admins = result;
         _isLoading = false;
@@ -94,12 +100,12 @@ class _AdminPageState extends State<AdminPage> {
         _notData = false;
         _isLoading = false;
       });
-    }    
+    }
   }
-  
+
   @override
   void initState() {
-    super.initState();  
+    super.initState();
     data = widget.institutions;
     _getAllAdmins();
   }
@@ -210,44 +216,59 @@ class _AdminPageState extends State<AdminPage> {
             const SizedBox(
               height: 30.0,
             ),
-            _notData
+            _isLoading
                 ? const Expanded(
                     child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 60,
-                            color: Colors.grey,
-                          ),
-                          Text(
-                            "Adminstradores no encontrados",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                          ),
-                        ],
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
                       ),
                     ),
                   )
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: admins.length,
-                      itemBuilder: (context, index) {
-                        return CustomListAdmin(
-                          admins: admins[index],
-                          institution: data,
-                        );
-                      },
-                    ),
-                  ),
+                : _notData
+                    ? const Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 60,
+                                color: Colors.grey,
+                              ),
+                              Text(
+                                "Adminstradores no encontrados",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: admins.length,
+                          itemBuilder: (context, index) {
+                            return CustomListAdmin(
+                              admins: admins[index],
+                              institution: data,
+                            );
+                          },
+                        ),
+                      ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,MaterialPageRoute(builder: (context) => AddAdmin(logo: data?.logo, name: data?.name,)));          
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddAdmin(
+                        logo: data?.logo,
+                        name: data?.name,
+                        institutionId: data?.institutionId,
+                      )));
         },
         backgroundColor: Colors.black,
         child: const IconTheme(

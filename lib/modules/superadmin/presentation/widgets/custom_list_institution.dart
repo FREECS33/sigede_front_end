@@ -27,7 +27,8 @@ class CustomListInstitution extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
                 child: Image.network(

@@ -20,7 +20,7 @@ class _NavigationState extends State<Navigation> {
     Navigator(
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          builder: (context) => Landing(),
+          builder: (context) => const Landing(),
         );
       },
     ),

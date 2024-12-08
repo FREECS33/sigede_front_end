@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:sigede_flutter/shared/widgets.dart/success_dialog_super.dart';
 
 class AddAdmin extends StatefulWidget {
   final String? logo;
   final String? name;
-  const AddAdmin({super.key, this.logo, this.name});
+  final int? institutionId;
+  const AddAdmin({super.key, this.logo, this.name,this.institutionId});
 
   @override
   State<AddAdmin> createState() => _AddAdminState();
@@ -71,16 +77,42 @@ class _AddAdminState extends State<AddAdmin> {
     });
   }
 
-  Future<void> _registerAdmin() async {
+  GetIt getIt = GetIt.instance;
+  Future<void> _registerAdmin() async{
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isloading = true;
-      });
-      // Lógica para registrar al administrador
+    setState(() {
+      _isloading = true;
+    });
+    try {
+      final adminModel = AddAdminModel(
+        name: _nameAdminController.text,
+        email: _emailAdminController.text,        
+        fkInstitution: widget.institutionId??0,
+      );
+      final adminResponse = await getIt<AddNewAdmin>().call(adminModel);
+      if (adminResponse.status == 201) {
+        showSuccessDialogSuper(
+          context: context,
+          message: "Administrador registrado correctamente",
+          onPressed: () {
+            _nameAdminController.clear();
+            _emailAdminController.clear();          
+          },
+        );
+      } else {
+        showErrorDialog(
+          context: context,
+          message: "Error al registrar el administrador",
+        );
+      }
+    } catch (e) {
+      showErrorDialog(context: context, message: "Error inesperado: $e");
+    } finally {
       setState(() {
         _isloading = false;
       });
     }
+    }    
   }
 
   @override
