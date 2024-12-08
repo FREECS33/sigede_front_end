@@ -25,12 +25,15 @@ import 'package:sigede_flutter/modules/superadmin/data/repositories/admin_reposi
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 
 
 
 final locator = GetIt.instance;
 
 void setupLocator(){
+  locator.registerLazySingleton<TokenService>(() => TokenService());
+
   locator.registerLazySingleton(() => DioClient(baseUrl: 'http://localhost:8080'));
 
   // Registrar el LoginRemoteDataSource
