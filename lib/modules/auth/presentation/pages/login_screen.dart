@@ -168,7 +168,7 @@ class _LoginscreenState extends State<Loginscreen> {
                   ),
                   const SizedBox(height: 16),
                   Image.asset(
-                    'Logo_sigede.png',
+                    'assets/Logo_sigede.png',
                     height: 150,
                     width: 200,
                   ),

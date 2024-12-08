@@ -21,16 +21,12 @@ import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.d
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
-import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_post_data_source.dart';
-import 'package:sigede_flutter/modules/superadmin/data/datasources/institutions_all_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/admin_repository.dart';
-import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_new_repository.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/institution_repository.dart';
-import 'package:sigede_flutter/modules/superadmin/data/repositories/institutions_repository.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/get_institutions_by_name.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institutions.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_admin.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
+
+
 
 final locator = GetIt.instance;
 
@@ -70,13 +66,12 @@ void setupLocator(){
   locator.registerFactory<ResetPassword>(() => ResetPassword(repository: locator()));
 
   //Registrar el InstitucionDataSource
-  locator.registerFactory<InstitutionsAllDataSource>(() => InstitutionsAllDataSourceImpl(dioClient: locator()));
-
+  locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
   //Registrar el InstitucionRepository
-  locator.registerFactory<InstitutionsRepository>(() => InstitutionsRepositoryImpl(institutionsAllDataSource: locator()));
-
+  locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
   //Registrar el caso de uso Institucion
-  locator.registerFactory<Institutions>(() => Institutions(repository: locator()));
+  locator.registerFactory<GetAllInstitutions>(() => GetAllInstitutions(repository: locator()));
+
   // Registro de CapturistaRemoteDataSource
   locator.registerFactory<CapturistaRemoteDataSource>(
     () => CapturistaRemoteDataSourceImpl(dioClient: locator()));
@@ -90,13 +85,27 @@ void setupLocator(){
   locator.registerFactory(()=> DisableCapturista(repository: locator()));
   locator.registerFactory(()=>PostCapturista(repository: locator()));
 
-  //Registrar institutionDataSource
-  locator.registerFactory<InstitutionDataSource>(() => InstitutionDataSourceImpl(dioClient: locator()));
-  //Registrar institutionRepository
-  locator.registerFactory<InstitutionRepository>(() => InstitutionRepositoryImpl(institutionDataSource: locator()));
   //Registrar el caso de uso GetInstitutionsByName
-  locator.registerFactory<GetInstitutionsByName>(() => GetInstitutionsByName(repository: locator()));
+  locator.registerFactory<GetInstitutionByName>(() => GetInstitutionByName(repository: locator()));
+  //Registrar el caso de uso AddInstitution
+  locator.registerFactory<AddInstitution>(() => AddInstitution(repository: locator()));
 
+  //Registrar AdminDataSource
+  locator.registerFactory<AdminDataSource>(() => AdminsDataSourceImpl(dioClient: locator()));
+  //Registrar AdminRepository
+  locator.registerFactory<AdminRepository>(() => AdminRepositoryImpl(adminDataSource: locator()));
+  //Registrar el caso de uso GetAdmins
+  locator.registerFactory<GetAllAdmin>(() => GetAllAdmin(repository: locator()));
+  
+  locator.registerFactory<GetAdminByName>(() => GetAdminByName(repository: locator()));  
+
+  locator.registerFactory<AddNewAdmin>(() => AddNewAdmin(repository: locator()));
+
+  locator.registerFactory<UpdateAdminInfo>(() => UpdateAdminInfo(repository: locator()));
+
+  locator.registerFactory<UpdateInfoAdmin>(() => UpdateInfoAdmin(repository: locator()));
+  
+ /*
   //Registrar InstitutionPostDataSource
   locator.registerFactory<InstitutionPostDataSource>(() => InstitutionPostDataSourceImpl(dioClient: locator()));
   //Registrar InstitutionPostRepository
@@ -111,5 +120,12 @@ void setupLocator(){
   //registrar el caso de uso PostAdmin
   locator.registerFactory<PostAdmin>(() => PostAdmin(repository: locator()));
   
+  //Registrar Admins data source
+  locator.registerFactory<AdminsDataSource>(() => AdminsDataSourceImpl(dioClient: locator()));
+  //Registrar AdminRepository
+  locator.registerFactory<AdminsRepository>(() => AdminsRepositoryImpl(adminsDataSource: locator()));
+  //Registrar el caso de uso GetAdmins
+  locator.registerFactory<GetAllAdmins>(() => GetAllAdmins(repository: locator()));
+  */
 }
 

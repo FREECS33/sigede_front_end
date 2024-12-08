@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
+import 'package:sigede_flutter/modules/superadmin/presentation/pages/admin_page.dart';
 
 class CustomListInstitution extends StatelessWidget {
-  final InstitutionsEntity institutions;
+  final InstitutionEntity institutions;
   const CustomListInstitution({
     super.key,
     required this.institutions,
@@ -11,7 +12,7 @@ class CustomListInstitution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => print('Institución seleccionada'),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPage(institutions: institutions,))),
       child: Card(
         color: const Color(0xFFF6F5F5),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -26,11 +27,12 @@ class CustomListInstitution extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
                 child: Image.network(
-                  institutions.logo!,
+                  institutions.logo,
                   height: 60.0,
                   width: 60.0,
                   fit: BoxFit.cover,
@@ -48,7 +50,7 @@ class CustomListInstitution extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      institutions.name!,
+                      institutions.name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16.0,
@@ -70,7 +72,7 @@ class CustomListInstitution extends StatelessWidget {
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      institutions.emailContact!,
+                      institutions.emailContact,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 14.0,

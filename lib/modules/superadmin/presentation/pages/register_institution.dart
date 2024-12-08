@@ -7,8 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
-import 'package:sigede_flutter/modules/superadmin/data/models/institution_new_model.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/use_cases/post_institution.dart';
+import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
+import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
@@ -43,14 +44,54 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   bool _isValidAdminName = true;
   bool _isValidAdminEmail = true;
   String _imageUrl = '';
-  int? _institutionId = 0;
+  int _institutionId = 0;
   final GetIt getIt = GetIt.instance;
 
-  Future<void> _registerInstitutionAndAdmin() async {
+  Future<void> _registerAdmin() async {
+    if(!_formKey.currentState!.validate()) return;
+    _setLoadingState(true);
+    try {
+      final adminModel = AddAdminModel(
+        name: _nameAdminController.text,
+        email: _emailAdminController.text,
+        fkInstitution: _institutionId,
+      );
+      final adminResponse = await getIt<AddNewAdmin>().call(adminModel);
+      if (adminResponse.status == 201) {
+        showSuccessDialogSuper(
+          context: context,
+          message: "Administrador registrado correctamente",
+          onPressed: () {               
+            _image = null;
+            _imageUrl = '';     
+            _nameInstController.clear();    
+            _nameAdminController.clear();
+            _emailAdminController.clear();
+            setState(() {              
+              _currentStep = 0;
+            });
+          },
+        );
+      } else {
+        showErrorDialog(
+          context: context,
+          message: "Error al registrar el administrador",
+        );
+      }
+    } catch (e) {
+      showErrorDialog(context: context, message: "Error inesperado: $e");
+    } finally {
+      _setLoadingState(false);
+    }
+  }
+
+  Future<void> _registerInstitution() async {
     _setLoadingState(true); // Activa el estado de carga
     try {
+      _imageUrl = await _uploadImage();
+      if (_imageUrl.isEmpty) return;
       // Crear la institución
-      final institutionModel = InstitutionNewModel(
+      final institutionModel = AddInstitutionModel(
         institutionName: _nameInstController.text,
         institutionAddress: _addressController.text,
         institutionEmail: _emailController.text,
@@ -59,42 +100,26 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       );
 
       final institutionResponse =
-          await getIt<PostInstitution>().call(institutionModel);
+          await getIt<AddInstitution>().call(institutionModel);
       if (institutionResponse.id != null) {
         _institutionId = institutionResponse.id;
         // Crear el administrador
-        final adminModel = AdminModel(
-          name: _nameAdminController.text,
-          email: _emailAdminController.text,
-          fkInstitution: _institutionId,
+        setState(() {
+          _institutionId = institutionResponse.id;
+        });
+
+        showSuccessDialogSuper(
+          context: context,
+          message: "Institución registrada correctamente",
+          onPressed: () {            
+            _addressController.clear();
+            _emailController.clear();
+            _phoneController.clear();            
+          },
         );
-
-        final adminResponse =
-            await getIt<AdminDataSource>().postAdmin(adminModel);
-
-        if (adminResponse.status == 201) {
-          showSuccessDialogSuper(
-            context: context,
-            message: "Institución y administrador registrados correctamente",
-            onPressed: () {              
-              _nameInstController.clear();
-              _nameAdminController.clear();
-              _emailAdminController.clear();
-              _addressController.clear();
-              _emailController.clear();
-              _phoneController.clear();              
-              setState(() {
-                _currentStep = 0;  
-                _imageUrl = ''; 
-              });              
-            },
-          );
-        } else {
-          showErrorDialog(
-            context: context,
-            message: "Error al registrar el administrador",
-          );
-        }
+        setState(() {
+          _currentStep = 1; // Cambia al segundo paso
+        });
       } else {
         showErrorDialog(
           context: context,
@@ -102,7 +127,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         );
       }
     } catch (e) {
-      showErrorDialog(context: context, message: "Error inesperado: $e");
+      showErrorDialog(context: context, message: "Error inesperado, vuelve a intentarlo");
     } finally {
       _setLoadingState(false); // Desactiva el estado de carga
     }
@@ -166,23 +191,17 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     }
   }
 
-  Future<void> _uploadImage() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<String> _uploadImage() async {
+    if (!_formKey.currentState!.validate()) return '';
     if (_image != null) {
       final imageUrl = await _cloudinaryService.uploadImage(_image!);
       if (imageUrl != null) {
-        setState(() {
-          _imageUrl = imageUrl;
-        });
+        return imageUrl;
       } else {
-        // Manejar el caso en que la carga falla
-        print('Error al cargar la imagen');
+        showErrorDialog(context: context, message: 'Error al cargar la imagen');
       }
     }
-    setState(() {
-      _isloading = false;
-      _currentStep = 1; // Cambia al segundo paso
-    });
+    return '';
   }
 
   String? validateEmailAdmin(String? value) {
@@ -357,6 +376,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -377,10 +397,11 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           ],
         ),
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
           width: double.infinity,
-          height: 600,
+          height: MediaQuery.of(context).size.height,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -634,12 +655,12 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                 ),
                 const Expanded(child: Column()),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
+                  padding: const EdgeInsets.only(bottom: 175.0),
                   child: SizedBox(
                     width: 300,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: _isloading ? null : _uploadImage,
+                      onPressed: _isloading ? null : _registerInstitution,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),
@@ -669,6 +690,9 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   Widget buildSecondStep() {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,        
+        toolbarHeight: 30,
         title: const Row(
           children: [
             Spacer(),
@@ -679,172 +703,182 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text(
-            'Registrar Administrador',
-            style: TextStyle(
-              fontFamily: 'RubikOne',
-              fontSize: 39,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center, // Asegura que el texto esté centrado
-          ),
-          const SizedBox(height: 35),
-          Form(
-            key: _formKey,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
-                width: double.infinity,
-                height: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(
-                      _imageUrl,
-                      width: 125,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.image_not_supported,
-                        size: 60.0,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(width: 50),
-                    SizedBox(
-                      width: 150,
-                      child: Text(
-                        _nameInstController.text,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Registrar Administrador',
+                style: TextStyle(
+                  fontFamily: 'RubikOne',
+                  fontSize: 39,
+                  height: 1.2,
                 ),
+                textAlign: TextAlign.center, // Asegura que el texto esté centrado
               ),
               const SizedBox(height: 35),
-              TextFormField(
-                validator: validateNameAdmin,
-                controller: _nameAdminController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre administrador',
-                  labelStyle: TextStyle(
-                    color: _isValidAdminName
-                        ? Colors.grey // Si la validación es exitosa
-                        : Colors.red, // Si la validación falla
-                  ),
-                  suffixIcon: Icon(
-                    Icons.admin_panel_settings_outlined,
-                    color: _isValidAdminName ? Colors.grey : Colors.red,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                validator: validateEmailAdmin,
-                controller: _emailAdminController,
-                decoration: InputDecoration(
-                  labelText: 'Correo electrónico',
-                  labelStyle: TextStyle(
-                    color: _isValidAdminEmail
-                        ? Colors.grey // Si la validación es exitosa
-                        : Colors.red, // Si la validación falla
-                  ),
-                  suffixIcon: Icon(
-                    Icons.email_outlined,
-                    color: _isValidAdminEmail ? Colors.grey : Colors.red,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-            ]),
-          ),
-          const Expanded(child: Column()),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: SizedBox(
-              width: 300,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isloading ? null : _registerInstitutionAndAdmin,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                ),
-                child: _isloading
-                    ? const LoadingWidget() // Mostrar loading si está cargando
-                    : Text(
-                        'Paso 2',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+              Form(
+                key: _formKey,
+                child:
+                    Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          _imageUrl,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.image_not_supported,
+                            size: 60.0,
+                            color: Colors.grey,
                           ),
                         ),
+                        const SizedBox(width: 50),
+                        SizedBox(
+                          width: 150,
+                          child: Text(
+                            _nameInstController.text,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                  TextFormField(
+                    validator: validateNameAdmin,
+                    controller: _nameAdminController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre administrador',
+                      labelStyle: TextStyle(
+                        color: _isValidAdminName
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
                       ),
+                      suffixIcon: Icon(
+                        Icons.admin_panel_settings_outlined,
+                        color: _isValidAdminName ? Colors.grey : Colors.red,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    validator: validateEmailAdmin,
+                    controller: _emailAdminController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo electrónico',
+                      labelStyle: TextStyle(
+                        color: _isValidAdminEmail
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
+                      ),
+                      suffixIcon: Icon(
+                        Icons.email_outlined,
+                        color: _isValidAdminEmail ? Colors.grey : Colors.red,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ]),
               ),
-            ),
+              const Expanded(child: Column()),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 150.0),
+                child: SizedBox(
+                  width: 300,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _isloading ? null : _registerAdmin,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    child: _isloading
+                        ? const LoadingWidget() // Mostrar loading si está cargando
+                        : Text(
+                            'Registrar',
+                            style: GoogleFonts.roboto(
+                              textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _currentStep == 0 ? buildFirstStep() : buildSecondStep(),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(        
+          padding: const EdgeInsets.all(16.0),
+          child: _currentStep == 0 ? buildFirstStep() : buildSecondStep(),
+        ),      
       ),
     );
   }

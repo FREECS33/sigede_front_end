@@ -1,69 +1,72 @@
-
-
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
 
-class InstitutionModel extends InstitutionsEntity {
+class InstitutionModel extends InstitutionEntity{
+
   InstitutionModel({
-    required super.id,
+    required super.institutionId,
     required super.name,
     required super.emailContact,
-    required super.logo,
+    required super.logo,    
   });
 
   factory InstitutionModel.fromJson(Map<String, dynamic> json) {
     return InstitutionModel(
-      id: json['id'],
+      institutionId: json['institutionId'],
       name: json['name'],
       emailContact: json['email_contact'],
       logo: json['logo'],
     );
   }
+}
+
+class PageModel extends PageEntity{
+  PageModel({
+    required super.name, required super.page, required super.size
+  });
 
   Map<String, dynamic> toJson() {
     return {
-      'id': super.id,
-      'name': super.name,
-      'email_contact': super.emailContact,
-      'logo': super.logo,
+      'name': name,
+      'page': page,
+      'size': size,
     };
   }
 }
 
-class PageModel extends PageEntity {
-  PageModel({
-    required super.size,
-    required super.number,
-    required super.totalElements,
-    required super.totalPages,
+class AddInstitutionModel extends AddInstitutionEntity{
+  AddInstitutionModel({
+    required super.institutionName,
+    required super.institutionAddress,
+    required super.institutionEmail,
+    required super.institutionPhone,
+    required super.logo,    
   });
 
-  factory PageModel.fromJson(Map<String, dynamic> json) {
-    return PageModel(
-      size: json['size'],
-      number: json['number'],
-      totalElements: json['totalElements'],
-      totalPages: json['totalPages'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'institutionName': institutionName,
+      'institutionAddress': institutionAddress,
+      'institutionEmail': institutionEmail,
+      'institutionPhone': institutionPhone,
+      'logo': logo,
+    };
   }
 }
 
-class InstitutionResponseModel extends InstitutionResponseEntity {
-  InstitutionResponseModel({
-    required super.error,
-    required super.message,
-    required super.content,
-    required super.page,
+class ResponseAddInstitutionModel extends ResponseAddInstitutionEntity{
+  ResponseAddInstitutionModel({
+    required super.id,    
+    required super.name,
+    required super.emailContact,
+    required super.logo,
   });
 
-  factory InstitutionResponseModel.fromJson(Map<String, dynamic> json) {
-    return InstitutionResponseModel(
-      error: json['error'],
-      message: json['message'],
-      content: (json['data']['content'] as List)
-          .map((e) => InstitutionModel.fromJson(e))
-          .toList(),
-      page: PageModel.fromJson(json['data']['page']),
+  factory ResponseAddInstitutionModel.fromJson(Map<String, dynamic> json) {
+    return ResponseAddInstitutionModel(
+      id: json['id'], 
+      name: json ['name'],
+      emailContact: json ['email_contact'],
+      logo: json ['logo'],
     );
   }
 }

@@ -1,29 +1,34 @@
-import 'package:sigede_flutter/modules/superadmin/domain/entities/institutions_entity.dart';
+class InstitutionEntity {
+  final int institutionId;
+  final String name;
+  final String emailContact;
+  final String logo;
 
-class PageEntity {
-  final int size;
-  final int number;
-  final int totalElements;
-  final int totalPages;
-
-  PageEntity({
-    required this.size,
-    required this.number,
-    required this.totalElements,
-    required this.totalPages,
-  });
+  InstitutionEntity({required this.institutionId, required this.name, required this.emailContact, required this.logo});
 }
 
-class InstitutionResponseEntity {
-  final bool error;
-  final String message;
-  final List<InstitutionsEntity> content;
-  final PageEntity page;
+class PageEntity {
+  final String name;
+  final int page;
+  final int size;
 
-  InstitutionResponseEntity({
-    required this.error,
-    required this.message,
-    required this.content,
-    required this.page,
-  });
+  PageEntity({required this.name, required this.page, required this.size});
+}
+
+class AddInstitutionEntity {
+  final String institutionName;
+  final String institutionAddress;
+  final String institutionEmail;
+  final String institutionPhone;
+  final String logo;
+
+  AddInstitutionEntity({required this.institutionName, required this.institutionAddress, required this.institutionEmail, required this.institutionPhone, required this.logo});
+}
+
+class ResponseAddInstitutionEntity {
+  final int id;  
+  final String name;
+  final String emailContact;
+  final String logo;
+  ResponseAddInstitutionEntity({required this.name,required this.emailContact,required this.logo, required this.id});
 }

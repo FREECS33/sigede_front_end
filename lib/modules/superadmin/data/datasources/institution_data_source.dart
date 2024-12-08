@@ -3,8 +3,9 @@ import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 
 abstract class InstitutionDataSource {
-  Future<InstitutionResponseModel> getInstitutionsByName(
-      String name, int page, int size);
+  Future<List<InstitutionModel>> getAllInstitutions();
+  Future<List<InstitutionModel>> getInstitutionByName(PageModel model);
+  Future<ResponseAddInstitutionModel> addInstitution(AddInstitutionModel model);
 }
 
 class InstitutionDataSourceImpl implements InstitutionDataSource {
@@ -13,30 +14,123 @@ class InstitutionDataSourceImpl implements InstitutionDataSource {
   InstitutionDataSourceImpl({required this.dioClient});
 
   @override
-  Future<InstitutionResponseModel> getInstitutionsByName(
-      String name, int page, int size) async {
+  Future<List<InstitutionModel>> getAllInstitutions() async {
     try {
+      final response = await dioClient.dio.get('/api/institutions/get-all');
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        // Verificar si 'data' es una lista antes de mapear
+        if (response.data['data'] is List) {
+          return (response.data['data'] as List)
+              .map((json) => InstitutionModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Expected a list in response.data["data"]');
+        }
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError) {
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<InstitutionModel>> getInstitutionByName(PageModel model) async {
+    try{
       final response = await dioClient.dio.post(
         '/api/institutions/get-institutions-by-name',
-        data: {
-          'name': name,
-          'page': page,
-          'size': size,
-        },
+        data: model.toJson()
+      );
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {        
+        if (response.data['data']['content'] is List) {
+          return (response.data['data']['content'] as List)
+              .map((json) => InstitutionModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Expected a list in response.data["data"]');
+        }
+      } else {
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError){
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      throw Exception('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<ResponseAddInstitutionModel> addInstitution(AddInstitutionModel model) async {
+    try{
+      final response = await dioClient.dio.post(
+        '/api/institutions/post-institution',
+        data: model.toJson()
       );
 
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
-        return InstitutionResponseModel.fromJson(response.data);
+        return ResponseAddInstitutionModel.fromJson(response.data['data']);
       } else {
-        throw DioError(
-          requestOptions: response.requestOptions,
-          response: response,
-        );
+        throw Exception('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (dioError){
+      if (dioError.response != null) {
+        switch (dioError.response?.statusCode) {
+          case 400:
+            throw Exception("Bad Request: ${dioError.response?.data}");
+          case 401:
+            throw Exception("Unauthorized: ${dioError.response?.data}");
+          case 403:
+            throw Exception("Forbidden: ${dioError.response?.data}");
+          case 500:
+            throw Exception("Internal Server Error: ${dioError.response?.data}");
+          default:
+            throw Exception("Unhandled Error: ${dioError.response?.data}");
+        }
+      } else {
+        throw Exception('Network error: ${dioError.message}');
       }
     } catch (e) {
-      throw Exception('Error fetching institutions: $e');
+      throw Exception('Unexpected error: ${e.toString()}');
     }
   }
 }
