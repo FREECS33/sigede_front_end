@@ -118,165 +118,175 @@ class _AddAdminState extends State<AddAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 35),
-          const Text(
-            'Registrar Administrador',
-            style: TextStyle(
-              fontFamily: 'RubikOne',
-              fontSize: 39,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center, // Asegura que el texto esté centrado
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 100,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.network(
-                  widget.logo ?? '',
-                  width: 125,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.image_not_supported,
-                    size: 60.0,
-                    color: Colors.grey,
-                  ),
+      appBar: AppBar(        
+        backgroundColor: Colors.white,
+        toolbarHeight: 30.0,
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(        
+        child: SizedBox(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [          
+              const Text(
+                'Registrar Administrador',
+                style: TextStyle(
+                  fontFamily: 'RubikOne',
+                  fontSize: 39,
+                  height: 1.2,
                 ),
-                const SizedBox(width: 50),
-                SizedBox(
-                  width: 150,
-                  child: Text(
-                    widget.name ?? 'Nombre del administrador',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                textAlign: TextAlign.center, // Asegura que el texto esté centrado
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 100,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextFormField(
-                      validator: validateNameAdmin,
-                      controller: _nameAdminController,
-                      decoration: InputDecoration(
-                        labelText: 'Nombre administrador',
-                        labelStyle: TextStyle(
-                          color: _isValidAdminName
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
-                        ),
-                        suffixIcon: Icon(
-                          Icons.admin_panel_settings_outlined,
-                          color: _isValidAdminName ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
+                    Image.network(
+                      widget.logo ?? '',
+                      width: 125,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.image_not_supported,
+                        size: 60.0,
+                        color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      validator: validateEmailAdmin,
-                      controller: _emailAdminController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        labelStyle: TextStyle(
-                          color: _isValidAdminEmail
-                              ? Colors.grey // Si la validación es exitosa
-                              : Colors.red, // Si la validación falla
+                    const SizedBox(width: 50),
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        widget.name ?? 'Nombre del administrador',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        suffixIcon: Icon(
-                          Icons.email_outlined,
-                          color: _isValidAdminEmail ? Colors.grey : Colors.red,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ]),
-            ),
-          ),
-          const Expanded(child: Column()),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: SizedBox(
-              width: 300,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isloading ? null : _registerAdmin,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  ],
                 ),
-                child: _isloading
-                    ? const LoadingWidget() // Mostrar loading si está cargando
-                    : Text(
-                        'Guardar',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+              ),
+              Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          validator: validateNameAdmin,
+                          controller: _nameAdminController,
+                          decoration: InputDecoration(
+                            labelText: 'Nombre administrador',
+                            labelStyle: TextStyle(
+                              color: _isValidAdminName
+                                  ? Colors.grey // Si la validación es exitosa
+                                  : Colors.red, // Si la validación falla
+                            ),
+                            suffixIcon: Icon(
+                              Icons.admin_panel_settings_outlined,
+                              color: _isValidAdminName ? Colors.grey : Colors.red,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          validator: validateEmailAdmin,
+                          controller: _emailAdminController,
+                          decoration: InputDecoration(
+                            labelText: 'Correo electrónico',
+                            labelStyle: TextStyle(
+                              color: _isValidAdminEmail
+                                  ? Colors.grey // Si la validación es exitosa
+                                  : Colors.red, // Si la validación falla
+                            ),
+                            suffixIcon: Icon(
+                              Icons.email_outlined,
+                              color: _isValidAdminEmail ? Colors.grey : Colors.red,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                ),
               ),
-            ),
+              const Expanded(child: Column()),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 150.0),
+                child: SizedBox(
+                  width: 300,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _isloading ? null : _registerAdmin,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    child: _isloading
+                        ? const LoadingWidget() // Mostrar loading si está cargando
+                        : Text(
+                            'Guardar',
+                            style: GoogleFonts.roboto(
+                              textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

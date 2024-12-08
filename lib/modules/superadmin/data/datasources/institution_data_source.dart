@@ -108,7 +108,7 @@ class InstitutionDataSourceImpl implements InstitutionDataSource {
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
-        return ResponseAddInstitutionModel.fromJson(response.data);
+        return ResponseAddInstitutionModel.fromJson(response.data['data']);
       } else {
         throw Exception('Unexpected status code: ${response.statusCode}');
       }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,12 +47,13 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   int _institutionId = 0;
   final GetIt getIt = GetIt.instance;
 
-  Future<void> _registerAdmin() async{
+  Future<void> _registerAdmin() async {
+    if(!_formKey.currentState!.validate()) return;
     _setLoadingState(true);
     try {
       final adminModel = AddAdminModel(
         name: _nameAdminController.text,
-        email: _emailAdminController.text,        
+        email: _emailAdminController.text,
         fkInstitution: _institutionId,
       );
       final adminResponse = await getIt<AddNewAdmin>().call(adminModel);
@@ -61,10 +61,13 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         showSuccessDialogSuper(
           context: context,
           message: "Administrador registrado correctamente",
-          onPressed: () {
+          onPressed: () {               
+            _image = null;
+            _imageUrl = '';     
+            _nameInstController.clear();    
             _nameAdminController.clear();
             _emailAdminController.clear();
-            setState(() {
+            setState(() {              
               _currentStep = 0;
             });
           },
@@ -107,17 +110,16 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
 
         showSuccessDialogSuper(
           context: context,
-          message: "Institución registradA correctamente",
-          onPressed: () {
-            _nameInstController.clear();            
+          message: "Institución registrada correctamente",
+          onPressed: () {            
             _addressController.clear();
             _emailController.clear();
-            _phoneController.clear();
-            setState(() {              
-              _imageUrl = '';
-            });
+            _phoneController.clear();            
           },
         );
+        setState(() {
+          _currentStep = 1; // Cambia al segundo paso
+        });
       } else {
         showErrorDialog(
           context: context,
@@ -125,7 +127,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
         );
       }
     } catch (e) {
-      showErrorDialog(context: context, message: "Error inesperado: $e");
+      showErrorDialog(context: context, message: "Error inesperado, vuelve a intentarlo");
     } finally {
       _setLoadingState(false); // Desactiva el estado de carga
     }
@@ -196,14 +198,9 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
       if (imageUrl != null) {
         return imageUrl;
       } else {
-        // Manejar el caso en que la carga falla
-        print('Error al cargar la imagen');
+        showErrorDialog(context: context, message: 'Error al cargar la imagen');
       }
     }
-    setState(() {
-      _isloading = false;
-      _currentStep = 1; // Cambia al segundo paso
-    });
     return '';
   }
 
@@ -379,6 +376,7 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -399,10 +397,11 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           ],
         ),
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
           width: double.infinity,
-          height: 600,
+          height: MediaQuery.of(context).size.height,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -656,13 +655,12 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
                 ),
                 const Expanded(child: Column()),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
+                  padding: const EdgeInsets.only(bottom: 175.0),
                   child: SizedBox(
                     width: 300,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed:
-                          _isloading ? null : _registerInstitution,
+                      onPressed: _isloading ? null : _registerInstitution,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),
@@ -692,6 +690,9 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
   Widget buildSecondStep() {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,        
+        toolbarHeight: 30,
         title: const Row(
           children: [
             Spacer(),
@@ -702,172 +703,182 @@ class _RegisterInstitutionState extends State<RegisterInstitution> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text(
-            'Registrar Administrador',
-            style: TextStyle(
-              fontFamily: 'RubikOne',
-              fontSize: 39,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center, // Asegura que el texto esté centrado
-          ),
-          const SizedBox(height: 35),
-          Form(
-            key: _formKey,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
-                width: double.infinity,
-                height: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(
-                      _imageUrl,
-                      width: 125,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.image_not_supported,
-                        size: 60.0,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(width: 50),
-                    SizedBox(
-                      width: 150,
-                      child: Text(
-                        _nameInstController.text,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Registrar Administrador',
+                style: TextStyle(
+                  fontFamily: 'RubikOne',
+                  fontSize: 39,
+                  height: 1.2,
                 ),
+                textAlign: TextAlign.center, // Asegura que el texto esté centrado
               ),
               const SizedBox(height: 35),
-              TextFormField(
-                validator: validateNameAdmin,
-                controller: _nameAdminController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre administrador',
-                  labelStyle: TextStyle(
-                    color: _isValidAdminName
-                        ? Colors.grey // Si la validación es exitosa
-                        : Colors.red, // Si la validación falla
-                  ),
-                  suffixIcon: Icon(
-                    Icons.admin_panel_settings_outlined,
-                    color: _isValidAdminName ? Colors.grey : Colors.red,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                validator: validateEmailAdmin,
-                controller: _emailAdminController,
-                decoration: InputDecoration(
-                  labelText: 'Correo electrónico',
-                  labelStyle: TextStyle(
-                    color: _isValidAdminEmail
-                        ? Colors.grey // Si la validación es exitosa
-                        : Colors.red, // Si la validación falla
-                  ),
-                  suffixIcon: Icon(
-                    Icons.email_outlined,
-                    color: _isValidAdminEmail ? Colors.grey : Colors.red,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-            ]),
-          ),
-          const Expanded(child: Column()),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: SizedBox(
-              width: 300,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isloading ? null : _registerAdmin,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                ),
-                child: _isloading
-                    ? const LoadingWidget() // Mostrar loading si está cargando
-                    : Text(
-                        'Paso 2',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+              Form(
+                key: _formKey,
+                child:
+                    Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          _imageUrl,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.image_not_supported,
+                            size: 60.0,
+                            color: Colors.grey,
                           ),
                         ),
+                        const SizedBox(width: 50),
+                        SizedBox(
+                          width: 150,
+                          child: Text(
+                            _nameInstController.text,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                  TextFormField(
+                    validator: validateNameAdmin,
+                    controller: _nameAdminController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre administrador',
+                      labelStyle: TextStyle(
+                        color: _isValidAdminName
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
                       ),
+                      suffixIcon: Icon(
+                        Icons.admin_panel_settings_outlined,
+                        color: _isValidAdminName ? Colors.grey : Colors.red,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    validator: validateEmailAdmin,
+                    controller: _emailAdminController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo electrónico',
+                      labelStyle: TextStyle(
+                        color: _isValidAdminEmail
+                            ? Colors.grey // Si la validación es exitosa
+                            : Colors.red, // Si la validación falla
+                      ),
+                      suffixIcon: Icon(
+                        Icons.email_outlined,
+                        color: _isValidAdminEmail ? Colors.grey : Colors.red,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ]),
               ),
-            ),
+              const Expanded(child: Column()),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 150.0),
+                child: SizedBox(
+                  width: 300,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _isloading ? null : _registerAdmin,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    child: _isloading
+                        ? const LoadingWidget() // Mostrar loading si está cargando
+                        : Text(
+                            'Registrar',
+                            style: GoogleFonts.roboto(
+                              textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _currentStep == 0 ? buildFirstStep() : buildSecondStep(),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(        
+          padding: const EdgeInsets.all(16.0),
+          child: _currentStep == 0 ? buildFirstStep() : buildSecondStep(),
+        ),      
       ),
     );
   }

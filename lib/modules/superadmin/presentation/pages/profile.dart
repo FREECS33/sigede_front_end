@@ -16,7 +16,7 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _isloading = true;
     });
-    await Future.delayed(const Duration(seconds: 2));
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     setState(() {
       _isloading = false;
     });
@@ -25,7 +25,8 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(backgroundColor: Colors.white,),
+        backgroundColor: Colors.white,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -40,7 +41,7 @@ class _ProfileState extends State<Profile> {
               ),
               const SizedBox(height: 16),
               Image.asset(
-                'Logo_sigede.png',
+                'assets/Logo_sigede.png',
                 height: 150,
                 width: 200,
               ),

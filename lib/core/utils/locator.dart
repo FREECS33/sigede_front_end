@@ -31,7 +31,7 @@ import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_c
 final locator = GetIt.instance;
 
 void setupLocator(){
-  locator.registerLazySingleton(() => DioClient(baseUrl: 'http://192.168.61.219:8080'));
+  locator.registerLazySingleton(() => DioClient(baseUrl: 'http://localhost:8080'));
 
   // Registrar el LoginRemoteDataSource
   locator.registerFactory<LoginRemoteDataSource>(() => LoginRemoteDataSourceImpl(dioClient: locator()));

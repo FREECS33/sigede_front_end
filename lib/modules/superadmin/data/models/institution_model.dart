@@ -56,11 +56,17 @@ class AddInstitutionModel extends AddInstitutionEntity{
 class ResponseAddInstitutionModel extends ResponseAddInstitutionEntity{
   ResponseAddInstitutionModel({
     required super.id,    
+    required super.name,
+    required super.emailContact,
+    required super.logo,
   });
 
   factory ResponseAddInstitutionModel.fromJson(Map<String, dynamic> json) {
     return ResponseAddInstitutionModel(
-      id: json['id'],
+      id: json['id'], 
+      name: json ['name'],
+      emailContact: json ['email_contact'],
+      logo: json ['logo'],
     );
   }
 }

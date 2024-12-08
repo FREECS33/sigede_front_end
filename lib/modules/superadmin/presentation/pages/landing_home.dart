@@ -87,12 +87,12 @@ class _LandingHomeState extends State<LandingHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60), // Altura deseada
+        preferredSize: const Size.fromHeight(65), // Altura deseada
         child: Container(
           color: Colors.transparent, // Fondo transparente
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
+              padding: const EdgeInsets.only(left: 16.0,top: 10.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +102,7 @@ class _LandingHomeState extends State<LandingHome> {
                     style: TextStyle(
                       fontFamily: 'RubikOne',
                       fontSize: 39,
-                      height: 1.2,
+                      height: 1.0,
                       color: Colors.black,
                     ),
                   ),
@@ -112,7 +112,7 @@ class _LandingHomeState extends State<LandingHome> {
                       textStyle: const TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
-                        height: 1.2,
+                        height: 1.0,
                       ),
                     ),
                   ),

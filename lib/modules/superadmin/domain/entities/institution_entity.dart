@@ -27,5 +27,8 @@ class AddInstitutionEntity {
 
 class ResponseAddInstitutionEntity {
   final int id;  
-  ResponseAddInstitutionEntity({required this.id});
+  final String name;
+  final String emailContact;
+  final String logo;
+  ResponseAddInstitutionEntity({required this.name,required this.emailContact,required this.logo, required this.id});
 }

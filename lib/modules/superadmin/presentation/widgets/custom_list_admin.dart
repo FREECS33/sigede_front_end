@@ -149,6 +149,7 @@ class _CustomListAdminState extends State<CustomListAdmin> {
                     MaterialPageRoute(
                         builder: (context) => EditAdmin(
                               admin: widget.admins,
+                              status: isActive,
                               logo: widget.institution?.logo,
                               name: widget.institution?.name,
                             )));

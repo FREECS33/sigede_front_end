@@ -103,7 +103,7 @@ class AdminsDataSourceImpl implements AdminDataSource {
   @override
   Future<ResponseAddAdminModel> addAdmin(AddAdminModel model) async {
     try {
-      final response = await dioClient.dio.post('/api/admin/add-admin', data: model.toJson());
+      final response = await dioClient.dio.post('/api/admin/register', data: model.toJson());
 
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
