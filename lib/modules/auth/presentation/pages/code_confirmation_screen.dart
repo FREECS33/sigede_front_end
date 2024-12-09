@@ -7,28 +7,21 @@ import 'package:sigede_flutter/modules/auth/data/exceptions/code_exceptions.dart
 import 'package:sigede_flutter/modules/auth/data/models/code_confirmation_model.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/code_confirmation.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/reset_password_screen.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 
 class CodeConfirmationScreen extends StatefulWidget {
-  final int? userId;
-  const CodeConfirmationScreen({super.key, this.userId});
+  const CodeConfirmationScreen({
+    super.key,
+  });
 
   @override
   State<CodeConfirmationScreen> createState() => _CodeConfirmationState();
 }
 
 class _CodeConfirmationState extends State<CodeConfirmationScreen> {
-  late int? userId;
-
-  @override
-  void initState() {
-    super.initState();
-    // Asignar el userId recibido
-    userId = widget.userId;
-  }
-
   final TextEditingController _codeController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isloading = false;
@@ -74,7 +67,6 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
 
   final GetIt getIt = GetIt.instance;
   Future<void> _codeConfirmationDio() async {
-    print(userId);
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isloading = true;
@@ -82,16 +74,16 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
 
       try {
         final String verificationCode = _codeController.text.trim();
-
+        String? email = await TokenService.getUserEmail();
         final CodeConfirmationModel model = CodeConfirmationModel(
           code: verificationCode,
-          userId: userId,
+          userEmail: email ?? '',
         );
 
         final codeUseCase = getIt<CodeConfirmation>();
 
         final result = await codeUseCase.call(model);
-        if (result.error == false) {
+        if (result.status == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Código verificado correctamente")),
           );
@@ -100,11 +92,11 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ResetPasswordScreen(userId: result.data),
+              builder: (context) => const ResetPasswordScreen(),
             ),
           );
         } else {
-          throw Exception("Error: codigo");
+          showErrorDialog(context: context, message: 'Error en la verificación');
         }
       } on BadRequestException {
         showErrorDialog(context: context, message: "Código no válido");

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/admin_entity.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/entities/institution_entity.dart';

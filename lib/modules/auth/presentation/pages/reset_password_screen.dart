@@ -4,26 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/modules/auth/data/exceptions/reset_password_exceptions.dart';
 import 'package:sigede_flutter/modules/auth/data/models/reset_password_model.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  final int? userId;
-  const ResetPasswordScreen({super.key, this.userId});
+class ResetPasswordScreen extends StatefulWidget {  
+  const ResetPasswordScreen({super.key,});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  late int? userId;
-  @override
-  void initState() {
-    super.initState();
-    // Asignar el userId recibido
-    userId = widget.userId;
-  }
-
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {  
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -47,51 +39,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       });
       return 'Las contraseñas no coinciden';
     }
+    setState(() {
+      _isValidConfirmPassword = true;
+    });
     return null;
   }
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'Ingrese una contraseña';
-    } else if (value.length < 8) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña debe tener al menos 8 caracteres';
-    } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña debe contener al menos una letra mayúscula';
-    } else if (!RegExp(r'[a-z]').hasMatch(value)) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña debe contener al menos una letra minúscula';
-    } else if (!RegExp(r'[0-9]').hasMatch(value)) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña debe contener al menos un número';
-    } else if (value.contains(" ")) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña no debe contener espacios';
-    } else if (!RegExp(r'^[a-zA-Z0-9\s]*$').hasMatch(value)) {
-      setState(() {
-        _isValidPassword = false;
-      });
-      return 'La contraseña no debe contener caracteres especiales';
-    }
+  // Expresión regular que valida la contraseña según los requisitos
+  final regex = RegExp(r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+
+  if (value == null || value.isEmpty) {
     setState(() {
-      _isValidPassword = true;
+      _isValidPassword = false;
     });
-    return null;
+    return 'Ingrese una contraseña';
+  } else if (!regex.hasMatch(value)) {
+    setState(() {
+      _isValidPassword = false;
+    });
+    return 'La contraseña debe cumplir con los siguientes requisitos:\n'
+        '- Al menos 8 caracteres\n'
+        '- Una letra mayúscula\n'
+        '- Un número\n'
+        '- Un carácter especial (@, \$, !, %, *, ?, &)';    
   }
+
+  setState(() {
+    _isValidPassword = true;
+  });
+  return null;
+}
+
 
   void handlePasswordResetResult(BuildContext context, bool error) {
     if (!error) {
@@ -182,10 +161,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       try {
         final String password = _passwordController.text.trim();
-
+        String? userEmail = await TokenService.getUserEmail();
         final ResetPasswordModel model = ResetPasswordModel(
           newPassword: password,
-          userId: userId,
+          userEmail: userEmail,
         );
 
         final resetPasswordUseCase = getIt<ResetPassword>();

@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 
 class DioClient {
   final Dio _dio;
 
-  DioClient({required String baseUrl})
+  DioClient()
       : _dio = Dio(
           BaseOptions(
-            baseUrl: baseUrl,
+          baseUrl: dotenv.env['BASE_URL']?? '',
             headers: {
               'Authorization': '',
               'Content-Type': 'application/json',
@@ -16,6 +18,13 @@ class DioClient {
           ),
         ) {
     _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+      final token = await TokenService.getToken();
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+      handler.next(options);
+    },
       onResponse: (response, handler) {
         if (response.statusCode == 200) {
           handler.next(response);

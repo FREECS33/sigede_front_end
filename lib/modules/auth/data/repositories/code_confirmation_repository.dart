@@ -3,7 +3,7 @@ import 'package:sigede_flutter/modules/auth/data/models/code_confirmation_model.
 import 'package:sigede_flutter/modules/auth/domain/entities/code_confirmation_entity.dart';
 
 abstract class CodeConfirmationRepository {
-  Future<CodeConfirmationEntity> codeConfirmation(CodeConfirmationModel model);
+  Future<ResponseCodeConfirmationModel> codeConfirmation(CodeConfirmationModel model);
 }
 
 class CodeConfirmationRepositoryImpl implements CodeConfirmationRepository {
@@ -12,7 +12,7 @@ class CodeConfirmationRepositoryImpl implements CodeConfirmationRepository {
   CodeConfirmationRepositoryImpl({required this.codeConfirmationDataSource});
 
   @override
-  Future<CodeConfirmationEntity> codeConfirmation(CodeConfirmationModel model) async {
+  Future<ResponseCodeConfirmationModel> codeConfirmation(CodeConfirmationModel model) async {
     return await codeConfirmationDataSource.codeConfirmation(model);
   }
 }

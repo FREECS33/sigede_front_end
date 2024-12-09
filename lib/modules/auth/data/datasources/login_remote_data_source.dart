@@ -2,10 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/auth/data/exceptions/auth_exceptions.dart';
 import 'package:sigede_flutter/modules/auth/data/models/login_model.dart';
-import 'package:sigede_flutter/modules/auth/domain/entities/login_entity.dart';
 
 abstract class LoginRemoteDataSource {
-  Future<LoginEntity> login(LoginModel loginModel);
+  Future<ResponseLoginModel> login(LoginModel loginModel);
 }
 
 class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
@@ -14,26 +13,28 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
   LoginRemoteDataSourceImpl({required this.dioClient});
 
   @override
-Future<LoginEntity> login(LoginModel loginModel) async {
-  try {
-    final response = await dioClient.dio.post(
-      '/login',
-      data: loginModel.toJson(),
-    );
-
-    // Verifica que el estado HTTP sea exitoso (200-299)
-    if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
-      return LoginModel.fromJson(response.data);
-    } else {
-      // Aquí puedes manejar la respuesta de error, si el código no es exitoso
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+  Future<ResponseLoginModel> login(LoginModel loginModel) async {
+    try {
+      final response = await dioClient.dio.post(
+        '/login',
+        data: loginModel.toJson(),
       );
-    }
-  } on DioException catch (dioError) {
-    // Aquí se maneja el error utilizando la misma lógica que tienes en el interceptor
-    if (dioError.response != null) {
+
+      // Verifica que el estado HTTP sea exitoso (200-299)
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        return ResponseLoginModel.fromJson(response.data);
+      } else {
+        // Aquí puedes manejar la respuesta de error, si el código no es exitoso
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+        );
+      }
+    } on DioException catch (dioError) {
+      // Aquí se maneja el error utilizando la misma lógica que tienes en el interceptor
+      if (dioError.response != null) {
         switch (dioError.response?.statusCode) {
           case 400:
             throw BadRequestException();
@@ -44,16 +45,16 @@ Future<LoginEntity> login(LoginModel loginModel) async {
           case 500:
             throw ServerException();
           default:
-            throw AuthException('Unexpected error: ${dioError.response?.statusCode}');
+            throw AuthException(
+                'Unexpected error: ${dioError.response?.statusCode}');
         }
-    } else {
-      // En caso de errores de red o conexión
-      throw Exception('Network error: ${dioError.message}');
+      } else {
+        // En caso de errores de red o conexión
+        throw Exception('Network error: ${dioError.message}');
+      }
+    } catch (e) {
+      // Si hay algún otro error no relacionado con Dio
+      throw Exception('Unexpected error: ${e.toString()}');
     }
-  } catch (e) {
-    // Si hay algún otro error no relacionado con Dio
-    throw Exception('Unexpected error: ${e.toString()}');
   }
-}
-
 }

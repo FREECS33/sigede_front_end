@@ -1,10 +1,10 @@
 class ResetPasswordEntity {
   final String? newPassword;
-  final int? userId;
+  final String? userEmail;
   final bool? error;
   ResetPasswordEntity({
     this.newPassword,
-    this.userId,
+    this.userEmail,
     this.error, 
   });
 }

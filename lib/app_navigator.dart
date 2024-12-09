@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/modules/admin/navigation/navigation_admin.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart';
 import 'package:sigede_flutter/modules/superadmin/navigation/navigation.dart';
-import 'package:sigede_movil/features/superadmin/superadmin_navigator.dart';
-import 'package:sigede_movil/features/admin/admin_navigator.dart';
-import 'package:sigede_movil/features/capturist/capturist_navigator.dart';
-import 'package:sigede_movil/features/authentication/public_navigator.dart';
+
 
 class AppNavigator extends StatelessWidget {
   final String userRole;
@@ -16,11 +15,11 @@ class AppNavigator extends StatelessWidget {
       case 'SUPERADMIN':
         return const Navigation();
       case 'ADMIN':
-        return  const AdminNavigator();
-      case 'CAPTURISTA':
-        return  const CapturistNavigator();
+        return  const NavigationAdmin();
+      //case 'CAPTURISTA':
+        //return  const CapturistNavigator();
       default:
-        return const PublicNavigator(); // Si el rol es inválido, vuelve al flujo público
+        return const Loginscreen(); // Si el rol es inválido, vuelve al flujo público
     }
   }
   

@@ -5,14 +5,12 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
-import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/institution_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/institution_cases/institution_use_case.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
-import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog_super.dart';
 
 class RegisterInstitution extends StatefulWidget {

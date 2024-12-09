@@ -5,6 +5,7 @@ import 'package:sigede_flutter/modules/auth/data/exceptions/recovery_password_ex
 import 'package:sigede_flutter/modules/auth/data/models/recovery_password_model.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/presentation/pages/code_confirmation_screen.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
@@ -34,7 +35,7 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
         final RecoveryPasswordModel model = RecoveryPasswordModel(
           userEmail: userEmail,
         );
-
+        TokenService.saveEmail(userEmail);
         final recoveryUseCase = getIt<RecoveryPassword>();
 
         final result = await recoveryUseCase.call(model);
@@ -47,7 +48,7 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => CodeConfirmationScreen(userId: result.data),
+              builder: (context) => const CodeConfirmationScreen(),
             ),
           );
         } else {

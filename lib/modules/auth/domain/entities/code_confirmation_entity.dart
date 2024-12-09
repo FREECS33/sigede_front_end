@@ -1,8 +1,16 @@
 
 class CodeConfirmationEntity {
-  final String? code;
-  final int? userId;
-  final bool? error;
-  final int? data;
-  CodeConfirmationEntity({this.code,this.userId,this.error, this.data, });
+  final String code;
+  final String userEmail;
+  
+  CodeConfirmationEntity({required this.code,required this.userEmail});
+}
+
+class ResponseCodeConfirmationEntity {
+  final int status;
+  final String message;
+  final bool error;
+  final String data;
+  
+  ResponseCodeConfirmationEntity({required this.status,required this.message,required this.error,required this.data});
 }

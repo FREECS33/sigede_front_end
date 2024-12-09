@@ -1,13 +1,13 @@
-import 'dart:math';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/app_navigator.dart';
 import 'package:sigede_flutter/modules/auth/data/exceptions/auth_exceptions.dart';
 import 'package:sigede_flutter/modules/auth/data/models/login_model.dart';
 import 'package:sigede_flutter/modules/auth/domain/entities/login_entity.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
+import 'package:sigede_flutter/modules/auth/jwt/jwt_decoder.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/recovery_password_screen.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
@@ -27,7 +27,7 @@ class _LoginscreenState extends State<Loginscreen> {
   bool _isValidPassword = true;
   bool _isValidUserEmail = true;
   bool _isloading = false;
-  final GetIt getIt = GetIt.instance;
+  final getIt = GetIt.instance;
   Future<void> _loginSubmit() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -49,8 +49,18 @@ class _LoginscreenState extends State<Loginscreen> {
         // Llamar al caso de uso
         final result = await loginUseCase.call(loginModel);
         // Manejo del resultado
-        if (result.token != null) {
-          Navigator.pushReplacementNamed(context, '/navigation');
+        if (result.token != null) {          
+          await TokenService.saveToken(result.token);
+          await TokenService.saveEmail(result.email);
+          await TokenService.saveInstitutionId(result.institutionId);
+          final response = JwtDecoder.getRoleFromToken(result.token);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AppNavigator(userRole: response ?? ''),
+            ),
+          );          
+          
         } else {
           throw Exception("Error: Token no recibido");
         }
@@ -302,7 +312,12 @@ class _LoginscreenState extends State<Loginscreen> {
                   SizedBox(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/recoverPassword');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Recoverpasswordscreen(),
+                          ),
+                        );
                       },
                       style: OutlinedButton.styleFrom(
                         elevation: 0,

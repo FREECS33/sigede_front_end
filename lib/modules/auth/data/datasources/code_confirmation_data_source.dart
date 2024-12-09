@@ -5,7 +5,7 @@ import 'package:sigede_flutter/modules/auth/data/models/code_confirmation_model.
 import 'package:sigede_flutter/modules/auth/domain/entities/code_confirmation_entity.dart';
 
 abstract class CodeConfirmationDataSource {
-  Future<CodeConfirmationEntity> codeConfirmation(
+  Future<ResponseCodeConfirmationModel> codeConfirmation(
       CodeConfirmationModel codeConfirmationModel);
 }
 
@@ -15,7 +15,7 @@ class CodeConfirmationDataSourceImpl implements CodeConfirmationDataSource {
   CodeConfirmationDataSourceImpl({required this.dioClient});
 
   @override
-  Future<CodeConfirmationEntity> codeConfirmation(
+  Future<ResponseCodeConfirmationModel> codeConfirmation(
       CodeConfirmationModel model) async {
     try {
       final response = await dioClient.dio.post(
@@ -25,7 +25,7 @@ class CodeConfirmationDataSourceImpl implements CodeConfirmationDataSource {
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
-        return CodeConfirmationModel.fromJson(response.data);
+        return ResponseCodeConfirmationModel.fromJson(response.data);
       } else {
         // Aquí puedes manejar la respuesta de error, si el código no es exitoso
         throw DioException(

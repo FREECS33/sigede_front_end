@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigede_flutter/modules/auth/presentation/pages/login_screen.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
 
 class Profile extends StatefulWidget {
@@ -16,7 +18,15 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _isloading = true;
     });
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    TokenService.clearToken();
+    TokenService.clearInstitutionId();
+    TokenService.clearUserEmail();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Loginscreen()),
+      (route) => false,
+    );
+
     setState(() {
       _isloading = false;
     });
@@ -25,7 +35,9 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(backgroundColor: Colors.white,),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+        ),
         backgroundColor: Colors.white,
         body: Center(
           child: Column(

@@ -32,9 +32,9 @@ import 'package:sigede_flutter/shared/services/token_service.dart';
 final locator = GetIt.instance;
 
 void setupLocator(){
-  locator.registerLazySingleton<TokenService>(() => TokenService());
+  locator.registerLazySingleton<DioClient>(() => DioClient());
 
-  locator.registerLazySingleton(() => DioClient(baseUrl: 'http://localhost:8080'));
+  locator.registerLazySingleton<TokenService>(() => TokenService());  
 
   // Registrar el LoginRemoteDataSource
   locator.registerFactory<LoginRemoteDataSource>(() => LoginRemoteDataSourceImpl(dioClient: locator()));
@@ -107,28 +107,6 @@ void setupLocator(){
   locator.registerFactory<UpdateAdminInfo>(() => UpdateAdminInfo(repository: locator()));
 
   locator.registerFactory<UpdateInfoAdmin>(() => UpdateInfoAdmin(repository: locator()));
-  
- /*
-  //Registrar InstitutionPostDataSource
-  locator.registerFactory<InstitutionPostDataSource>(() => InstitutionPostDataSourceImpl(dioClient: locator()));
-  //Registrar InstitutionPostRepository
-  locator.registerFactory<InstitutionNewRepository>(() => InstitutionNewRepositoryImpl(institutionPostDataSource: locator()));
-  //Registrar el caso de uso PostInstitution
-  locator.registerFactory<PostInstitution>(() => PostInstitution(repository: locator()));
-
-  //registrar admin_data_source
-  locator.registerFactory<AdminDataSource>(() => AdminDataSourceImpl(dioClient: locator()));
-  //registrar admin_repository
-  locator.registerFactory<AdminRepository>(() => AdminRepositoryImpl(adminDataSource: locator()));
-  //registrar el caso de uso PostAdmin
-  locator.registerFactory<PostAdmin>(() => PostAdmin(repository: locator()));
-  
-  //Registrar Admins data source
-  locator.registerFactory<AdminsDataSource>(() => AdminsDataSourceImpl(dioClient: locator()));
-  //Registrar AdminRepository
-  locator.registerFactory<AdminsRepository>(() => AdminsRepositoryImpl(adminsDataSource: locator()));
-  //Registrar el caso de uso GetAdmins
-  locator.registerFactory<GetAllAdmins>(() => GetAllAdmins(repository: locator()));
-  */
+   
 }
 

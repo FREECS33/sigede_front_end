@@ -2,23 +2,33 @@ import 'package:sigede_flutter/modules/auth/domain/entities/code_confirmation_en
 
 class CodeConfirmationModel extends CodeConfirmationEntity{
   CodeConfirmationModel({
-    super.code,
-    super.userId,
-    super.error,
-    super.data,
-  });
-
-  factory CodeConfirmationModel.fromJson(Map<String, dynamic> json) {
-    return CodeConfirmationModel(
-      error: json['error'],
-      data: json['data'],
-    );
-  }
+    required super.code,
+    required super.userEmail
+    
+  }); 
 
   Map<String, dynamic> toJson() {
     return {
       'code': code,
-      'userId': userId,
+      'userEmail': userEmail,
     };
+  }
+}
+
+class ResponseCodeConfirmationModel extends ResponseCodeConfirmationEntity {
+  ResponseCodeConfirmationModel({
+    required super.status,
+    required super.message,
+    required super.error,
+    required super.data,
+  });
+
+  factory ResponseCodeConfirmationModel.fromJson(Map<String, dynamic> json) {
+    return ResponseCodeConfirmationModel(
+      status: json['status'],
+      message: json['message'],
+      error: json['error'],
+      data: json['data'],
+    );
   }
 }

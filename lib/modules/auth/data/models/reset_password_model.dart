@@ -3,7 +3,7 @@ import 'package:sigede_flutter/modules/auth/domain/entities/reset_password_entit
 class ResetPasswordModel extends ResetPasswordEntity {
   ResetPasswordModel({
     super.newPassword,
-    super.userId,
+    super.userEmail,
     super.error,
   });
 
@@ -16,7 +16,7 @@ class ResetPasswordModel extends ResetPasswordEntity {
   Map<String, dynamic> toJson() {
     return {
       'newPassword': newPassword,
-      'userId': userId,
+      'userEmail': userEmail,
     };
   }
 }
