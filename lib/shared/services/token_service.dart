@@ -47,9 +47,9 @@ class TokenService {
   }
 
   // Recupera el Id de la institución
-  static Future<String?> getInstituionId() async {
+  static Future<int?> getInstituionId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_institutionId); 
+    return prefs.getInt(_institutionId); 
   }
 
   // Elimina el correo del usuario

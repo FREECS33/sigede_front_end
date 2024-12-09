@@ -19,6 +19,9 @@ import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.da
 import 'package:sigede_flutter/modules/auth/domain/use_cases/login.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/recovery_password.dart';
 import 'package:sigede_flutter/modules/auth/domain/use_cases/reset_password.dart';
+import 'package:sigede_flutter/modules/capturista/data/datasources/credential_remote_data_source.dart';
+import 'package:sigede_flutter/modules/capturista/data/repositories/credential_repository.dart';
+import 'package:sigede_flutter/modules/capturista/domain/use_cases/get_credentials.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/admin_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/datasources/institution_data_source.dart';
 import 'package:sigede_flutter/modules/superadmin/data/repositories/admin_repository.dart';
@@ -107,6 +110,9 @@ void setupLocator(){
   locator.registerFactory<UpdateAdminInfo>(() => UpdateAdminInfo(repository: locator()));
 
   locator.registerFactory<UpdateInfoAdmin>(() => UpdateInfoAdmin(repository: locator()));
-   
+
+  locator.registerFactory<CredentialRemoteDataSource>(()=> CredentialRemoteDataSourceImpl(dioClient: locator()));
+  locator.registerFactory<CredentialRepository>(()=> CredentialRepositoryImpl(credentialRemoteDataSource: locator()));
+  locator.registerFactory(()=> GetCredentials(repository: locator()));
 }
 
