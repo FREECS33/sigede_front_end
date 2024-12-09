@@ -1,7 +1,51 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class PreviewQR extends StatelessWidget {
-  const PreviewQR({super.key});
+class PreviewQR extends StatefulWidget {
+  final int credentialId;
+  const PreviewQR({super.key, required this.credentialId});
+
+  @override
+  State<PreviewQR> createState() => _PreviewQRState();
+}
+
+class _PreviewQRState extends State<PreviewQR> {
+  bool isLoading = true;
+  String? errorMessage;
+  Map<String, dynamic>? credentialData;
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentialData();
+  }
+
+   Future<void> _loadCredentialData() async {
+    try {
+      final response = await Dio().get(
+        'http://localhost:8080/api/credentials/${widget.credentialId}',
+      );
+      setState(() {
+        credentialData = response.data['data'];
+        isLoading = false;
+      });
+    } on DioException catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = "Error al cargar la credencial";
+      });
+      debugPrint('DioError: ${e.type} - ${e.message}');
+    }
+  }
+
+  String formatDate(String dateTime) {
+    try {
+      DateTime parsedDate = DateTime.parse(dateTime);
+      return "${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}";
+    } catch (e) {
+      debugPrint("Error parsing date: $dateTime");
+      return "Fecha inválida";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,88 +56,60 @@ class PreviewQR extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Expanded(
-                  flex: 1,
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage: NetworkImage('https://cdn.pixabay.com/photo/2024/07/22/17/11/elegance-in-profile-8913207_640.png'),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, top: 6.0, bottom: 6.0),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 217, 217, 217),
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(8.0),
-                                bottom: Radius.circular(8.0)),
-                          ),
-                          child: const Text(
-                            'Vigencia',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0,right: 12.0,bottom: 8.0),
-                        child: TextField(
-                          controller: TextEditingController(text: '23-12-2024'),
-                          readOnly: true,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                            ),
-                            label: Text('Vigencia'),
-                            suffixIcon: Icon(Icons.calendar_today)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for(int i=1;i<=10;i++)
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(
+                                  credentialData?['userPhoto'] ??
+                                      'https://cdn.pixabay.com/photo/2024/07/22/17/11/elegance-in-profile-8913207_640.png'),
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  credentialData?['fullname'] ?? 'Cargando...',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+  'Vigencia: ${credentialData != null && credentialData!['expirationDate'] != null ? formatDate(credentialData!['expirationDate']) : 'No disponible'}',
+  style: const TextStyle(fontSize: 14),
+),
+
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        for (var field in credentialData?['fields'] ?? [])
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 32),
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextField(
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                              labelText: 'campo $i'
-                            ),
-                            controller: TextEditingController(
-                              text: 'valor $i'
+                              controller: TextEditingController(
+                                  text: field['value']),
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                labelText: field['tag'],
+                                border: const OutlineInputBorder(),
+                              ),
                             ),
                           ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
                 ),
-          ],
-        ),
-      ),
     );
   }
 }
