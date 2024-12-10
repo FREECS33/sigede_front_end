@@ -6,7 +6,7 @@ import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_ca
 import 'package:sigede_flutter/shared/services/token_service.dart';
 
 class CapturistasScreen extends StatefulWidget {
-  const CapturistasScreen({Key? key}) : super(key: key);
+  const CapturistasScreen({super.key});
 
   @override
   State<CapturistasScreen> createState() => _CapturistasScreenState();
@@ -17,40 +17,67 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
   bool _isLoading = false;
   bool _notData = false;
   List<CapturistaEntity> capturistas = [];
+  final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Future<void> _getAllCapturistas() async {
+    setState(() {
+      _isLoading = true;
+      _notData = false;
+    });
+    try {
+      final institutionId = await TokenService.getInstituionId();
+      if (institutionId == null) {
+        throw Exception("Institution ID no encontrado.");
+      }
+      final getCapturistasUseCase = getIt<GetCapturistas>();
+      final result = await getCapturistasUseCase.call(institutionId);
 
-Future<void> _getAllCapturistas() async {
-  setState(() {
-    _isLoading = true;
-    _notData = false;
-  });
-  try {
-    final institutionId = await TokenService.getInstituionId();
-    if (institutionId == null) {
-      throw Exception("Institution ID no encontrado.");
-    }
-    final getCapturistasUseCase = getIt<GetCapturistas>();
-    final result = await getCapturistasUseCase.call(institutionId);
-
-    if (result.isEmpty) {
+      if (result.isEmpty) {
+        setState(() {
+          _notData = true;
+        });
+      } else {
+        setState(() {
+          capturistas = result;
+        });
+      }
+    } catch (e) {
       setState(() {
         _notData = true;
       });
-    } else {
+    } finally {
       setState(() {
-        capturistas = result;
+        _isLoading = false;
       });
     }
-  } catch (e) {
-    setState(() {
-      _notData = true;
-    });
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
+  String? validateSearch(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'El campo no puede estar vacío';
+    }
+    // solo se permiten letras y espacios y numeros
+    final RegExp nameExp = RegExp(r'^[A-Za-z0-9 ]+$');
+    if (!nameExp.hasMatch(value)) {
+      return 'Por favor, solo ingrese caracteres válidos';
+    }
+    return null;
+  }
+
+  Future<void> _loadAdmins(String text) async {
+    setState(() {
+      _isLoading = true;
+      _notData = false;
+    });
+    try {
+      
+    } catch (e) {
+      setState(() {
+        _notData = false;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -62,8 +89,8 @@ Future<void> _getAllCapturistas() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Capturistas"),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,     
+        toolbarHeight: 30,   
       ),
       backgroundColor: Colors.white,
       body: RefreshIndicator(
@@ -72,6 +99,8 @@ Future<void> _getAllCapturistas() async {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 'Capturistas',
@@ -81,6 +110,85 @@ Future<void> _getAllCapturistas() async {
                   height: 1.2,
                 ),
                 textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 120,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Cv6NT72JT5sKlprd0tJd6OpW0TgVcNsaYw&s',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.image_not_supported,
+                        size: 60.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(width: 50),
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        'Nombre de la institución',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Form(
+                key: _formKey,
+                child: Center(
+                  child: Container(
+                    width: 500,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6F5F5),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: const Color(0xFF917D62),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      validator: validateSearch,
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Buscar capturista', // Texto placeholder
+                        hintStyle: const TextStyle(
+                            color: Colors.grey), // Color del placeholder
+                        border: InputBorder.none, // Quita el borde predeterminado
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.search,
+                            color: Colors.grey, // Icono de búsqueda
+                          ),
+                          onPressed: () {
+                            // Llamar a la función al presionar el icono
+                            _loadAdmins(_searchController.text);
+                          },
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16.0),
               _isLoading
