@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/update_capturista_status.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/edit_capturist.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
@@ -69,25 +70,27 @@ class _CustomListCapturistState extends State<CustomListCapturist> {
       _changeStatus(newValue);
     }
   }
+
   GetIt getIt = GetIt.instance;
   Future<void> _changeStatus(bool newValue) async {
-    try {      
-      String? email = await TokenService.getUserEmail();
+    try {
       final model = UpdateAdminStatusModel(
         email: widget.capturista.email,
         status: isActive ? 'inactivo' : 'activo',
       );
       final changeStatus = getIt<UpdateAdminInfo>();
       final response = await changeStatus.call(model);
-      if(response.status == 200){
-        showSuccessDialog(context: context, message: 'Estado actualizado correctamente');
-      }else{
-        showErrorDialog(context: context, message: 'Error al actualizar el estado');
+      if (response.status == 200) {
+        showSuccessDialog(
+            context: context, message: 'Estado actualizado correctamente');
+      } else {
+        showErrorDialog(
+            context: context, message: 'Error al actualizar el estado');
       }
     } catch (e) {
       // Manejo de errores
     }
-  }  
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,16 +117,36 @@ class _CustomListCapturistState extends State<CustomListCapturist> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: Switch(
-          inactiveThumbColor: Colors.red,
-          inactiveTrackColor: Colors.red.withOpacity(0.5),
-          activeTrackColor: Colors.green.withOpacity(0.5),
-          thumbIcon: thumbIcon,
-          value: isActive,
-          activeColor: Colors.green,
-          onChanged: (bool value) {
-            _showConfirmationDialog(value);
-          },
+        trailing: Row(
+          mainAxisSize: MainAxisSize
+              .min, // Esto asegura que el Row no ocupe más espacio del necesario
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.edit_outlined,
+                color: Colors.grey[750],
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EditCapturist(
+                              
+                            )));
+              },
+            ),
+            Switch(
+              inactiveThumbColor: Colors.red,
+              inactiveTrackColor: Colors.red.withOpacity(0.5),
+              activeTrackColor: Colors.green.withOpacity(0.5),
+              thumbIcon: thumbIcon,
+              value: isActive,
+              activeColor: Colors.green,
+              onChanged: (bool value) {
+                _showConfirmationDialog(value);
+              },
+            ),
+          ],
         ),
       ),
     );
