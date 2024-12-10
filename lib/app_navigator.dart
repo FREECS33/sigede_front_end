@@ -13,11 +13,11 @@ class AppNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (userRole) {
-      case 'superadmin':
+      case 'SUPERADMIN':
         return const Navigation();
-      case 'admin':
+      case 'ADMIN':
         return  const NavigationAdmin();
-      case 'capturista':
+      case 'CAPTURISTA':
         return  const CapturistNavigator();
       default:
         return const Loginscreen(); // Si el rol es inválido, vuelve al flujo público
