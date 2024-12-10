@@ -129,8 +129,7 @@ void setupLocator(){
     () => CapturistRepositoryImpl(remoteDataSource: locator<CapturistRemoteDataSource>()),
   );
 
-  // Registrar casos de uso
-  locator.registerFactory(() => GetCapturistas(repository: locator()));
+  // Registrar casos de uso  
   locator.registerFactory(() => UpdateCapturistaStatus(repository: locator()));
 }
 
