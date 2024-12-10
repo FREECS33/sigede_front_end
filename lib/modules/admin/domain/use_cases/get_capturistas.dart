@@ -1,18 +1,13 @@
-import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
-import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository.dart';
+
+import 'package:sigede_flutter/modules/admin/data/repositories/capturist_repository.dart';
+import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
 
 class GetCapturistas {
-  final CapturistaRepository repository;
+  final CapturistRepository repository;
 
-  GetCapturistas({required this.repository}) ;
+  GetCapturistas({required this.repository});
 
-  Future<List<SimpleCapturista>> call({
-    required String role,
-    required int institutionId,
-  }) {
-    return repository.getAllCapturistas(
-      role: role,
-      institutionId: institutionId,
-    );
+  Future<List<CapturistaEntity>> call(int institutionId) {
+    return repository.getCapturistasByInstitution(institutionId);
   }
 }
