@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/edit_capturist.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/landing_crendential.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/form/credential_form.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/home/home_capturer.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/home/management_capturist.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/profile/profile_admin.dart';
 
@@ -14,11 +14,20 @@ class NavigationAdmin extends StatefulWidget {
 
 class _NavigationAdminState extends State<NavigationAdmin> {
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    CapturistasScreen(),
-    LandingCrendential(),
-    CredentialForm(),
-    ProfileAdmin()
+  // ignore: unused_field
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static final List<Widget> _widgetOptions = <Widget>[
+    Navigator(
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) => const HomeCapturer(),
+        );
+      },
+    ),
+    const LandingCrendential(),
+    const CredentialForm(),
+    const ProfileAdmin()
   ];
 
   void _onItemTapped(int index) {

@@ -31,14 +31,44 @@ class TokenService {
 
   // Guardar el id de la institución
   static Future<void> saveInstitutionId(int? institutionId) async {
-  final prefs = await SharedPreferences.getInstance();
-  if (institutionId != null) {
-    await prefs.setInt(_institutionId, institutionId);
-  } else {
-    await prefs.remove(_institutionId);
+    final prefs = await SharedPreferences.getInstance();
+    if (institutionId != null) {
+      await prefs.setInt(_institutionId, institutionId);
+    } else {
+      await prefs.remove(_institutionId);
+    }
   }
-}
 
+  static Future<void> saveLogo(String logo) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('logo', logo);
+  }
+
+  static Future<String?> getLogo() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('logo');
+  }
+  
+  static Future<void> clearLogo() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('logo');
+  }
+
+  // name de la isntitución
+  static Future<void> saveInstitutionName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('institution_name', name);
+  }
+
+  static Future<String?> getInstitutionName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('institution_name');
+  }
+
+  static Future<void> clearInstitutionName() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('institution_name');
+  }
 
   // Recupera el correo del usuario
   static Future<String?> getUserEmail() async {
@@ -49,7 +79,7 @@ class TokenService {
   // Recupera el Id de la institución
   static Future<int?> getInstituionId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_institutionId); 
+    return prefs.getInt(_institutionId);
   }
 
   // Elimina el correo del usuario

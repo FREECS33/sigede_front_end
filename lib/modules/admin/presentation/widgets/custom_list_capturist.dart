@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/update_capturista_status.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/edit_capturist.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/home/edit_capturist.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/home/update_capturist.dart';
 import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 import 'package:sigede_flutter/modules/superadmin/domain/use_cases/admin_cases/admin_use_case.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
@@ -130,9 +131,8 @@ class _CustomListCapturistState extends State<CustomListCapturist> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const EditCapturist(
-                              
-                            )));
+                        builder: (context) => const UpdateCapturist()),
+                  );
               },
             ),
             Switch(

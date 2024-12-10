@@ -37,7 +37,11 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
       final result = await getInstitution.call(institutionId);
       setState(() {
         institution = result;
-      });      
+      });
+      if(institution != null){
+        await TokenService.saveLogo(institution!.logo);
+        await TokenService.saveInstitutionName(institution!.name);
+      }
     } catch (e) {
       setState(() {
         _isLoading = true;

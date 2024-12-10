@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/credential_entity.dart';
 import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_credential.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 
 class LandingCrendential extends StatefulWidget {
-const LandingCrendential({ super.key });
+  const LandingCrendential({super.key});
 
   @override
   State<LandingCrendential> createState() => _LandingCrendentialState();
 }
 
 class _LandingCrendentialState extends State<LandingCrendential> {
+  String? logo;
+  String? name;
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -20,7 +23,27 @@ class _LandingCrendentialState extends State<LandingCrendential> {
   void initState() {
     super.initState();
     // Inicializa el estado del switch con la información recibida.
-    getAllCredentials();
+    Future.delayed(Duration.zero, () async {
+      await loadData();
+      await getAllCredentials();
+    });    
+  }
+
+  Future<void> loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      logo = await TokenService.getLogo();
+      name = await TokenService.getInstitutionName();
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadCredentials(String search) async {
@@ -56,12 +79,13 @@ class _LandingCrendentialState extends State<LandingCrendential> {
       });
     }
   }
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,     
-        toolbarHeight: 30,   
+        backgroundColor: Colors.transparent,
+        toolbarHeight: 30,
       ),
       body: RefreshIndicator(
         onRefresh: getAllCredentials,
@@ -86,7 +110,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
-                      'https://www.utez.edu.mx/wp-content/uploads/2024/08/LOGO_UTEZ-2016.png',
+                      logo ?? '',
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -100,7 +124,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                     SizedBox(
                       width: 150,
                       child: Text(
-                        'Nombre de la institución',
+                        name ?? '',
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -134,13 +158,14 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                         ),
                       ],
                     ),
-                    child: TextFormField(                      
+                    child: TextFormField(
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Buscar credencial', // Texto placeholder
                         hintStyle: const TextStyle(
                             color: Colors.grey), // Color del placeholder
-                        border: InputBorder.none, // Quita el borde predeterminado
+                        border:
+                            InputBorder.none, // Quita el borde predeterminado
                         suffixIcon: IconButton(
                           icon: const Icon(
                             Icons.search,
@@ -151,7 +176,8 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                             _loadCredentials(_searchController.text);
                           },
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
@@ -193,8 +219,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                           child: ListView.builder(
                             itemCount: credentials.length,
                             itemBuilder: (context, index) {
-                              return CustomListCredential(                                
-                              );
+                              return CustomListCredential();
                             },
                           ),
                         ),
@@ -202,7 +227,6 @@ class _LandingCrendentialState extends State<LandingCrendential> {
           ),
         ),
       ),
-
     );
   }
 }

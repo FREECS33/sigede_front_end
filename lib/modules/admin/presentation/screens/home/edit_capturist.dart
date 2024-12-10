@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/core/utils/locator.dart';
+
 import 'package:sigede_flutter/modules/admin/data/models/capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
@@ -29,7 +29,7 @@ class _EditCapturistState extends State<EditCapturist> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-
+/*
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _EditCapturistState extends State<EditCapturist> {
     putCapturista = locator<PutCapturista>();
     disableCapturista = locator<DisableCapturista>();
   }
-
+*/
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

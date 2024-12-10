@@ -21,6 +21,8 @@ class _ProfileAdminState extends State<ProfileAdmin> {
     TokenService.clearToken();
     TokenService.clearInstitutionId();
     TokenService.clearUserEmail();
+    TokenService.clearInstitutionName();
+    TokenService.clearLogo();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const Loginscreen()),
