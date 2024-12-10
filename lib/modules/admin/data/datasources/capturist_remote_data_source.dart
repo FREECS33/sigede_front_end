@@ -15,7 +15,7 @@ class CapturistRemoteDataSourceImpl implements CapturistRemoteDataSource {
   @override
   Future<List<CapturistaModel>> getCapturistasByInstitution(int institutionId) async {
     try {
-      final response = await dioClient.dio.get('/users/capturists/$institutionId');
+      final response = await dioClient.dio.get('/api/users/capturists/$institutionId');
       if (response.statusCode == 200) {
         final data = response.data as List;
         return data.map((json) => CapturistaModel.fromJson(json)).toList();
@@ -30,7 +30,7 @@ class CapturistRemoteDataSourceImpl implements CapturistRemoteDataSource {
   @override
   Future<void> updateCapturistaStatus(String email, String status) async {
     try {
-      final response = await dioClient.dio.post('/users/update-status', data: {
+      final response = await dioClient.dio.post('/api/users/update-status', data: {
         "email": email,
         "status": status,
       });
