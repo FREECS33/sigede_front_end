@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista_model.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
+import 'package:sigede_flutter/modules/admin/domain/entities/institution_info_entity.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_by_name_institution.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_one_institution.dart';
 import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_capturist.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
 
@@ -17,8 +21,33 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
   bool _isLoading = false;
   bool _notData = false;
   List<CapturistaEntity> capturistas = [];
+  InstitutionInfoEntity? institution;
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Future<void> _getInstitution() async {
+    setState(() {
+      _isLoading = true;      
+    });
+    try {
+      final institutionId = await TokenService.getInstituionId();
+      if (institutionId == null) {
+        throw Exception("Institution ID no encontrado.");
+      }
+      final getInstitution = getIt<GetOneInstitution>();
+      final result = await getInstitution.call(institutionId);
+      setState(() {
+        institution = result;
+      });      
+    } catch (e) {
+      setState(() {
+        _isLoading = true;
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   Future<void> _getAllCapturistas() async {
     setState(() {
       _isLoading = true;
@@ -64,13 +93,31 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
     return null;
   }
 
-  Future<void> _loadAdmins(String text) async {
+  Future<void> _loadCapturers(String text) async {
     setState(() {
       _isLoading = true;
       _notData = false;
     });
     try {
-      
+      final institutionId = await TokenService.getInstituionId();
+      final FilterCapturerModel capturersModel = FilterCapturerModel(
+          name: text,
+          institutionId: institutionId??0,
+          page: 0,
+          size: 200);
+
+      final capturersByInstitution = getIt<GetByNameInstitution>();
+      final result = await capturersByInstitution.call(capturersModel);
+      if(result.isEmpty){
+        setState(() {
+          _notData = true;
+          _isLoading = false;
+        });
+      }
+      setState(() {
+        capturistas = result;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _notData = false;
@@ -82,7 +129,8 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
   @override
   void initState() {
     super.initState();
-    _getAllCapturistas();
+    _getInstitution();
+    _getAllCapturistas();    
   }
 
   @override
@@ -118,7 +166,7 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1Cv6NT72JT5sKlprd0tJd6OpW0TgVcNsaYw&s',
+                      institution?.logo ?? '',
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -132,7 +180,7 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
                     SizedBox(
                       width: 150,
                       child: Text(
-                        'Nombre de la institución',
+                        institution?.name??'',
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -181,7 +229,7 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
                           ),
                           onPressed: () {
                             // Llamar a la función al presionar el icono
-                            _loadAdmins(_searchController.text);
+                            _loadCapturers(_searchController.text);
                           },
                         ),
                         contentPadding: const EdgeInsets.symmetric(vertical: 12),

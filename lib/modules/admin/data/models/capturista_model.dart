@@ -26,3 +26,21 @@ class CapturistaModel extends CapturistaEntity {
     };
   }
 }
+
+class FilterCapturerModel extends FilterCapturerEntity {
+  const FilterCapturerModel({
+    required super.name,
+    required super.institutionId,
+    required super.page,
+    required super.size,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "institutionId": institutionId,
+      "page": page,
+      "size": size,
+    };
+  }
+}
