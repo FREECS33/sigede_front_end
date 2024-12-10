@@ -1,207 +1,128 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/core/utils/locator.dart';
-import 'package:sigede_flutter/modules/admin/data/models/simple_capturista.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
+import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_capturist.dart';
+import 'package:sigede_flutter/shared/services/token_service.dart';
 
-class ManagementCapturist extends StatefulWidget {
-  const ManagementCapturist({super.key});
+class CapturistasScreen extends StatefulWidget {
+  const CapturistasScreen({Key? key}) : super(key: key);
 
   @override
-  State<ManagementCapturist> createState() => _ManagementCapturistState();
+  State<CapturistasScreen> createState() => _CapturistasScreenState();
 }
 
-class _ManagementCapturistState extends State<ManagementCapturist> {
-  late GetCapturistas getCapturistas;
-  List<SimpleCapturista> capturistas = [];
-  bool isLoading = true;
-  String? errorMessage;
+class _CapturistasScreenState extends State<CapturistasScreen> {
+  final GetIt getIt = GetIt.instance;
+  bool _isLoading = false;
+  bool _notData = false;
+  List<CapturistaEntity> capturistas = [];
+
+Future<void> _getAllCapturistas() async {
+  setState(() {
+    _isLoading = true;
+    _notData = false;
+  });
+  try {
+    final institutionId = await TokenService.getInstituionId();
+    if (institutionId == null) {
+      throw Exception("Institution ID no encontrado.");
+    }
+    final getCapturistasUseCase = getIt<GetCapturistas>();
+    final result = await getCapturistasUseCase.call(institutionId);
+
+    if (result.isEmpty) {
+      setState(() {
+        _notData = true;
+      });
+    } else {
+      setState(() {
+        capturistas = result;
+      });
+    }
+  } catch (e) {
+    setState(() {
+      _notData = true;
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   @override
   void initState() {
     super.initState();
-    getCapturistas = locator<GetCapturistas>();
-    _loadCapturistas();
+    _getAllCapturistas();
   }
-
-  Future<void> _loadCapturistas() async {
-  try {
-    final role = "capturista";
-    final institutionId = 1;
-
-    final users = await getCapturistas.call(
-      role: role,
-      institutionId: institutionId,
-    );
-
-    setState(() {
-      capturistas = users;
-      isLoading = false;
-      if (users.isEmpty) {
-        errorMessage = 'No se encontraron capturistas.';
-      }
-    });
-  } on DioException catch (e) {
-    setState(() {
-      isLoading = false;
-      errorMessage = 'Error al cargar los capturistas';
-    });
-    debugPrint('DioError: ${e.type} - ${e.message}');
-    if (e.response != null) {
-      debugPrint('DioError response: ${e.response!.data}');
-      debugPrint('DioError status code: ${e.response!.statusCode}');
-    } else {
-      debugPrint('DioError no response: ${e.error}');
-    }
-  }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      appBar: AppBar(
+        title: const Text("Capturistas"),
+        backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.white,
+      body: RefreshIndicator(
+        onRefresh: _getAllCapturistas,
+        color: Colors.black,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const SizedBox(height: 12),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Capturistas',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ],
+              const Text(
+                'Capturistas',
+                style: TextStyle(
+                  fontFamily: 'RubikOne',
+                  fontSize: 37,
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 18,),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 4.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                            suffixIcon: const Icon(Icons.search),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25.0)),
-                            hintText: 'Buscar capturista',
-                            labelText: 'Buscar capturista'),
+              const SizedBox(height: 16.0),
+              _isLoading
+                  ? const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(color: Colors.black),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              if (isLoading)
-                const CircularProgressIndicator()
-              else if (errorMessage != null)
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        color: Colors.red,
-                        size: 60,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16, color: Colors.red),
-                      ),
-                    ],
-                  ),
-                )
-              else if (capturistas.isEmpty)
-                const Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.grey,
-                        size: 60,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'No hay capturistas disponibles.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: capturistas.map((capturista) {
-                        return Padding(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 6.0,horizontal: 12),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/editCapturist',
-                                arguments: capturista.userId,
-                              );
-                            },
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: ListTile(
-                                        leading: const Icon(
-                                          Icons.account_circle,
-                                        ),
-                                        title: Text(
-                                          capturista.name,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                        subtitle: Text(
-                                          capturista.email,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                    )
+                  : _notData
+                      ? const Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 60,
+                                  color: Colors.grey,
                                 ),
-                              ),
+                                Text(
+                                  "No se encontraron capturistas",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                        )
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: capturistas.length,
+                            itemBuilder: (context, index) {
+                              return CustomListCapturist(
+                                capturista: capturistas[index],
+                              );
+                            },
+                          ),
+                        ),
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/registerCapturist');
-        },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
