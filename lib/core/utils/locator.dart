@@ -1,10 +1,14 @@
 import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
+import 'package:sigede_flutter/modules/admin/data/datasources/capturist_remote_data_source.dart';
 import 'package:sigede_flutter/modules/admin/data/datasources/capturista_remote_data_source.dart';
+import 'package:sigede_flutter/modules/admin/data/repositories/capturist_repository.dart';
+import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository_impl.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/post_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/put_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/update_capturista_status.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/code_confirmation_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/login_remote_data_source.dart';
 import 'package:sigede_flutter/modules/auth/data/datasources/recovery_password_data_source.dart';
@@ -114,5 +118,19 @@ void setupLocator(){
   locator.registerFactory<CredentialRemoteDataSource>(()=> CredentialRemoteDataSourceImpl(dioClient: locator()));
   locator.registerFactory<CredentialRepository>(()=> CredentialRepositoryImpl(credentialRemoteDataSource: locator()));
   locator.registerFactory(()=> GetCredentials(repository: locator()));
+
+   // Registrar CapturistRemoteDataSource
+  locator.registerFactory<CapturistRemoteDataSource>(
+    () => CapturistRemoteDataSourceImpl(dioClient: locator()),
+  );
+
+  // Registrar CapturistaRepo
+  locator.registerFactory<CapturistRepository>(
+    () => CapturistRepositoryImpl(remoteDataSource: locator<CapturistRemoteDataSource>()),
+  );
+
+  // Registrar casos de uso
+  locator.registerFactory(() => GetCapturistas(repository: locator()));
+  locator.registerFactory(() => UpdateCapturistaStatus(repository: locator()));
 }
 

@@ -12,7 +12,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    ManagementCapturist()
+    CapturistasScreen()
   ];
 
   void _onItemTapped(int index) {
