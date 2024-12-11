@@ -159,6 +159,7 @@ class _LoginscreenState extends State<Loginscreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
