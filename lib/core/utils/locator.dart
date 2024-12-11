@@ -2,10 +2,13 @@ import 'package:get_it/get_it.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/admin/data/datasources/capturist_remote_data_source.dart';
 import 'package:sigede_flutter/modules/admin/data/datasources/capturista_remote_data_source.dart';
+import 'package:sigede_flutter/modules/admin/data/datasources/credentials_remote_data_source.dart';
 import 'package:sigede_flutter/modules/admin/data/repositories/capturer_repository.dart';
 import 'package:sigede_flutter/modules/admin/data/repositories/capturist_repository.dart';
 import 'package:sigede_flutter/modules/admin/data/repositories/capturista_repository_impl.dart';
+import 'package:sigede_flutter/modules/admin/data/repositories/credentials_institution.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/disable_capturista.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_all_credentials.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_by_name_institution.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturista.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_one_institution.dart';
@@ -137,5 +140,9 @@ void setupLocator(){
   locator.registerFactory<CapturerRepository>(() => CapturerRepositoryImpl(capturerDataSource: locator()));
   locator.registerFactory<GetByNameInstitution>(() => GetByNameInstitution(repository: locator()));  
   locator.registerFactory<GetOneInstitution>(() => GetOneInstitution(repository: locator()));  
+
+  locator.registerFactory<CredentialsRemoteDataSource>(() => CredentialsRemoteDataSourceImpl(dioClient: locator()));
+  locator.registerFactory<CredentialsInstitutionRepository>(() => CredentialsInstitutionRepositoryImpl(remoteDataSource: locator()));
+  locator.registerFactory<GetAllCredentials>(() => GetAllCredentials(repository: locator()));
 }
 

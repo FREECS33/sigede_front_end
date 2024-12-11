@@ -6,6 +6,7 @@ import 'package:sigede_flutter/modules/admin/domain/entities/institution_info_en
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_by_name_institution.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_capturistas.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_one_institution.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/register_capturist.dart';
 import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_capturist.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
 
@@ -65,15 +66,9 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
       final getCapturistasUseCase = getIt<GetCapturistas>();
       final result = await getCapturistasUseCase.call(institutionId);
 
-      if (result.isEmpty) {
-        setState(() {
-          _notData = true;
-        });
-      } else {
-        setState(() {
-          capturistas = result;
-        });
-      }
+      setState(() {
+        capturistas = result;
+      });
     } catch (e) {
       setState(() {
         _notData = true;
@@ -282,6 +277,23 @@ class _CapturistasScreenState extends State<CapturistasScreen> {
                         ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RegisterCapturist(
+                        
+                      )));
+        },
+        backgroundColor: Colors.black,
+        child: const IconTheme(
+          data: IconThemeData(
+            color: Colors.white,
+          ),
+          child: Icon(Icons.add),
         ),
       ),
     );

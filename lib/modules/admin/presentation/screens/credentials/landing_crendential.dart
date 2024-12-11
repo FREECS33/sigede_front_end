@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sigede_flutter/modules/admin/data/models/capturista_model.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/credential_entity.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_all_credentials.dart';
 import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_credential.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
 
@@ -13,12 +16,14 @@ class LandingCrendential extends StatefulWidget {
 class _LandingCrendentialState extends State<LandingCrendential> {
   String? logo;
   String? name;
+  int? institutionId;
+  int? userAccoutId;
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _notData = false;
-  List<CredentialEntity> credentials = [];
-
+  List<ResponseCredentialInstitutionEntity> credentialList = [];
+  final GetIt getIt = GetIt.instance;
   @override
   void initState() {
     super.initState();
@@ -36,6 +41,8 @@ class _LandingCrendentialState extends State<LandingCrendential> {
     try {
       logo = await TokenService.getLogo();
       name = await TokenService.getInstitutionName();
+      institutionId = await TokenService.getInstituionId();
+      userAccoutId = await TokenService.getUserId();
       setState(() {
         _isLoading = false;
       });
@@ -66,8 +73,16 @@ class _LandingCrendentialState extends State<LandingCrendential> {
       _isLoading = true;
       _notData = false;
     });
-    try {
-      // Call to the API
+    try {      
+      final credentials = await getIt<GetAllCredentials>();
+      final response = await credentials.call(userAccoutId??0);
+      if(response.isNotEmpty){
+        setState(() {
+          _notData = false;
+          _isLoading = false;
+          credentialList = response;
+        });
+      }
       setState(() {
         _notData = true;
         _isLoading = false;
@@ -87,6 +102,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
         backgroundColor: Colors.transparent,
         toolbarHeight: 30,
       ),
+      backgroundColor: Colors.white,
       body: RefreshIndicator(
         onRefresh: getAllCredentials,
         color: Colors.black,
@@ -217,9 +233,11 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                         )
                       : Expanded(
                           child: ListView.builder(
-                            itemCount: credentials.length,
+                            itemCount: credentialList.length,
                             itemBuilder: (context, index) {
-                              return CustomListCredential();
+                              return CustomListCredential(
+                                credential: credentialList[index],
+                              );
                             },
                           ),
                         ),

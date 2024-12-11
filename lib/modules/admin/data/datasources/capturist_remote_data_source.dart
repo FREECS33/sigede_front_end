@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:sigede_flutter/core/utils/dio_client.dart';
 import 'package:sigede_flutter/modules/admin/data/models/capturista_model.dart';
 import 'package:sigede_flutter/modules/admin/data/models/institution_capturer_model.dart';
-import 'package:sigede_flutter/modules/superadmin/data/models/admin_model.dart';
 
 abstract class CapturistRemoteDataSource {
   Future<List<CapturistaModel>> getCapturistasByInstitution(int institutionId);
@@ -103,5 +102,6 @@ class CapturistRemoteDataSourceImpl implements CapturistRemoteDataSource {
     } catch (e) {
       throw Exception('Error en getCapturistasByInstitution: $e');
     }
-  }
+  }  
+  
 }

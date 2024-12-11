@@ -7,7 +7,7 @@ class GetCapturistas {
 
   GetCapturistas({required this.repository});
 
-  Future<List<CapturistaEntity>> call(int institutionId) {
-    return repository.getCapturistasByInstitution(institutionId);
+  Future<List<CapturistaEntity>> call(int institutionId) async{
+    return await repository.getCapturistasByInstitution(institutionId);
   }
 }

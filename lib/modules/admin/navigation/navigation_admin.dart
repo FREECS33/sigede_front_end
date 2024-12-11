@@ -25,8 +25,6 @@ class _NavigationAdminState extends State<NavigationAdmin> {
         );
       },
     ),
-    const LandingCrendential(),
-    const CredentialForm(),
     const ProfileAdmin()
   ];
 
@@ -61,15 +59,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               label: 'Inicio',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.badge_outlined),
-              label: 'Credenciales',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.post_add_outlined),
-              label: 'Formulario',
-            ),
+            ),            
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_outlined),
               label: 'Perfil',
