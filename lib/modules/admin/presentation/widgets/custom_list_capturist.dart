@@ -131,7 +131,10 @@ class _CustomListCapturistState extends State<CustomListCapturist> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const UpdateCapturist()),
+                        builder: (context) => UpdateCapturist(
+                          capturista: widget.capturista,
+                          status: isActive,
+                        )),
                   );
               },
             ),
