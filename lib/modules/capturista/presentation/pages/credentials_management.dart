@@ -40,9 +40,7 @@ class _CredentialsManagementState extends State<CredentialsManagement> {
         });
         return;
       }
-      final institutionResponse = await Dio().get(
-        'http://localhost:8080/api/institutions/$institutionId',
-      );
+      final institutionResponse = await Dio().get('http://93.83.9.7.145:8081/api/institutions/$institutionId',); // API
       final institutionData = institutionResponse.data['data'];
       setState(() {
         institutionName = institutionData['name'];
@@ -127,11 +125,11 @@ class _CredentialsManagementState extends State<CredentialsManagement> {
                       flex: 1,
                       child: institutionLogo != null
                           ? Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Logo-utez.png/460px-Logo-utez.png',
+                              institutionLogo!,
                               height: 90,
                               width: 110,
                             )
-                          : const SizedBox.shrink()),
+                          : const Icon(Icons.image_not_supported_outlined)),
                   const SizedBox(width: 8.0),
                   Expanded(
                     flex: 2,

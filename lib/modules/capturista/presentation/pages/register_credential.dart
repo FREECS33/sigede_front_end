@@ -49,15 +49,14 @@ class _RegisterCredentialState extends State<RegisterCredential> {
 
       // Obtener userAccountId con el email
       final userResponse = await _dio
-          .get('http://localhost:8080/api/capturists/get-capturistId/$email');
+          .get('http://93.83.9.7.145:8081/api/capturists/get-capturistId/$email');
       if (userResponse.statusCode != 200) {
         throw Exception("Error al obtener el ID de usuario.");
       }
       userAccountId = userResponse.data['userAccountId'];
 
       // Obtener formulario dinámico
-      final formResponse = await _dio.get(
-          'http://localhost:8080/api/user-info/get-institution-form/$institutionId');
+      final formResponse = await _dio.get('http://93.83.9.7.145:8081/api/user-info/get-institution-form/$institutionId'); // API
       if (formResponse.statusCode != 200) {
         throw Exception("Error al obtener el formulario dinámico.");
       }
@@ -86,7 +85,7 @@ class _RegisterCredentialState extends State<RegisterCredential> {
   if (fullname == null || fullname!.isEmpty || _image == null) {
     await showErrorDialog(
         context: context,
-        message: "Nombre completo y foto son obligatorios.");
+        message: "Nombre y foto son obligatorios.");
     return;
   }
 
@@ -130,7 +129,8 @@ class _RegisterCredentialState extends State<RegisterCredential> {
     };
 
     final response = await _dio.post(
-      'http://localhost:8080/api/credentials/new-credential',
+        // API  
+      'http://93.83.9.7.145:8081/api/credentials/new-credential',
       data: requestPayload,
     );
 
