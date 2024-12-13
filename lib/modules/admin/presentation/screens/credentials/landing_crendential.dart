@@ -15,29 +15,7 @@ class LandingCrendential extends StatefulWidget {
 
 class _LandingCrendentialState extends State<LandingCrendential> {
   final dioClient = DioClient();
-  List credenciales = [
-    {
-      'credentialId': 1,
-      'userPhoto':
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-      'fullname': 'Nombre del usuario',
-      'expirationDate': DateTime.now(),
-    },
-    {
-      'credentialId': 2,
-      'userPhoto':
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-      'fullname': 'Nombre del usuario',
-      'expirationDate': DateTime.now(),
-    },
-    {
-      'credentialId': 3,
-      'userPhoto':
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-      'fullname': 'Nombre del usuario',
-      'expirationDate': DateTime.now(),
-    },
-  ];
+  List credenciales = [];
   int? institutionId;
   String? fullname;
   String? baseUrl;
@@ -63,32 +41,32 @@ class _LandingCrendentialState extends State<LandingCrendential> {
   }
 
   Future<void> getCredenciales() async {
-    /*
+    
     setState(() {
       _isLoading = true;
     });
-    */
+    
     try {
       final response = await dioClient.dio.post(
           '/api/credentials/get-all-by-institution',
           data: {'institutionId': institutionId, 'fullname': fullname});
       if (response.statusCode == 200) {
-        /*
+        
         setState(() {
           credenciales =
               List<Map<String, dynamic>>.from(response.data['data']['content']);
           _isLoading = false;
           _notData = false;
         });
-        */
-        /*
+        
+        
         if (credenciales.isEmpty) {
           setState(() {
             _isLoading = false;
             _notData = true;
           });
         }
-        */
+        
       } else {
         setState(() {
           _isLoading = false;
@@ -96,12 +74,11 @@ class _LandingCrendentialState extends State<LandingCrendential> {
         });
       }
     } catch (e) {
-      /*
       setState(() {
         _isLoading = false;
         _notData = true;
       });
-      */
+      
       print(e);
     }
   }
