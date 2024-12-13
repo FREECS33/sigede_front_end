@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/credential_navigator.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/landing_crendential.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/form/credential_form.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/home/home_capturer.dart';
@@ -19,13 +20,21 @@ class _NavigationAdminState extends State<NavigationAdmin> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
     Navigator(
+      key: GlobalKey<NavigatorState>(),
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
           builder: (context) => const HomeCapturer(),
         );
       },
     ),
-    const LandingCrendential(),
+    Navigator(
+      key: GlobalKey<NavigatorState>(),
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) => const CredentialNavigator(),
+        );
+      },
+    ),
     const ProfileAdmin()
   ];
 
@@ -34,7 +43,6 @@ class _NavigationAdminState extends State<NavigationAdmin> {
       _selectedIndex = index;
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +63,16 @@ class _NavigationAdminState extends State<NavigationAdmin> {
           ],
         ),
         child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed, 
+          type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               label: 'Inicio',
-            ),            
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.badge_outlined),
+              label: 'Credenciales',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_outlined),
               label: 'Perfil',
