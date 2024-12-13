@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sigede_flutter/modules/admin/data/models/capturista_model.dart';
 import 'package:sigede_flutter/modules/admin/domain/entities/credential_entity.dart';
 import 'package:sigede_flutter/modules/admin/domain/use_cases/get_all_credentials.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/edit_credentials.dart';
 import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_credential.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
 
@@ -24,14 +24,14 @@ class _LandingCrendentialState extends State<LandingCrendential> {
   bool _notData = false;
   List<ResponseCredentialInstitutionEntity> credentialList = [];
   final GetIt getIt = GetIt.instance;
+
   @override
   void initState() {
     super.initState();
-    // Inicializa el estado del switch con la información recibida.
     Future.delayed(Duration.zero, () async {
       await loadData();
       await getAllCredentials();
-    });    
+    });
   }
 
   Future<void> loadData() async {
@@ -53,40 +53,26 @@ class _LandingCrendentialState extends State<LandingCrendential> {
     }
   }
 
-  Future<void> _loadCredentials(String search) async {
-    setState(() {
-      _isLoading = true;
-      _notData = false;
-    });
-    try {
-      // Call to the API
-    } catch (e) {
-      setState(() {
-        _notData = true;
-        _isLoading = false;
-      });
-    }
-  }
-
   Future<void> getAllCredentials() async {
     setState(() {
       _isLoading = true;
       _notData = false;
     });
-    try {      
+    try {
       final credentials = await getIt<GetAllCredentials>();
-      final response = await credentials.call(userAccoutId??0);
-      if(response.isNotEmpty){
+      final response = await credentials.call(userAccoutId ?? 0);
+      if (response.isNotEmpty) {
         setState(() {
           _notData = false;
           _isLoading = false;
           credentialList = response;
         });
+      } else {
+        setState(() {
+          _notData = true;
+          _isLoading = false;
+        });
       }
-      setState(() {
-        _notData = true;
-        _isLoading = false;
-      });
     } catch (e) {
       setState(() {
         _notData = true;
@@ -177,31 +163,25 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                     child: TextFormField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Buscar credencial', // Texto placeholder
-                        hintStyle: const TextStyle(
-                            color: Colors.grey), // Color del placeholder
-                        border:
-                            InputBorder.none, // Quita el borde predeterminado
+                        hintText: 'Buscar credencial',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
                         suffixIcon: IconButton(
                           icon: const Icon(
                             Icons.search,
-                            color: Colors.grey, // Icono de búsqueda
+                            color: Colors.grey,
                           ),
                           onPressed: () {
-                            // Llamar a la función al presionar el icono
-                            _loadCredentials(_searchController.text);
+                            // Agrega funcionalidad de búsqueda si es necesario
                           },
                         ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 30.0,
-              ),
+              const SizedBox(height: 30.0),
               _isLoading
                   ? const Expanded(
                       child: Center(
@@ -224,8 +204,9 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                                 Text(
                                   "Credenciales no encontradas",
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ],
                             ),
@@ -235,9 +216,22 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                           child: ListView.builder(
                             itemCount: credentialList.length,
                             itemBuilder: (context, index) {
-                              return CustomListCredential(
-                                credential: credentialList[index],
-                              );
+                              return GestureDetector(
+onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EditCredentialScreen(
+        credentialId: credentialList[index].credentialId,
+      ),
+    ),
+  );
+},
+  child: CustomListCredential(
+    credential: credentialList[index],
+  ),
+);
+
                             },
                           ),
                         ),
