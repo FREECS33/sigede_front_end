@@ -130,53 +130,55 @@ class _RecoverpasswordscreenState extends State<Recoverpasswordscreen> {
                 const SizedBox(
                   height: 36.0,
                 ),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextFormField(
-                        readOnly: _isloading,
-                        validator: validateEmail,
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
-                          labelStyle: TextStyle(
-                            color: _isValidUserEmail
-                                ? Colors.grey // Si la validación es exitosa
-                                : Colors.red, // Si la validación falla
-                          ),
-                          suffixIcon: Icon(
-                            Icons.email_outlined,
-                            color: _isValidUserEmail
-                                ? Colors.grey // Si la validación es exitosa
-                                : Colors.red,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0,
+                SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          readOnly: _isloading,
+                          validator: validateEmail,
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Correo electrónico',
+                            labelStyle: TextStyle(
+                              color: _isValidUserEmail
+                                  ? Colors.grey // Si la validación es exitosa
+                                  : Colors.red, // Si la validación falla
                             ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0,
+                            suffixIcon: Icon(
+                              Icons.email_outlined,
+                              color: _isValidUserEmail
+                                  ? Colors.grey // Si la validación es exitosa
+                                  : Colors.red,
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.0,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.0,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
                 const Expanded(child: Column()),
