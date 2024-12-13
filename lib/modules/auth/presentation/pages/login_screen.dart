@@ -163,178 +163,180 @@ class _LoginscreenState extends State<Loginscreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Bienvenido',
-                    style: TextStyle(
-                      fontFamily: 'RubikOne',
-                      fontSize: 39,
-                      height: 1.2,
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Bienvenido',
+                      style: TextStyle(
+                        fontFamily: 'RubikOne',
+                        fontSize: 39,
+                        height: 1.2,
+                      ),
+                      textAlign:
+                          TextAlign.center, // Asegura que el texto esté centrado
                     ),
-                    textAlign:
-                        TextAlign.center, // Asegura que el texto esté centrado
-                  ),
-                  const SizedBox(height: 16),
-                  Image.asset(
-                    'assets/Logo_sigede.png',
-                    height: 150,
-                    width: 200,
-                  ),
-                  const SizedBox(
-                    height: 16.0,
-                  ),
-                  const Text(
-                    'SIGEDE',
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 8.0,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  TextFormField(
-                    validator: validateEmail,
-                    controller: _emailcontroller,
-                    decoration: InputDecoration(
-                      labelText: 'Correo electrónico',
-                      labelStyle: TextStyle(
-                        color: _isValidUserEmail
-                            ? Colors.grey // Si la validación es exitosa
-                            : Colors.red, // Si la validación falla
-                      ),
-                      suffixIcon: Icon(
-                        Icons.email_outlined,
-                        color: _isValidUserEmail
-                            ? Colors.grey // Si la validación es exitosa
-                            : Colors.red,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
+                    const SizedBox(height: 16),
+                    Image.asset(
+                      'assets/Logo_sigede.png',
+                      height: 150,
+                      width: 200,
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    obscureText: _isObscure,
-                    controller: _passwordcontroller,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      labelStyle: TextStyle(
-                        color: _isValidPassword
-                            ? Colors.grey // Si la validación es exitosa
-                            : Colors.red, // Si la validación falla
+                    const SizedBox(
+                      height: 16.0,
+                    ),
+                    const Text(
+                      'SIGEDE',
+                      style: TextStyle(
+                          fontSize: 18,
+                          letterSpacing: 8.0,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    TextFormField(
+                      validator: validateEmail,
+                      controller: _emailcontroller,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        labelStyle: TextStyle(
+                          color: _isValidUserEmail
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red, // Si la validación falla
+                        ),
+                        suffixIcon: Icon(
+                          Icons.email_outlined,
+                          color: _isValidUserEmail
+                              ? Colors.grey // Si la validación es exitosa
+                              : Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
                       ),
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isObscure = !_isObscure;
-                            });
-                          },
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      obscureText: _isObscure,
+                      controller: _passwordcontroller,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        labelStyle: TextStyle(
                           color: _isValidPassword
                               ? Colors.grey // Si la validación es exitosa
                               : Colors.red, // Si la validación falla
-                          icon: Icon(_isObscure
-                              ? Icons.visibility
-                              : Icons.visibility_off)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
                         ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isloading ? null : _loginSubmit,
-                      style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20))),
-                      child: _isloading
-                          ? const LoadingWidget() // Mostrar loading si está cargando
-                          : const Text(
-                              'Entrar',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  SizedBox(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Recoverpasswordscreen(),
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            color: _isValidPassword
+                                ? Colors.grey // Si la validación es exitosa
+                                : Colors.red, // Si la validación falla
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
                           ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Colors.transparent,
-                      ),
-                      child: const Text(
-                        'Olvide la contraseña',
-                        style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.black),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isloading ? null : _loginSubmit,
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20))),
+                        child: _isloading
+                            ? const LoadingWidget() // Mostrar loading si está cargando
+                            : const Text(
+                                'Entrar',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    SizedBox(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Recoverpasswordscreen(),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child: const Text(
+                          'Olvide la contraseña',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
