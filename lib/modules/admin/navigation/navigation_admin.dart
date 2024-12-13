@@ -25,6 +25,7 @@ class _NavigationAdminState extends State<NavigationAdmin> {
         );
       },
     ),
+    const LandingCrendential(),
     const ProfileAdmin()
   ];
 
