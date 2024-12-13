@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
@@ -13,14 +12,29 @@ class UploadDocument extends StatefulWidget {
 }
 
 class _UploadDocumentState extends State<UploadDocument> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        toolbarHeight: 30,
+      ),
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [Text('Hola')],
+      ),
+    );
+  }
+  /*
   File? _file;
   String? _fileName;
   bool _isLoading = false;
   // Función para seleccionar el archivo Word
   void _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
       type: FileType.custom,
-      allowedExtensions: ['doc', 'docx'],
+      allowedExtensions: ['doc','docs','docx'],
     );
 
     if (result != null) {
@@ -129,4 +143,5 @@ class _UploadDocumentState extends State<UploadDocument> {
       ),
     );
   }
+  */
 }

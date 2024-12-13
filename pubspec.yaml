@@ -19,7 +19,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   jwt_decoder: ^2.0.1
   intl: ^0.20.1
-  file_picker: ^8.1.5
+  
 
 dev_dependencies:
   flutter_test:

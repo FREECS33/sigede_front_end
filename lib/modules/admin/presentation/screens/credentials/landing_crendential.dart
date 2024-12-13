@@ -198,7 +198,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2, // Número de columnas
                               crossAxisSpacing:
-                                  10.0, // Espacio horizontal entre tarjetas
+                                  1.0, // Espacio horizontal entre tarjetas
                               mainAxisSpacing:
                                   10.0, // Espacio vertical entre tarjetas
                               childAspectRatio:
@@ -244,7 +244,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                                     child: Row(
                                       children: [
                                         CircleAvatar(
-                                          radius: 30,
+                                          radius: 20,
                                           backgroundImage: NetworkImage(
                                               credential['userPhoto']),
                                         ),
