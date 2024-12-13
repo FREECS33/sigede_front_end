@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sigede_flutter/shared/widgets.dart/loading_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UploadDocument extends StatefulWidget {
   const UploadDocument({super.key});
@@ -12,39 +11,12 @@ class UploadDocument extends StatefulWidget {
 }
 
 class _UploadDocumentState extends State<UploadDocument> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        toolbarHeight: 30,
-      ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [Text('Hola')],
-      ),
-    );
+  final Uri _url = Uri.parse('https://www.youtube.com/watch?v=kvj0__KPcFE');
+  Future<void> _launchUrl() async {
+  if (!await launchUrl(_url)) {
+    throw Exception('Could not launch $_url');
   }
-  /*
-  File? _file;
-  String? _fileName;
-  bool _isLoading = false;
-  // Función para seleccionar el archivo Word
-  void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.custom,
-      allowedExtensions: ['doc','docs','docx'],
-    );
-
-    if (result != null) {
-      setState(() {
-        _file = File(result.files.single.path!);
-        _fileName = result.files.single.name;
-      });
-    }
-  }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,94 +26,127 @@ class _UploadDocumentState extends State<UploadDocument> {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Instrucciones para Subir tu Plantilla',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'RubikOne',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Para generar documentos correctamente, asegúrate de que tu plantilla cumpla con los siguientes requisitos:',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Requisitos del Documento:',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 236, 63, 10)),
+              ),
+              const SizedBox(height: 8),
+              // Lista de requisitos
+              ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 children: [
-                  const Text('Hola'),
-                  // Botón para subir el archivo
-                  GestureDetector(
-                    onTap: _pickFile,
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.upload_file,
-                          size: 30,
-                          color: Colors.black,
-                        ),
-                      ),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                            child: Text(
+                                'El documento debe estar en formato .docx.')),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // Nombre del archivo seleccionado
-                  if (_fileName != null)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.brown[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Lista de campos\n$_fileName',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  const Divider(),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                            child: Text(
+                                'Incluye etiquetas para datos dinámicos:')),
+                      ],
                     ),
-                  Spacer(),
-
-                  // Botón para guardar
+                  ),
+                  const Divider(),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 140.0),
-                    child: SizedBox(
-                      width: 300,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_file != null) {
-                            print('Archivo cargado: ${_file!.path}');
-                          }
-                        },
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                    padding: const EdgeInsets.only(left: 32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          title: Text('\$name: Nombre del usuario.',
+                              style: TextStyle(color: Colors.blueAccent)),
                         ),
-                        child: _isLoading
-                            ? const LoadingWidget() // Mostrar loading si está cargando
-                            : Text(
-                                'Guardar',
-                                style: GoogleFonts.roboto(
-                                  textStyle: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                      ),
+                        ListTile(
+                          title: Text('\$expirationDate: Fecha de expiración.',
+                              style: TextStyle(color: Colors.blueAccent)),
+                        ),
+                        ListTile(
+                          title: Text(
+                            '\$tag: Campos dinámicos de la credencial. (Reemplaza "tag" por los campos que registraste en tu formulario).',
+                            style: TextStyle(color: Colors.blueAccent),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                            child: Text(
+                                'Para insertar imágenes, usa marcadores de posición con texto alternativo:')),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          title: Text(
+                              'PERSON_IMAGE: Imagen de perfil del usuario.',
+                              style: TextStyle(color: Colors.blueAccent)),
+                        ),
+                        ListTile(
+                          title: Text('QR_CODE: Código QR dinámico.',
+                              style: TextStyle(color: Colors.blueAccent)),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 16),
+              const Text(
+                'Recuerda que esta función solo esta disponible para usuarios con rol de administrador en la aplicación web.',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              
+            ],
           ),
         ),
       ),
     );
   }
-  */
 }

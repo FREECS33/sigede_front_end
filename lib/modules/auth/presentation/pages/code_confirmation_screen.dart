@@ -157,39 +157,41 @@ class _CodeConfirmationState extends State<CodeConfirmationScreen> {
                 const SizedBox(
                   height: 36.0,
                 ),
-                Form(
-                  key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        PinCodeTextField(
-                            readOnly: _isloading,
-                            appContext: context,
-                            length: 6,
-                            controller: _codeController,
-                            onChanged: (value) {
-                              setState(() {
-                                _code = value;
-                              });
-                            },
-                            onTap: () async {
-                              await _checkClipboardForCode();
-                            },
-                            validator: validateCode,
-                            textStyle: const TextStyle(color: Colors.black),
-                            pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius: BorderRadius.circular(8),
-                              fieldHeight: 50,
-                              fieldWidth: 40,
-                              activeColor: Colors.black,
-                              selectedColor: Colors.red,
-                              inactiveColor: Colors.red,
-                            ),
-                            keyboardType: TextInputType.number,
-                            enablePinAutofill: true),
-                      ],
+                SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          PinCodeTextField(
+                              readOnly: _isloading,
+                              appContext: context,
+                              length: 6,
+                              controller: _codeController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _code = value;
+                                });
+                              },
+                              onTap: () async {
+                                await _checkClipboardForCode();
+                              },
+                              validator: validateCode,
+                              textStyle: const TextStyle(color: Colors.black),
+                              pinTheme: PinTheme(
+                                shape: PinCodeFieldShape.box,
+                                borderRadius: BorderRadius.circular(8),
+                                fieldHeight: 50,
+                                fieldWidth: 40,
+                                activeColor: Colors.black,
+                                selectedColor: Colors.red,
+                                inactiveColor: Colors.red,
+                              ),
+                              keyboardType: TextInputType.number,
+                              enablePinAutofill: true),
+                        ],
+                      ),
                     ),
                   ),
                 ),
