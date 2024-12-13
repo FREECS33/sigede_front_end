@@ -1,23 +1,24 @@
 import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
+import 'package:intl/intl.dart';
 import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 import 'package:sigede_flutter/shared/widgets.dart/success_dialog.dart';
-import 'package:intl/intl.dart';
 
-class RegisterCredentialScreen extends StatefulWidget {
-  const RegisterCredentialScreen({super.key});
+class EditCredentialScreen extends StatefulWidget {
+  final int credentialId;
+
+  const EditCredentialScreen({required this.credentialId, Key? key}) : super(key: key);
 
   @override
-  _RegisterCredentialScreenState createState() => _RegisterCredentialScreenState();
+  _EditCredentialScreenState createState() => _EditCredentialScreenState();
 }
 
-class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
+class _EditCredentialScreenState extends State<EditCredentialScreen> {
   final Dio _dio = Dio(BaseOptions(baseUrl: dotenv.env['BASE_URL'] ?? ''));
   final CloudinaryService _cloudinaryService = CloudinaryService();
   final _formKey = GlobalKey<FormState>();
@@ -27,65 +28,54 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
 
   List<Map<String, dynamic>> fields = [];
   File? _selectedImage;
+  String? _imageUrl;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadFields();
+    _loadCredentialDetails();
   }
 
-  Future<void> _loadFields() async {
+Future<void> _loadCredentialDetails() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    if (widget.credentialId == null) {
+      throw Exception('El ID de la credencial es nulo.');
+    }
+
+    final response = await _dio.get('/api/credentials/${widget.credentialId}');
+
+    if (response.statusCode == 200 && response.data != null) {
+      final credentialData = response.data;
+
+      setState(() {
+        _fullnameController.text = credentialData['fullname'] ?? '';
+        _expirationDateController.text = credentialData['expirationDate'] ?? '';
+        _imageUrl = credentialData['userPhoto'];
+        fields = List<Map<String, dynamic>>.from(credentialData['fields'] ?? []).map((field) {
+          return {
+            'tag': field['tag'],
+            'value': field['value'] ?? '',
+          };
+        }).toList();
+      });
+    } else {
+      throw Exception('Datos de la credencial no encontrados.');
+    }
+  } catch (e) {
+    await showErrorDialog(context: context, message: 'Error al cargar los detalles: $e');
+  } finally {
     setState(() {
-      _isLoading = true;
+      _isLoading = false;
     });
-
-    try {
-      final institutionId = await TokenService.getInstituionId();
-      if (institutionId == null) {
-        throw Exception("Institution ID no encontrado.");
-      }
-
-      final response = await _dio.get('/api/user-info/get-institution-form/$institutionId');
-
-      if (response.statusCode == 200 && response.data != null) {
-        final userInfo = List<Map<String, dynamic>>.from(response.data['userInfo'] ?? []);
-        final fieldsData = List<Map<String, dynamic>>.from(response.data['fields'] ?? []);
-
-        setState(() {
-          fields = fieldsData.map((field) {
-            final userInfoItem = userInfo.firstWhere(
-              (info) => info['userInfoId'] == field['userInfoId'],
-              orElse: () => {'tag': 'Campo desconocido', 'type': 'Texto'},
-            );
-
-            return {
-              'tag': userInfoItem['tag'],
-              'type': userInfoItem['type'],
-              'required': field['required'],
-              'value': '',
-            };
-          }).toList();
-        });
-      }
-    } catch (e) {
-      await showErrorDialog(context: context, message: 'Error al cargar los campos: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
+}
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
 
   Future<void> _selectExpirationDate() async {
     final selectedDate = await showDatePicker(
@@ -118,8 +108,17 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
     }
   }
 
-  Future<void> _handleSubmit() async {
-    if (!_formKey.currentState!.validate() || _selectedImage == null) {
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    if (!_formKey.currentState!.validate()) {
       await showErrorDialog(context: context, message: 'Por favor, completa todos los campos obligatorios.');
       return;
     }
@@ -129,36 +128,31 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
     });
 
     try {
-      final imageUrl = await _cloudinaryService.uploadImage(_selectedImage!);
-      if (imageUrl == null) {
-        throw Exception("Error al subir la imagen.");
+      String? uploadedImageUrl = _imageUrl;
+
+      if (_selectedImage != null) {
+        uploadedImageUrl = await _cloudinaryService.uploadImage(_selectedImage!);
+        if (uploadedImageUrl == null) {
+          throw Exception('Error al subir la imagen.');
+        }
       }
 
-      final institutionId = await TokenService.getInstituionId();
-      final userAccountId = await TokenService.getUserId();
-
-      if (institutionId == null || userAccountId == null) {
-        throw Exception("Datos del usuario o institución no disponibles.");
-      }
-
-      final formData = {
-        'userAccountId': userAccountId,
-        'institutionId': institutionId,
+      final updatedData = {
         'fullname': _fullnameController.text,
+        'userPhoto': uploadedImageUrl,
         'expirationDate': _expirationDateController.text,
-        'userPhoto': imageUrl,
         'fields': fields.map((field) => {
           'tag': field['tag'],
           'value': field['value'],
         }).toList(),
       };
 
-      await _dio.post('/api/credentials/new-credential', data: formData);
+      await _dio.put('/api/credentials/${widget.credentialId}', data: updatedData);
 
-      await showSuccessDialog(context: context, message: 'Credencial registrada con éxito.');
+      await showSuccessDialog(context: context, message: 'Cambios guardados con éxito.');
       Navigator.of(context).pop();
     } catch (e) {
-      await showErrorDialog(context: context, message: 'Error al registrar la credencial: $e');
+      await showErrorDialog(context: context, message: 'Error al guardar los cambios: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -187,7 +181,7 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Registrar Credencial',
+                      'Editar Credencial',
                       style: TextStyle(
                         fontFamily: 'RubikOne',
                         fontSize: 37,
@@ -269,7 +263,12 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: _selectedImage == null
-                            ? const Center(child: Text('Selecciona una imagen'))
+                            ? (_imageUrl == null
+                                ? const Center(child: Text('Selecciona una imagen'))
+                                : Image.network(
+                                    _imageUrl!,
+                                    fit: BoxFit.cover,
+                                  ))
                             : Image.file(
                                 _selectedImage!,
                                 fit: BoxFit.cover,
@@ -291,6 +290,7 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
+                                initialValue: field['value'],
                                 decoration: InputDecoration(
                                   labelText: 'Ingresa ${field['tag']}',
                                   labelStyle: const TextStyle(
@@ -302,12 +302,6 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                                 onChanged: (value) {
                                   field['value'] = value;
                                 },
-                                validator: (value) {
-                                  if (field['required'] && (value == null || value.isEmpty)) {
-                                    return 'Este campo es obligatorio';
-                                  }
-                                  return null;
-                                },
                               ),
                             ],
                           ),
@@ -317,7 +311,7 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed: _handleSubmit,
+                          onPressed: _saveChanges,
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(150, 50),
                             backgroundColor: Colors.black,
@@ -326,7 +320,7 @@ class _RegisterCredentialScreenState extends State<RegisterCredentialScreen> {
                             ),
                           ),
                           child: const Text(
-                            'Registrar',
+                            'Guardar',
                             style: TextStyle(
                               fontFamily: 'RubikOne',
                               fontSize: 16,

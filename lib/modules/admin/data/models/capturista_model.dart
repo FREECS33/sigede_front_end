@@ -62,7 +62,7 @@ class CredentialInstitutionModel extends CredentialInstitutionEntity {
 
 class ResponseCredentialInstitutionModel extends ResponseCredentialInstitutionEntity{
   const ResponseCredentialInstitutionModel({
-    required super.credentailId,
+    required super.credentialId,
     required super.fullname,
     required super.userPhoto,
     required super.expirationDate,
@@ -70,7 +70,7 @@ class ResponseCredentialInstitutionModel extends ResponseCredentialInstitutionEn
 
   factory ResponseCredentialInstitutionModel.fromJson(Map<String, dynamic> json) {
     return ResponseCredentialInstitutionModel(
-      credentailId: json['credentailId'],
+      credentialId: json['credentailId'],
       fullname: json['fullname'],
       userPhoto: json['userPhoto'],
       expirationDate: json['expirationDate'],

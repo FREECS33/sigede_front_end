@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:sigede_flutter/core/utils/dio_client.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/credential_detail.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/upload_document.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sigede_flutter/modules/admin/domain/entities/credential_entity.dart';
+import 'package:sigede_flutter/modules/admin/domain/use_cases/get_all_credentials.dart';
+import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/edit_credentials.dart';
+import 'package:sigede_flutter/modules/admin/presentation/widgets/custom_list_credential.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
-import 'package:intl/intl.dart';
 
 class LandingCrendential extends StatefulWidget {
   const LandingCrendential({super.key});
@@ -14,72 +14,70 @@ class LandingCrendential extends StatefulWidget {
 }
 
 class _LandingCrendentialState extends State<LandingCrendential> {
-  final dioClient = DioClient();
-  List credenciales = [];
-  int? institutionId;
-  String? fullname;
-  String? baseUrl;
   String? logo;
   String? name;
+  int? institutionId;
+  int? userAccoutId;
+  final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _notData = false;
+  List<ResponseCredentialInstitutionEntity> credentialList = [];
+  final GetIt getIt = GetIt.instance;
+
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
       await loadData();
-      await getCredenciales();
+      await getAllCredentials();
     });
   }
 
   Future<void> loadData() async {
-    institutionId = await TokenService.getInstituionId();
-    fullname = await TokenService.getInstitutionName();
-    logo = await TokenService.getLogo();
-    name = await TokenService.getInstitutionName();
-    baseUrl = dotenv.env['BASE_URL'];
-  }
-
-  Future<void> getCredenciales() async {
-    
     setState(() {
       _isLoading = true;
     });
-    
     try {
-      final response = await dioClient.dio.post(
-          '/api/credentials/get-all-by-institution',
-          data: {'institutionId': institutionId, 'fullname': fullname});
-      if (response.statusCode == 200) {
-        
+      logo = await TokenService.getLogo();
+      name = await TokenService.getInstitutionName();
+      institutionId = await TokenService.getInstituionId();
+      userAccoutId = await TokenService.getUserId();
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> getAllCredentials() async {
+    setState(() {
+      _isLoading = true;
+      _notData = false;
+    });
+    try {
+      final credentials = await getIt<GetAllCredentials>();
+      final response = await credentials.call(userAccoutId ?? 0);
+      if (response.isNotEmpty) {
         setState(() {
-          credenciales =
-              List<Map<String, dynamic>>.from(response.data['data']['content']);
-          _isLoading = false;
           _notData = false;
+          _isLoading = false;
+          credentialList = response;
         });
-        
-        
-        if (credenciales.isEmpty) {
-          setState(() {
-            _isLoading = false;
-            _notData = true;
-          });
-        }
-        
       } else {
         setState(() {
-          _isLoading = false;
           _notData = true;
+          _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _isLoading = false;
         _notData = true;
+        _isLoading = false;
       });
-      
-      print(e);
     }
   }
 
@@ -92,11 +90,11 @@ class _LandingCrendentialState extends State<LandingCrendential> {
       ),
       backgroundColor: Colors.white,
       body: RefreshIndicator(
-        onRefresh: getCredenciales,
+        onRefresh: getAllCredentials,
+        color: Colors.black,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 'Credenciales',
@@ -105,19 +103,18 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                   fontSize: 37,
                   height: 1.2,
                 ),
-                textAlign:
-                    TextAlign.center, // Asegura que el texto esté centrado
+                textAlign: TextAlign.center,
               ),
               SizedBox(
                 width: double.infinity,
-                height: 100,
+                height: 120,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
                       logo ?? '',
-                      width: 125,
-                      height: 50,
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.image_not_supported,
@@ -129,7 +126,7 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                     SizedBox(
                       width: 150,
                       child: Text(
-                        name ?? 'Nombre de la institución',
+                        name ?? '',
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -141,11 +138,56 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16.0),
+              Form(
+                key: _formKey,
+                child: Center(
+                  child: Container(
+                    width: 500,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6F5F5),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: const Color(0xFF917D62),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Buscar credencial',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            // Agrega funcionalidad de búsqueda si es necesario
+                          },
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30.0),
               _isLoading
                   ? const Expanded(
                       child: Center(
-                        child: CircularProgressIndicator(color: Colors.black),
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                        ),
                       ),
                     )
                   : _notData
@@ -160,121 +202,41 @@ class _LandingCrendentialState extends State<LandingCrendential> {
                                   color: Colors.grey,
                                 ),
                                 Text(
-                                  "No se encontraron credenciales",
+                                  "Credenciales no encontradas",
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         )
                       : Expanded(
-                          child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // Número de columnas
-                              crossAxisSpacing:
-                                  1.0, // Espacio horizontal entre tarjetas
-                              mainAxisSpacing:
-                                  10.0, // Espacio vertical entre tarjetas
-                              childAspectRatio:
-                                  2, // Relación ancho-alto de las tarjetas
-                            ),
-                            itemCount:
-                                credenciales.length, // Número total de tarjetas
+                          child: ListView.builder(
+                            itemCount: credentialList.length,
                             itemBuilder: (context, index) {
-                              final credential = credenciales[
-                                  index]; // Obtener cada credencial
-                              return Card(
-                                color: const Color(0xFFF6F5F5),
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 16.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  side: const BorderSide(
-                                    color: Color(0xFF917D62), // Color del borde
-                                    width: 1.5, // Grosor del borde
-                                  ),
-                                ),
-                                elevation: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return CredentialDetail(
-                                            credentialId:
-                                                credential['credentialId'],
-                                            userPhoto: credential['userPhoto'],
-                                            fullname: credential['fullname'],
-                                            expirationDate:
-                                                credential['expirationDate'],
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundImage: NetworkImage(
-                                              credential['userPhoto']),
-                                        ),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                credential['fullname'],
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                DateFormat('dd/MM/yyyy').format(
-                                                    credential[
-                                                        'expirationDate']),
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return GestureDetector(
+onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EditCredentialScreen(
+        credentialId: credentialList[index].credentialId,
+      ),
+    ),
+  );
+},
+  child: CustomListCredential(
+    credential: credentialList[index],
+  ),
+);
+
                             },
                           ),
                         ),
             ],
           ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const UploadDocument()));
-        },
-        backgroundColor: Colors.black,
-        child: const IconTheme(
-          data: IconThemeData(
-            color: Colors.white,
-          ),
-          child: Icon(Icons.document_scanner_outlined),
         ),
       ),
     );

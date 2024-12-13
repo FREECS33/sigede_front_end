@@ -15,10 +15,10 @@ class CredentialInstitutionEntity {
 }
 
 class ResponseCredentialInstitutionEntity {
-  final int credentailId;
+  final int credentialId;
   final String fullname;
   final String userPhoto;
   final DateTime expirationDate;
 
-  const ResponseCredentialInstitutionEntity({required this.credentailId, required this.fullname, required this.userPhoto, required this.expirationDate});
+  const ResponseCredentialInstitutionEntity({required this.credentialId, required this.fullname, required this.userPhoto, required this.expirationDate});
 }
