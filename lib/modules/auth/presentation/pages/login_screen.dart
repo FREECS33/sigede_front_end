@@ -53,6 +53,7 @@ class _LoginscreenState extends State<Loginscreen> {
           await TokenService.saveToken(result.token);
           await TokenService.saveEmail(result.email);
           await TokenService.saveInstitutionId(result.institutionId);
+          await TokenService.saveUserId(result.userId);
           final response = JwtDecoder.getRoleFromToken(result.token);
           Navigator.pushReplacement(
             context,
@@ -158,6 +159,7 @@ class _LoginscreenState extends State<Loginscreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

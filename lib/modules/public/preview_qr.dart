@@ -22,7 +22,7 @@ class _PreviewQRState extends State<PreviewQR> {
    Future<void> _loadCredentialData() async {
     try {
       final response = await Dio().get(
-        'http://localhost:8080/api/credentials/${widget.credentialId}',
+        'http://93.83.9.7.145:8081/api/credentials/${widget.credentialId}',
       );
       setState(() {
         credentialData = response.data['data'];

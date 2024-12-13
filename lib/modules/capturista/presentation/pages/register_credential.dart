@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_web/image_picker_web.dart'; // Agregar esto para la web
 import 'package:sigede_flutter/core/utils/cloudinary_service.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
 import 'package:flutter/foundation.dart'; // Para detección de plataforma
@@ -50,15 +49,14 @@ class _RegisterCredentialState extends State<RegisterCredential> {
 
       // Obtener userAccountId con el email
       final userResponse = await _dio
-          .get('http://localhost:8080/api/capturists/get-capturistId/$email');
+          .get('http://93.83.9.7.145:8081/api/capturists/get-capturistId/$email');
       if (userResponse.statusCode != 200) {
         throw Exception("Error al obtener el ID de usuario.");
       }
       userAccountId = userResponse.data['userAccountId'];
 
       // Obtener formulario dinámico
-      final formResponse = await _dio.get(
-          'http://localhost:8080/api/user-info/get-institution-form/$institutionId');
+      final formResponse = await _dio.get('http://93.83.9.7.145:8081/api/user-info/get-institution-form/$institutionId'); // API
       if (formResponse.statusCode != 200) {
         throw Exception("Error al obtener el formulario dinámico.");
       }
@@ -82,31 +80,12 @@ class _RegisterCredentialState extends State<RegisterCredential> {
     }
   }
 
-  // Selecciona una imagen (móvil o web)
-  Future<void> _pickImage(ImageSource source) async {
-    if (kIsWeb) {
-      final pickedFile = await ImagePickerWeb.getImageAsFile();
-      if (pickedFile != null) {
-        setState(() {
-          _image = pickedFile; // Guardamos la imagen en el formato web
-        });
-      }
-    } else {
-      final pickedFile = await _picker.pickImage(source: source);
-      if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path); // Para móvil, usamos File
-        });
-      }
-    }
-  }
-
   // Registrar la credencial
   Future<void> registerCredential() async {
   if (fullname == null || fullname!.isEmpty || _image == null) {
     await showErrorDialog(
         context: context,
-        message: "Nombre completo y foto son obligatorios.");
+        message: "Nombre y foto son obligatorios.");
     return;
   }
 
@@ -150,7 +129,8 @@ class _RegisterCredentialState extends State<RegisterCredential> {
     };
 
     final response = await _dio.post(
-      'http://localhost:8080/api/credentials/new-credential',
+        // API  
+      'http://93.83.9.7.145:8081/api/credentials/new-credential',
       data: requestPayload,
     );
 
@@ -167,6 +147,43 @@ class _RegisterCredentialState extends State<RegisterCredential> {
     });
   }
 }
+
+void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Tomar una foto'),
+                onTap: () async {
+                  final XFile? photo =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  setState(() => _image = photo);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Seleccionar desde galería'),
+                onTap: () async {
+                  final XFile? photo =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  setState(() => _image = photo);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
 
   @override
@@ -235,65 +252,30 @@ class _RegisterCredentialState extends State<RegisterCredential> {
                 children: [
                   const SizedBox(height: 20),
                   GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 120,
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                const Text('Selecciona una opción'),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        _pickImage(ImageSource.camera);
-                                      },
-                                      label: const Text('Cámara'),
-                                      icon: const Icon(Icons.camera),
-                                    ),
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        _pickImage(ImageSource.gallery);
-                                      },
-                                      label: const Text('Galería'),
-                                      icon: const Icon(Icons.photo_library),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: Container(
+                    onTap: _showImagePickerOptions,
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.grey[300],
+            child: _image != null
+                ? ClipOval(
+                    child: Image.file(
+                      File(_image!.path),
+                      fit: BoxFit.cover,
                       width: 100,
                       height: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: _image == null
-                          ? const Icon(Icons.add_a_photo,
-                              size: 50, color: Colors.grey)
-                          : kIsWeb
-                              ? Image.network(
-                                  _image.toString(), // Usar la URL de la imagen subida
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.file(
-                                  _image is File ? _image : File(''),
-                                  fit: BoxFit.cover,
-                                ),
                     ),
+                  )
+                : const Icon(
+                    Icons.camera_alt,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+          ),
+        ),
+        if (_image != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Text('Imagen seleccionada: ${_image!.name}'),
                   ),
                   const SizedBox(height: 20),
                   TextFormField(

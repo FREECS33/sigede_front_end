@@ -1,4 +1,5 @@
 import 'package:sigede_flutter/modules/admin/domain/entities/capturista_entity.dart';
+import 'package:sigede_flutter/modules/admin/domain/entities/credential_entity.dart';
 
 class CapturistaModel extends CapturistaEntity {
   const CapturistaModel({
@@ -24,5 +25,55 @@ class CapturistaModel extends CapturistaEntity {
       "status": status,
       "email": email,
     };
+  }
+}
+
+class FilterCapturerModel extends FilterCapturerEntity {
+  const FilterCapturerModel({
+    required super.name,
+    required super.institutionId,
+    required super.page,
+    required super.size,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+      "institutionId": institutionId,
+      "page": page,
+      "size": size,
+    };
+  }
+}
+
+class CredentialInstitutionModel extends CredentialInstitutionEntity {
+  const CredentialInstitutionModel({
+    required super.institutionId,
+    required super.fullname,
+  });  
+
+  Map<String, dynamic> toJson() {
+    return {
+      "institutionId": institutionId,
+      "fullname": fullname,
+    };
+  }
+}
+
+class ResponseCredentialInstitutionModel extends ResponseCredentialInstitutionEntity{
+  const ResponseCredentialInstitutionModel({
+    required super.credentailId,
+    required super.fullname,
+    required super.userPhoto,
+    required super.expirationDate,
+  });
+
+  factory ResponseCredentialInstitutionModel.fromJson(Map<String, dynamic> json) {
+    return ResponseCredentialInstitutionModel(
+      credentailId: json['credentailId'],
+      fullname: json['fullname'],
+      userPhoto: json['userPhoto'],
+      expirationDate: json['expirationDate'],
+    );
   }
 }
