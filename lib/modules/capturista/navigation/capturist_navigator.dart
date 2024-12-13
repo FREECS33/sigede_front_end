@@ -15,8 +15,8 @@ class _CapturistNavigatorState extends State<CapturistNavigator> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const CredentialsManagement(),
-    const RegisterCredential(),
+    const CredentialsScreen(),
+    const RegisterCredentialScreen(),
     const Profile(),
   ];
 

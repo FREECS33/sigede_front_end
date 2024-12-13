@@ -1,293 +1,186 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/core/utils/locator.dart';
-import 'package:sigede_flutter/modules/capturista/data/models/credential_model.dart';
-import 'package:sigede_flutter/modules/capturista/domain/use_cases/get_credentials.dart';
-import 'package:sigede_flutter/modules/public/preview_qr.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sigede_flutter/shared/services/token_service.dart';
+import 'package:sigede_flutter/shared/widgets.dart/error_dialog.dart';
 
-class CredentialsManagement extends StatefulWidget {
-  const CredentialsManagement({super.key});
+class CredentialsScreen extends StatefulWidget {
+  const CredentialsScreen({super.key});
 
   @override
-  State<CredentialsManagement> createState() => _CredentialsManagementState();
+  _CredentialsScreenState createState() => _CredentialsScreenState();
 }
 
-class _CredentialsManagementState extends State<CredentialsManagement> {
-  late GetCredentials getCredentials;
-  List<CredentialModel> credencials = [];
-  List<CredentialModel> filteredCredentials = [];
-  bool isLoading = true;
-  String? errorMessage;
-  TextEditingController searchController = TextEditingController();
-  String? institutionName;
-  String? institutionLogo;
+class _CredentialsScreenState extends State<CredentialsScreen> {
+  final Dio _dio = Dio(BaseOptions(baseUrl: dotenv.env['BASE_URL'] ?? ''));
+  List<Map<String, dynamic>> credentials = [];
+  bool _isLoading = true;
+  int? userAccountId;
 
   @override
   void initState() {
     super.initState();
-    getCredentials = locator<GetCredentials>();
-    _loadCredentials();
+    _loadCapturerId();
   }
 
-  Future<void> _loadCredentials() async {
-    try {
-      final institutionId = await TokenService.getInstituionId();
-      if (institutionId == null) {
-        setState(() {
-          isLoading = false;
-          errorMessage = 'No se encontró el ID de la institución.';
-        });
-        return;
-      }
-      final institutionResponse = await Dio().get('http://93.83.9.7.145:8081/api/institutions/$institutionId',); // API
-      final institutionData = institutionResponse.data['data'];
-      setState(() {
-        institutionName = institutionData['name'];
-        institutionLogo = institutionData['logo'];
-      });
-
-      final result = await getCredentials.call(institutionId: 1);
-      setState(() {
-        credencials = result;
-        filteredCredentials = credencials; // Inicialmente muestra todas
-        isLoading = false;
-        if (credencials.isEmpty) {
-          errorMessage = 'No hay credenciales registradas';
-        }
-      });
-    } on DioException catch (e) {
-      setState(() {
-        isLoading = false;
-        errorMessage = "Error al cargar las credenciales";
-      });
-      debugPrint('DioError: ${e.type} - ${e.message}');
-      if (e.response != null) {
-        debugPrint('DioError response: ${e.response!.data}');
-        debugPrint('DioError status code: ${e.response!.statusCode}');
-      } else {
-        debugPrint('DioError no response: ${e.error}');
-      }
+  Future<void> _loadCapturerId() async {
+    userAccountId = await TokenService.getUserId();
+    print(userAccountId);
+    if (userAccountId != null) {
+      _fetchCredentials();
+    } else {
+      await showErrorDialog(
+        context: context,
+        message: 'Error: Capturer ID no está disponible.',
+      );
     }
   }
 
-  void _filterCredentials(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        filteredCredentials = credencials;
-      } else {
-        filteredCredentials = credencials
-            .where((credential) =>
-                credential.fullname.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
-    });
-  }
-
-  Color _getVigenciaColor(String vigencia) {
-    DateTime fechaVigencia = DateTime.parse(vigencia);
-    DateTime fechaActual = DateTime.now();
-    return fechaVigencia.isBefore(fechaActual) ? Colors.red : Colors.green;
-  }
-
-  String formatDate(String dateTime) {
+  Future<void> _fetchCredentials() async {
     try {
-      DateTime parsedDate = DateTime.parse(dateTime);
-      return "${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}";
-    } catch (e) {
-      debugPrint("Error parsing date: $dateTime");
-      return "Fecha inválida";
+      final response = await _dio.get('/api/credentials/capturist/$userAccountId');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          credentials = List<Map<String, dynamic>>.from(response.data.map((item) => {
+            'credentialId': item['credentialId'],
+            'fullname': item['fullname'],
+            'userPhoto': item['userPhoto'],
+            'expirationDate': item['expirationDate']?.substring(0, 10),
+          }));
+          _isLoading = false;
+        });
+      }
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 400) {
+        setState(() {
+          credentials = [];
+          _isLoading = false;
+        });
+      } else {
+        await showErrorDialog(
+          context: context,
+          message: 'Error al cargar las credenciales: ${e.message}',
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 30,
+      ),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Credenciales',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ],
+            const Text(
+              'Credenciales',
+              style: TextStyle(
+                fontFamily: 'RubikOne',
+                fontSize: 37,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.left,
             ),
-            const SizedBox(height: 18),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: institutionLogo != null
-                          ? Image.network(
-                              institutionLogo!,
-                              height: 90,
-                              width: 110,
-                            )
-                          : const Icon(Icons.image_not_supported_outlined)),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      institutionName ?? 'Cargando...',
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.bold),
-                      maxLines: 2,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  )
-                ],
+            const SizedBox(height: 16.0),
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: 'Buscar credencial',
+                hintStyle: const TextStyle(color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                filled: true,
+                fillColor: const Color(0xFFF6F5F5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color(0xFF917D62), width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 4.0),
-                    child: TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            _filterCredentials(searchController.text);
-                          },
-                          icon: const Icon(Icons.search),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                        ),
-                        hintText: 'Buscar credencial',
-                        labelText: 'Buscar credencial',
-                      ),
-                      onChanged: (value) => _filterCredentials(value),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            if (isLoading)
-              const CircularProgressIndicator()
-            else if (errorMessage != null)
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.grey,
-                      size: 60,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
-                    )
-                  ],
-                ),
-              )
-            else if (filteredCredentials.isEmpty)
-              const Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.grey,
-                      size: 60,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'No se encontraron credenciales.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              )
-            else
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 3 / 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    itemCount: filteredCredentials.length,
-                    itemBuilder: (context, index) {
-                      final credential = filteredCredentials[index];
-                      return InkWell(
-                        onTap: () {
-                          print('ID Credencial: ${credential.credentialId}');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PreviewQR(
-                                  credentialId: credential.credentialId),
+            const SizedBox(height: 16.0),
+            _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.black),
+                  )
+                : Expanded(
+                    child: credentials.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No se encontraron credenciales.',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
                             ),
-                          );
-                        },
-                        child: Card(
-                          elevation: 5,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.badge_outlined),
-                                const SizedBox(width: 10),
-                                Expanded(
+                          )
+                        : GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 3 / 2,
+                            ),
+                            itemCount: credentials.length,
+                            itemBuilder: (context, index) {
+                              final credential = credentials[index];
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        credential.fullname,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(credential['userPhoto'] ?? ''),
+                                        radius: 30,
+                                        onBackgroundImageError: (_, __) => const Icon(
+                                          Icons.person,
+                                          size: 60,
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                      const SizedBox(height: 5),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text('Vigencia'),
-                                          Text(
-                                            formatDate(
-                                                credential.expirationDate),
-                                            style: TextStyle(
-                                              color: _getVigenciaColor(
-                                                  credential.expirationDate),
-                                            ),
-                                          ),
-                                        ],
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        credential['fullname'] ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Vigencia:',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        credential['expirationDate'] ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
                   ),
-                ),
-              ),
           ],
         ),
       ),
