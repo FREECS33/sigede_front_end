@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/credentials/landing_crendential.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/form/credential_form.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/home/home_capturer.dart';
-import 'package:sigede_flutter/modules/admin/presentation/screens/home/management_capturist.dart';
 import 'package:sigede_flutter/modules/admin/presentation/screens/profile/profile_admin.dart';
 
 class NavigationAdmin extends StatefulWidget {
@@ -14,7 +12,6 @@ class NavigationAdmin extends StatefulWidget {
 
 class _NavigationAdminState extends State<NavigationAdmin> {
   int _selectedIndex = 0;
-  // ignore: unused_field
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
@@ -25,7 +22,8 @@ class _NavigationAdminState extends State<NavigationAdmin> {
         );
       },
     ),
-    const ProfileAdmin()
+    DynamicFormScreen(),
+    const ProfileAdmin(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,7 +31,6 @@ class _NavigationAdminState extends State<NavigationAdmin> {
       _selectedIndex = index;
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -41,15 +38,13 @@ class _NavigationAdminState extends State<NavigationAdmin> {
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color:
-              const Color(0xFF917D62), // Color de fondo del BottomNavigationBar
+          color: const Color(0xFF917D62),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3), // Color de la sombra
-              spreadRadius: 0, // Cuánto se extiende la sombra
-              blurRadius: 10, // Qué tan difusa es la sombra
-              offset: const Offset(0,
-                  -5), // Desplazamiento de la sombra (en este caso hacia arriba)
+              color: Colors.black.withOpacity(0.3),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, -5),
             ),
           ],
         ),
@@ -59,6 +54,10 @@ class _NavigationAdminState extends State<NavigationAdmin> {
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               label: 'Inicio',
+            ),            
+            BottomNavigationBarItem(
+              icon: Icon(Icons.edit_outlined),
+              label: 'Formulario',
             ),            
             BottomNavigationBarItem(
               icon: Icon(Icons.person_2_outlined),
