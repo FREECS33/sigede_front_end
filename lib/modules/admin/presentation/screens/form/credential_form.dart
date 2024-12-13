@@ -23,7 +23,6 @@ class _DynamicFormScreenState extends State<DynamicFormScreen> {
 
   Future<void> _loadInstitutionId() async {
     institutionId = await TokenService.getInstituionId();
-    print("Institution ID cargado: $institutionId");
   }
 
   void _addField() {
@@ -63,8 +62,6 @@ class _DynamicFormScreenState extends State<DynamicFormScreen> {
           'isInCard': field['isInCard'],
         };
       }).toList();
-
-      print("Campos a enviar: $fieldsToCreate con Institution ID: $institutionId");
 
       final response = await _dio.post(
         '/api/user-info/create-forms',
